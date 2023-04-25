@@ -8,9 +8,9 @@
 		<relativePath /> <!-- lookup parent from repository -->
 	</parent>
 	<groupId>se.sundsvall</groupId>
-	<artifactId>template</artifactId>
-	<version>1.0</version>
-	<name>template</name>
+	<artifactId>api-service-feedbacksettings-v2</artifactId>
+	<version>0.1</version>
+	<name>api-service-feedbacksettings-v2</name>
 	<properties>
 		<!-- Pipeline properties -->
 		<docker.image.name>ms-template</docker.image.name>
