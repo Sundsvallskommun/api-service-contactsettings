@@ -8,12 +8,12 @@
 		<relativePath /> <!-- lookup parent from repository -->
 	</parent>
 	<groupId>se.sundsvall</groupId>
-	<artifactId>api-service-feedbacksettings-v2</artifactId>
+	<artifactId>api-service-contactsettings</artifactId>
 	<version>0.1</version>
-	<name>api-service-feedbacksettings-v2</name>
+	<name>api-service-contactsettings</name>
 	<properties>
 		<!-- Pipeline properties -->
-		<docker.image.name>ms-feedbacksettings-v2</docker.image.name>
+		<docker.image.name>ms-contactsettings</docker.image.name>
 		<published.container.port.sandbox>8804</published.container.port.sandbox>
 		<published.container.port.test>8803</published.container.port.test>
 		<published.container.port.production>8812</published.container.port.production>
