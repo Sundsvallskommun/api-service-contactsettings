@@ -1,4 +1,4 @@
-package se.sundsvall.feedbacksettings;
+package se.sundsvall.contactsettings;
 
 import static org.springframework.boot.SpringApplication.run;
 
