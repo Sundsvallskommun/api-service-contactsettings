@@ -32,18 +32,18 @@ class ContactChannelTest {
 			.withAlias(alias)
 			.withContactMethod(ContactMethod.EMAIL)
 			.withDestination(destination)
-			.withSend(true);
+			.withDisabled(true);
 
 		assertThat(bean).isNotNull().hasNoNullFieldsOrProperties();
 		assertThat(bean.getAlias()).isEqualTo(alias);
 		assertThat(bean.getContactMethod()).isEqualTo(ContactMethod.EMAIL);
 		assertThat(bean.getDestination()).isEqualTo(destination);
-		assertThat(bean.isSend()).isTrue();
+		assertThat(bean.isDisabled()).isTrue();
 	}
 
 	@Test
 	void testNoDirtOnCreatedBean() {
-		assertThat(ContactChannel.create()).hasAllNullFieldsOrPropertiesExcept("send");
-		assertThat(new ContactChannel()).hasAllNullFieldsOrPropertiesExcept("send");
+		assertThat(ContactChannel.create()).hasAllNullFieldsOrPropertiesExcept("disabled");
+		assertThat(new ContactChannel()).hasAllNullFieldsOrPropertiesExcept("disabled");
 	}
 }

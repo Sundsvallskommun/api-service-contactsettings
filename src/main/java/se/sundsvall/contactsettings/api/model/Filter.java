@@ -4,6 +4,7 @@ import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Schema;
 
 import java.util.List;
+import java.util.Objects;
 
 @Schema(description = "Filter model")
 public class Filter {
@@ -46,7 +47,7 @@ public class Filter {
 
 	@Override
 	public int hashCode() {
-		return java.util.Objects.hash(key, values);
+		return Objects.hash(key, values);
 	}
 
 	@Override
@@ -57,7 +58,7 @@ public class Filter {
 			return false;
 		}
 		Filter filter = (Filter) o;
-		return java.util.Objects.equals(key, filter.key) && java.util.Objects.equals(values, filter.values);
+		return Objects.equals(key, filter.key) && Objects.equals(values, filter.values);
 	}
 
 	@Override

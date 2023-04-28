@@ -40,7 +40,7 @@ class DelegateTest {
 
 	@Test
 	void testNoDirtOnCreatedBean() {
-		assertThat(ContactChannel.create()).hasAllNullFieldsOrPropertiesExcept("send");
-		assertThat(new ContactChannel()).hasAllNullFieldsOrPropertiesExcept("send");
+		assertThat(Delegate.create()).hasAllNullFieldsOrPropertiesExcept("send");
+		assertThat(new Delegate()).hasAllNullFieldsOrPropertiesExcept("send");
 	}
 }

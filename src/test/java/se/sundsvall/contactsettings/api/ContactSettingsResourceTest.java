@@ -163,7 +163,7 @@ class ContactSettingsResourceTest {
 				.withContactMethod(EMAIL)
 				.withDestination("test.testsson@test.se")
 				.withAlias("test")
-				.withSend(true)))
+				.withDisabled(true)))
 			.withAlias("alias")
 			.withVirtual(false)
 			.withDelegates(List.of(Delegate.create()

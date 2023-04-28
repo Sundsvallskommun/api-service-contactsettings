@@ -3,6 +3,8 @@ package se.sundsvall.contactsettings.api.model;
 import io.swagger.v3.oas.annotations.media.Schema;
 import se.sundsvall.contactsettings.api.model.enums.ContactMethod;
 
+import java.util.Objects;
+
 @Schema(description = "Contact channel model")
 public class ContactChannel {
 
@@ -16,7 +18,7 @@ public class ContactChannel {
 	private String destination;
 
 	@Schema(description = "Signal if channel should be used or not when sending message", example = "true")
-	private boolean send;
+	private boolean disabled;
 
 	public static ContactChannel create() {
 		return new ContactChannel();
@@ -61,22 +63,22 @@ public class ContactChannel {
 		return this;
 	}
 
-	public boolean isSend() {
-		return send;
+	public boolean isDisabled() {
+		return disabled;
 	}
 
-	public void setSend(boolean send) {
-		this.send = send;
+	public void setDisabled(boolean disabled) {
+		this.disabled = disabled;
 	}
 
-	public ContactChannel withSend(boolean send) {
-		this.send = send;
+	public ContactChannel withDisabled(boolean disabled) {
+		this.disabled = disabled;
 		return this;
 	}
 
 	@Override
 	public int hashCode() {
-		return java.util.Objects.hash(contactMethod, alias, destination, send);
+		return Objects.hash(contactMethod, alias, destination, disabled);
 	}
 
 	@Override
@@ -90,11 +92,11 @@ public class ContactChannel {
 		}
 
 		ContactChannel other = (ContactChannel) obj;
-		return java.util.Objects.equals(contactMethod, other.contactMethod) && java.util.Objects.equals(alias, other.alias) && java.util.Objects.equals(destination, other.destination) && java.util.Objects.equals(send, other.send);
+		return Objects.equals(contactMethod, other.contactMethod) && Objects.equals(alias, other.alias) && Objects.equals(destination, other.destination) && disabled == other.disabled;
 	}
 
 	@Override
 	public String toString() {
-		return "ContactChannel [contactMethod=" + contactMethod + ", alias=" + alias + ", destination=" + destination + ", send=" + send + "]";
+		return "ContactChannel [contactMethod=" + contactMethod + ", alias=" + alias + ", destination=" + destination + ", disabled=" + disabled + "]";
 	}
 }
