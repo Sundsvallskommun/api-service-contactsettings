@@ -7,7 +7,7 @@ import java.util.Objects;
 import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;
 import jakarta.persistence.Enumerated;
-import se.sundsvall.contactsettings.integration.db.model.enums.ContactMethod;;
+import se.sundsvall.contactsettings.integration.db.model.enums.ContactMethod;
 
 @Embeddable
 public class Channel {
@@ -91,7 +91,7 @@ public class Channel {
 		if (this == obj) {
 			return true;
 		}
-		if (!(obj instanceof Channel other)) {
+		if (!(obj instanceof final Channel other)) {
 			return false;
 		}
 		return Objects.equals(alias, other.alias) && (contactMethod == other.contactMethod) && Objects.equals(destination, other.destination) && (disabled == other.disabled);
