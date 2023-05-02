@@ -3,6 +3,7 @@ package se.sundsvall.contactsettings.api.model;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
+import java.util.Map;
 
 import static com.google.code.beanmatchers.BeanMatchers.hasValidBeanConstructor;
 import static com.google.code.beanmatchers.BeanMatchers.hasValidBeanEquals;
@@ -28,11 +29,10 @@ class GetContactSettingsParametersTest {
 	void testBuilderMethods() {
 		final var partyId = "partyId";
 		final var filterKey = "filterKey";
-		final var filter = List.of("filter1", "filter2");
+		final var filter = Map.of(filterKey,List.of("filter1", "filter2"));
 
 		final var bean = GetContactSettingsParameters.create()
 			.withPartyId(partyId)
-			.withFilterKey(filterKey)
 			.withFilter(filter);
 
 		assertThat(bean).isNotNull().hasNoNullFieldsOrProperties();

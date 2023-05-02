@@ -22,11 +22,11 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.util.UriComponentsBuilder;
 import org.zalando.problem.Problem;
 import org.zalando.problem.violations.ConstraintViolationProblem;
+import se.sundsvall.contactsettings.api.model.ContactChannel;
 import se.sundsvall.contactsettings.api.model.ContactSetting;
 import se.sundsvall.contactsettings.api.model.GetContactSettingsParameters;
 import se.sundsvall.dept44.common.validators.annotation.ValidUuid;
 
-import java.util.Arrays;
 import java.util.List;
 
 import static org.springframework.http.HttpHeaders.CONTENT_TYPE;
@@ -44,7 +44,7 @@ import static org.springframework.http.ResponseEntity.ok;
 @Tag(name = "ContactSettings", description = "Contact settings")
 public class ContactSettingsResource {
 
-	@PostMapping(consumes = APPLICATION_JSON_VALUE, produces = { APPLICATION_JSON_VALUE, APPLICATION_PROBLEM_JSON_VALUE })
+	@PostMapping(consumes = APPLICATION_JSON_VALUE, produces = {APPLICATION_JSON_VALUE, APPLICATION_PROBLEM_JSON_VALUE})
 	@Operation(summary = "Create contact setting")
 	@ApiResponse(responseCode = "201", headers = @Header(name = LOCATION, schema = @Schema(type = "string")), description = "Successful operation", content = @Content(mediaType = ALL_VALUE, schema = @Schema(implementation = Void.class)))
 	@ApiResponse(responseCode = "400", description = "Bad request", content = @Content(mediaType = APPLICATION_PROBLEM_JSON_VALUE, schema = @Schema(oneOf = {Problem.class, ConstraintViolationProblem.class})))
@@ -56,15 +56,15 @@ public class ContactSettingsResource {
 		return created(uriComponentsBuilder.path("/settings/{id}").buildAndExpand(body.getId()).toUri()).header(CONTENT_TYPE, ALL_VALUE).build();
 	}
 
-	@PatchMapping(path = "/{id}", consumes = APPLICATION_JSON_VALUE, produces = { APPLICATION_JSON_VALUE, APPLICATION_PROBLEM_JSON_VALUE })
+	@PatchMapping(path = "/{id}", consumes = APPLICATION_JSON_VALUE, produces = {APPLICATION_JSON_VALUE, APPLICATION_PROBLEM_JSON_VALUE})
 	@Operation(summary = "Update contact setting")
 	@ApiResponse(responseCode = "200", description = "Successful operation", content = @Content(mediaType = APPLICATION_JSON_VALUE, schema = @Schema(implementation = ContactSetting.class)))
 	@ApiResponse(responseCode = "400", description = "Bad request", content = @Content(mediaType = APPLICATION_PROBLEM_JSON_VALUE, schema = @Schema(oneOf = {Problem.class, ConstraintViolationProblem.class})))
 	@ApiResponse(responseCode = "404", description = "Not found", content = @Content(mediaType = APPLICATION_PROBLEM_JSON_VALUE, schema = @Schema(implementation = Problem.class)))
 	@ApiResponse(responseCode = "500", description = "Internal Server error", content = @Content(mediaType = APPLICATION_PROBLEM_JSON_VALUE, schema = @Schema(implementation = Problem.class)))
 	public ResponseEntity<ContactSetting> updateContactSetting(
-			@Parameter(name = "id", description = "Contact setting ID", example = "81471222-5798-11e9-ae24-57fa13b361e1") @ValidUuid @PathVariable(name = "id") final String id,
-			@NotNull @Valid @RequestBody final ContactSetting body) {
+		@Parameter(name = "id", description = "Contact setting ID", example = "81471222-5798-11e9-ae24-57fa13b361e1") @ValidUuid @PathVariable(name = "id") final String id,
+		@NotNull @Valid @RequestBody final ContactSetting body) {
 
 		//TODO Implement call to service-layer
 		return ok(body.withId(id));
@@ -77,13 +77,13 @@ public class ContactSettingsResource {
 	@ApiResponse(responseCode = "404", description = "Not found", content = @Content(schema = @Schema(implementation = Problem.class)))
 	@ApiResponse(responseCode = "500", description = "Internal Server error", content = @Content(schema = @Schema(implementation = Problem.class)))
 	public ResponseEntity<Void> deleteContactSetting(
-			@Parameter(name = "id", description = "Contact setting ID", example = "81471222-5798-11e9-ae24-57fa13b361e1") @ValidUuid @PathVariable(name = "id") final String id) {
+		@Parameter(name = "id", description = "Contact setting ID", example = "81471222-5798-11e9-ae24-57fa13b361e1") @ValidUuid @PathVariable(name = "id") final String id) {
 
 		//TODO Implement call to service-layer
 		return noContent().build();
 	}
 
-	@GetMapping(path = "/{id}", produces = { APPLICATION_JSON_VALUE, APPLICATION_PROBLEM_JSON_VALUE })
+	@GetMapping(path = "/{id}", produces = {APPLICATION_JSON_VALUE, APPLICATION_PROBLEM_JSON_VALUE})
 	@Operation(summary = "Get contact setting by ID")
 	@ApiResponse(responseCode = "200", description = "Successful operation", content = @Content(mediaType = APPLICATION_JSON_VALUE, schema = @Schema(implementation = ContactSetting.class)))
 	@ApiResponse(responseCode = "400", description = "Bad request", content = @Content(mediaType = APPLICATION_PROBLEM_JSON_VALUE, schema = @Schema(oneOf = {Problem.class, ConstraintViolationProblem.class})))
@@ -96,17 +96,43 @@ public class ContactSettingsResource {
 		return ResponseEntity.ok(ContactSetting.create().withId(id));
 	}
 
-	@GetMapping(produces = { APPLICATION_JSON_VALUE, APPLICATION_PROBLEM_JSON_VALUE })
-	@Operation(summary = "Get all related contact settings by Party ID of top level contact setting and Filter parameter")
+	@GetMapping(path = "/party/{id}", produces = {APPLICATION_JSON_VALUE, APPLICATION_PROBLEM_JSON_VALUE})
+	@Operation(summary = "Get contact setting by Party ID")
 	@ApiResponse(responseCode = "200", description = "Successful operation", content = @Content(mediaType = APPLICATION_JSON_VALUE, schema = @Schema(implementation = ContactSetting.class)))
 	@ApiResponse(responseCode = "400", description = "Bad request", content = @Content(mediaType = APPLICATION_PROBLEM_JSON_VALUE, schema = @Schema(oneOf = {Problem.class, ConstraintViolationProblem.class})))
 	@ApiResponse(responseCode = "404", description = "Not found", content = @Content(mediaType = APPLICATION_PROBLEM_JSON_VALUE, schema = @Schema(implementation = Problem.class)))
 	@ApiResponse(responseCode = "500", description = "Internal Server error", content = @Content(mediaType = APPLICATION_PROBLEM_JSON_VALUE, schema = @Schema(implementation = Problem.class)))
-	public ResponseEntity<List<ContactSetting>> getAllRelatedContactSettingsByIdAndFilter(
+	public ResponseEntity<ContactSetting> getContactSettingByPartyId(
+		@Parameter(name = "id", description = "Party ID", example = "ff37f585-afe7-4c39-a3eb-9519c199e640") @ValidUuid @PathVariable(name = "id") final String id) {
+
+		//TODO Implement call to service-layer
+		return ResponseEntity.ok(ContactSetting.create().withPartyId(id));
+	}
+
+	@GetMapping(produces = {APPLICATION_JSON_VALUE, APPLICATION_PROBLEM_JSON_VALUE})
+	@Operation(summary = "Get contact setting with all delegates. Filter by Party ID as top level contact and delegate contacts by filter parameter")
+	@ApiResponse(responseCode = "200", description = "Successful operation", content = @Content(mediaType = APPLICATION_JSON_VALUE, schema = @Schema(implementation = ContactSetting.class)))
+	@ApiResponse(responseCode = "400", description = "Bad request", content = @Content(mediaType = APPLICATION_PROBLEM_JSON_VALUE, schema = @Schema(oneOf = {Problem.class, ConstraintViolationProblem.class})))
+	@ApiResponse(responseCode = "404", description = "Not found", content = @Content(mediaType = APPLICATION_PROBLEM_JSON_VALUE, schema = @Schema(implementation = Problem.class)))
+	@ApiResponse(responseCode = "500", description = "Internal Server error", content = @Content(mediaType = APPLICATION_PROBLEM_JSON_VALUE, schema = @Schema(implementation = Problem.class)))
+	public ResponseEntity<List<ContactSetting>> getContactSettingWithDelegatesByPartyIdAndFilter(
 		@NotNull @Valid final GetContactSettingsParameters body) {
 
 		//TODO Implement call to service-layer
-		return ResponseEntity.ok(Arrays.asList(ContactSetting.create().withId("666")));
+		return ResponseEntity.ok(List.of(ContactSetting.create().withId("666")));
+	}
+
+	@GetMapping(path = "/contact-channel/{destination}", produces = {APPLICATION_JSON_VALUE, APPLICATION_PROBLEM_JSON_VALUE})
+	@Operation(summary = "Get contact setting filtered by contactChannel.destination")
+	@ApiResponse(responseCode = "200", description = "Successful operation", content = @Content(mediaType = APPLICATION_JSON_VALUE, schema = @Schema(implementation = ContactSetting.class)))
+	@ApiResponse(responseCode = "400", description = "Bad request", content = @Content(mediaType = APPLICATION_PROBLEM_JSON_VALUE, schema = @Schema(oneOf = {Problem.class, ConstraintViolationProblem.class})))
+	@ApiResponse(responseCode = "404", description = "Not found", content = @Content(mediaType = APPLICATION_PROBLEM_JSON_VALUE, schema = @Schema(implementation = Problem.class)))
+	@ApiResponse(responseCode = "500", description = "Internal Server error", content = @Content(mediaType = APPLICATION_PROBLEM_JSON_VALUE, schema = @Schema(implementation = Problem.class)))
+	public ResponseEntity<List<ContactSetting>> getContactSettingByDestination(
+		@Parameter(name = "destination", description = "destination of contact channel", example = "0701234567") @PathVariable(name = "destination") final String destination) {
+
+		//TODO Implement call to service-layer
+		return ResponseEntity.ok(List.of(ContactSetting.create().withContactChannels(List.of(ContactChannel.create().withDestination(destination))).withId("666")));
 	}
 
 }

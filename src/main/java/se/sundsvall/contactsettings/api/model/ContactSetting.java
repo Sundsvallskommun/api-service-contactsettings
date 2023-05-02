@@ -1,6 +1,5 @@
 package se.sundsvall.contactsettings.api.model;
 
-import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Schema;
 import se.sundsvall.dept44.common.validators.annotation.ValidUuid;
 
@@ -21,10 +20,6 @@ public class ContactSetting {
 	@Schema(description = "Alias for the person or organization to whom the contact setting applies",
 			example = "Brorsan")
 	private String alias;
-
-	@ArraySchema(schema = @Schema(description = "List of delegates which are connected to the contact setting",
-			implementation = Delegate.class))
-	private List<Delegate> delegates;
 
 	@Schema(description = "Shows if the contact setting is virtual or not",
 			example = "false")
@@ -76,19 +71,6 @@ public class ContactSetting {
 		return this;
 	}
 
-	public List<Delegate> getDelegates() {
-		return delegates;
-	}
-
-	public void setDelegates(List<Delegate> delegates) {
-		this.delegates = delegates;
-	}
-
-	public ContactSetting withDelegates(List<Delegate> delegates) {
-		this.delegates = delegates;
-		return this;
-	}
-
 	public boolean isVirtual() {
 		return virtual;
 	}
@@ -117,24 +99,26 @@ public class ContactSetting {
 
 	@Override
 	public int hashCode() {
-		return Objects.hash(id, partyId, alias, delegates, virtual, contactChannels);
+		return Objects.hash(id, partyId, alias, virtual, contactChannels);
 	}
 
 	@Override
 	public boolean equals(Object obj) {
-		if (this == obj)
+		if (this == obj) {
 			return true;
-		if (!(obj instanceof ContactSetting))
+		}
+		if (!(obj instanceof ContactSetting)) {
 			return false;
+		}
 		ContactSetting other = (ContactSetting) obj;
 		return Objects.equals(id, other.id) && Objects.equals(partyId, other.partyId)
-				&& Objects.equals(alias, other.alias) && Objects.equals(delegates, other.delegates)
-				&& virtual == other.virtual && Objects.equals(contactChannels, other.contactChannels);
+			&& Objects.equals(alias, other.alias) && virtual == other.virtual
+			&& Objects.equals(contactChannels, other.contactChannels);
 	}
 
 	@Override
 	public String toString() {
-		return "ContactSetting [id=" + id + ", partyId=" + partyId + ", alias=" + alias + ", delegates=" + delegates +
+		return "ContactSetting [id=" + id + ", partyId=" + partyId + ", alias=" + alias +
 			", virtual=" + virtual + ", contactChannels=" + contactChannels + "]";
 	}
 }

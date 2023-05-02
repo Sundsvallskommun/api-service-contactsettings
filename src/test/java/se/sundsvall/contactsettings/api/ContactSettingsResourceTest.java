@@ -11,8 +11,6 @@ import org.springframework.util.MultiValueMap;
 import se.sundsvall.contactsettings.Application;
 import se.sundsvall.contactsettings.api.model.ContactChannel;
 import se.sundsvall.contactsettings.api.model.ContactSetting;
-import se.sundsvall.contactsettings.api.model.Delegate;
-import se.sundsvall.contactsettings.api.model.Filter;
 
 import java.util.List;
 import java.util.Map;
@@ -32,6 +30,8 @@ class ContactSettingsResourceTest {
 	private static final String PATH = "/settings";
 	private static final String CONTACT_SETTING_ID = UUID.randomUUID().toString();
 	private static final String PARTY_ID = UUID.randomUUID().toString();
+
+	private static final String CONTACT_CHANNEL_DESTINATION = "0701234567";
 
 	@Autowired
 	private WebTestClient webTestClient;
@@ -75,6 +75,24 @@ class ContactSettingsResourceTest {
 		// Verification
 		//TODO Add verifications
 		assertThat(response).isNotNull().isEqualTo(ContactSetting.create().withId(CONTACT_SETTING_ID));
+	}
+
+	@Test
+	void readContactSettingByPartyId() {
+
+		// Call
+		final var response = webTestClient.get()
+			.uri(builder -> builder.path(PATH + "/party/{id}").build(Map.of( "id", PARTY_ID)))
+			.exchange()
+			.expectStatus().isOk()
+			.expectHeader().contentType(APPLICATION_JSON)
+			.expectBody(ContactSetting.class)
+			.returnResult()
+			.getResponseBody();
+
+		// Verification
+		//TODO Add verifications
+		assertThat(response).isNotNull().isEqualTo(ContactSetting.create().withPartyId(PARTY_ID));
 	}
 
 	@Test
@@ -125,13 +143,31 @@ class ContactSettingsResourceTest {
 	void getContactSettings() {
 		// Parameter values
 		MultiValueMap<String, String> parameters = new LinkedMultiValueMap<>();
+		MultiValueMap<String, String> filter = new LinkedMultiValueMap<>();
 		parameters.add("partyId", PARTY_ID);
-		parameters.add("filterKey", "filterKey");
-		parameters.add("filter", List.of("filter1", "filter2").toString());
+		filter.add("filterKey", List.of("filter1", "filter2").toString());
+		parameters.addAll(filter);
 
 		// Call
 		final var response = webTestClient.get()
 			.uri(builder -> builder.path(PATH).queryParams(parameters).build())
+			.exchange()
+			.expectStatus().isOk()
+			.expectHeader().contentType(APPLICATION_JSON)
+			.expectBodyList(ContactSetting.class)
+			.returnResult()
+			.getResponseBody();
+
+		// Verification
+		//TODO Add verifications
+		assertThat(response).isNotNull().hasSize(1);
+	}
+
+	@Test
+	void getContactSettingsByContactChannelDestination() {
+		// Call
+		final var response = webTestClient.get()
+			.uri(builder -> builder.path(PATH + "/contact-channel/{destination}").build(Map.of("destination", CONTACT_CHANNEL_DESTINATION)))
 			.exchange()
 			.expectStatus().isOk()
 			.expectHeader().contentType(APPLICATION_JSON)
@@ -165,9 +201,6 @@ class ContactSettingsResourceTest {
 				.withAlias("test")
 				.withDisabled(true)))
 			.withAlias("alias")
-			.withVirtual(false)
-			.withDelegates(List.of(Delegate.create()
-				.withContactSettingId(CONTACT_SETTING_ID)
-				.withFilter(Filter.create().withKey("key").withValues(List.of("value")))));
+			.withVirtual(false);
 	}
 }

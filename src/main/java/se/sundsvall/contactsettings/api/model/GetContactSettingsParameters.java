@@ -4,6 +4,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import se.sundsvall.dept44.common.validators.annotation.ValidUuid;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 
 @Schema(description = "Get contact settings request model")
@@ -12,11 +13,8 @@ public class GetContactSettingsParameters {
 	@ValidUuid
 	private String partyId;
 
-	@Schema(description = "Key of filters for the contact settings", example = "category")
-	private String filterKey;
-
-	@Schema(description = "Filter for the contact settings")
-	private List<String> filter;
+	@Schema(description = "Filters for the contact settings")
+	private Map<String, List<String>> filter;
 
 	public static GetContactSettingsParameters create() {
 		return new GetContactSettingsParameters();
@@ -35,35 +33,22 @@ public class GetContactSettingsParameters {
 		return this;
 	}
 
-	public String getFilterKey() {
-		return filterKey;
-	}
-
-	public void setFilterKey(String filterKey) {
-		this.filterKey = filterKey;
-	}
-
-	public GetContactSettingsParameters withFilterKey(String filterKey) {
-		this.filterKey = filterKey;
-		return this;
-	}
-
-	public List<String> getFilter() {
+	public Map<String, List<String>> getFilter() {
 		return filter;
 	}
 
-	public void setFilter(List<String> filter) {
+	public void setFilter(Map<String, List<String>> filter) {
 		this.filter = filter;
 	}
 
-	public GetContactSettingsParameters withFilter(List<String> filter) {
+	public GetContactSettingsParameters withFilter(Map<String, List<String>> filter) {
 		this.filter = filter;
 		return this;
 	}
 
 	@Override
 	public int hashCode() {
-		return Objects.hash(partyId, filterKey, filter);
+		return Objects.hash(partyId, filter);
 	}
 
 	@Override
@@ -74,14 +59,13 @@ public class GetContactSettingsParameters {
 			return false;
 		}
 		GetContactSettingsParameters getContactSettingsParameters = (GetContactSettingsParameters) o;
-		return Objects.equals(partyId, getContactSettingsParameters.partyId) && Objects.equals(filterKey, getContactSettingsParameters.filterKey) && Objects.equals(filter, getContactSettingsParameters.filter);
+		return Objects.equals(partyId, getContactSettingsParameters.partyId) && Objects.equals(filter, getContactSettingsParameters.filter);
 	}
 
 	@Override
 	public String toString() {
 		return "GetContactSettingsParameters [" +
 			", partyId=" + partyId +
-			", filterKey=" + filterKey +
 			", filter=" + filter +
 			"]";
 	}
