@@ -10,7 +10,6 @@ import static org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTest
 import static org.springframework.transaction.annotation.Propagation.NOT_SUPPORTED;
 
 import java.util.List;
-import java.util.Map;
 import java.util.UUID;
 
 import org.junit.jupiter.api.Test;
@@ -25,7 +24,6 @@ import se.sundsvall.contactsettings.integration.db.model.Channel;
 import se.sundsvall.contactsettings.integration.db.model.ContactSettingEntity;
 import se.sundsvall.contactsettings.integration.db.model.DelegateEntity;
 import se.sundsvall.contactsettings.integration.db.model.Filter;
-import se.sundsvall.contactsettings.integration.db.model.enums.ContactMethod;
 
 /**
  * DelegateRepository tests
@@ -82,6 +80,9 @@ class DelegateRepositoryTest {
 		assertThat(entity).isNotNull();
 		assertThat(entity.getPrincipal().getAlias()).isEqualTo("Joe Doe");
 		assertThat(entity.getAgent().getAlias()).isEqualTo("Jane Doe");
+		assertThat(entity.getFilters())
+			.extracting(Filter::getKey, Filter::getValue)
+			.containsExactly(tuple("facility-id", "123456789"));
 
 		// Act
 		final var result = delegateRepository.save(entity.withFilters(List.of(
@@ -97,81 +98,53 @@ class DelegateRepositoryTest {
 				tuple("filter1", "value1"),
 				tuple("filter1", "value2"),
 				tuple("filter2", "value3"));
-		assertThat(result.filtersAsMap()).isEqualTo(Map.of(
-			"filter1", List.of("value1", "value2"),
-			"filter2", List.of("value3")));
 	}
 
 	@Test
-	void findByAgentPartyId() {
+	void findByAgentId() {
 
 		// Act
-		final var result = delegateRepository.findByAgentPartyId(DELEGATE_ENTITY_AGENT_PARTY_ID).orElseThrow();
+		final var result = delegateRepository.findByAgentId(DELEGATE_ENTITY_AGENT_ID);
 
 		// Assert
-		assertThat(result).isNotNull();
-		assertThat(result.getId()).isEqualTo(DELEGATE_ENTITY_ID);
-		assertThat(result.getAgent().getId()).isEqualTo(DELEGATE_ENTITY_AGENT_ID);
-		assertThat(result.getAgent().getPartyId()).isEqualTo(DELEGATE_ENTITY_AGENT_PARTY_ID);
-		assertThat(result.getPrincipal().getId()).isEqualTo(DELEGATE_ENTITY_PRINCIPAL_ID);
-		assertThat(result.getPrincipal().getPartyId()).isEqualTo(DELEGATE_ENTITY_PRINCIPAL_PARTY_ID);
+		assertThat(result).hasSize(1);
+		assertThat(result.get(0).getId()).isEqualTo(DELEGATE_ENTITY_ID);
+		assertThat(result.get(0).getAgent().getId()).isEqualTo(DELEGATE_ENTITY_AGENT_ID);
+		assertThat(result.get(0).getAgent().getPartyId()).isEqualTo(DELEGATE_ENTITY_AGENT_PARTY_ID);
+		assertThat(result.get(0).getPrincipal().getId()).isEqualTo(DELEGATE_ENTITY_PRINCIPAL_ID);
+		assertThat(result.get(0).getPrincipal().getPartyId()).isEqualTo(DELEGATE_ENTITY_PRINCIPAL_PARTY_ID);
 	}
 
 	@Test
-	void findByAgentPartyIdNotFound() {
+	void findByAgentIdNotFound() {
 
 		// Act
-		final var result = delegateRepository.findByAgentPartyId("non-existing");
+		final var result = delegateRepository.findByAgentId("non-existing");
 
 		// Assert
 		assertThat(result).isEmpty();
 	}
 
 	@Test
-	void findByPrincipalPartyId() {
+	void findByPrincipalId() {
 
 		// Act
-		final var result = delegateRepository.findByPrincipalPartyId(DELEGATE_ENTITY_PRINCIPAL_PARTY_ID).orElseThrow();
+		final var result = delegateRepository.findByPrincipalId(DELEGATE_ENTITY_PRINCIPAL_ID);
 
 		// Assert
-		assertThat(result).isNotNull();
-		assertThat(result.getId()).isEqualTo(DELEGATE_ENTITY_ID);
-		assertThat(result.getAgent().getId()).isEqualTo(DELEGATE_ENTITY_AGENT_ID);
-		assertThat(result.getAgent().getPartyId()).isEqualTo(DELEGATE_ENTITY_AGENT_PARTY_ID);
-		assertThat(result.getPrincipal().getId()).isEqualTo(DELEGATE_ENTITY_PRINCIPAL_ID);
-		assertThat(result.getPrincipal().getPartyId()).isEqualTo(DELEGATE_ENTITY_PRINCIPAL_PARTY_ID);
+		assertThat(result).hasSize(1);
+		assertThat(result.get(0).getId()).isEqualTo(DELEGATE_ENTITY_ID);
+		assertThat(result.get(0).getAgent().getId()).isEqualTo(DELEGATE_ENTITY_AGENT_ID);
+		assertThat(result.get(0).getAgent().getPartyId()).isEqualTo(DELEGATE_ENTITY_AGENT_PARTY_ID);
+		assertThat(result.get(0).getPrincipal().getId()).isEqualTo(DELEGATE_ENTITY_PRINCIPAL_ID);
+		assertThat(result.get(0).getPrincipal().getPartyId()).isEqualTo(DELEGATE_ENTITY_PRINCIPAL_PARTY_ID);
 	}
 
 	@Test
-	void findByPrincipalPartyIdNotFound() {
+	void findByPrincipalIdNotFound() {
 
 		// Act
-		final var result = delegateRepository.findByPrincipalPartyId("non-existing");
-
-		// Assert
-		assertThat(result).isEmpty();
-	}
-
-	@Test
-	void findByAgentPartyIdAndPrincipalPartyId() {
-
-		// Act
-		final var result = delegateRepository.findByAgentPartyIdAndPrincipalPartyId(DELEGATE_ENTITY_AGENT_PARTY_ID, DELEGATE_ENTITY_PRINCIPAL_PARTY_ID).orElseThrow();
-
-		// Assert
-		assertThat(result).isNotNull();
-		assertThat(result.getId()).isEqualTo(DELEGATE_ENTITY_ID);
-		assertThat(result.getAgent().getId()).isEqualTo(DELEGATE_ENTITY_AGENT_ID);
-		assertThat(result.getAgent().getPartyId()).isEqualTo(DELEGATE_ENTITY_AGENT_PARTY_ID);
-		assertThat(result.getPrincipal().getId()).isEqualTo(DELEGATE_ENTITY_PRINCIPAL_ID);
-		assertThat(result.getPrincipal().getPartyId()).isEqualTo(DELEGATE_ENTITY_PRINCIPAL_PARTY_ID);
-	}
-
-	@Test
-	void findByAgentPartyIdAndPrincipalPartyIdNotFound() {
-
-		// Act
-		final var result = delegateRepository.findByAgentPartyIdAndPrincipalPartyId("non-existing", "non-existing");
+		final var result = delegateRepository.findByPrincipalId("non-existing");
 
 		// Assert
 		assertThat(result).isEmpty();
@@ -199,7 +172,7 @@ class DelegateRepositoryTest {
 			.withAlias("alias")
 			.withChannels(List.of(Channel.create()
 				.withAlias("Email")
-				.withContactMethod(ContactMethod.EMAIL)
+				.withContactMethod("EMAIL")
 				.withDestination("0701234567")))
 			.withPartyId(randomUUID().toString());
 	}

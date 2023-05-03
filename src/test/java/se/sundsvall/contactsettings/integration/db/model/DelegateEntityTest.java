@@ -10,7 +10,6 @@ import static java.time.OffsetDateTime.now;
 import static java.util.UUID.randomUUID;
 import static org.apache.commons.lang3.RandomUtils.nextInt;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.entry;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.AllOf.allOf;
 
@@ -68,10 +67,6 @@ class DelegateEntityTest {
 		assertThat(entity.getId()).isEqualTo(id);
 		assertThat(entity.getModified()).isEqualTo(modified);
 		assertThat(entity.getPrincipal()).isEqualTo(principal);
-		assertThat(entity.filtersAsMap()).containsOnly(
-			entry("bike", List.of("Honda", "Kawasaki", "Aprilia")),
-			entry("car", List.of("Tesla", "Volvo")),
-			entry("truck", List.of("Scania")));
 	}
 
 	@Test

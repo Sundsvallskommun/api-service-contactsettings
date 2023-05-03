@@ -1,16 +1,8 @@
 package se.sundsvall.contactsettings.integration.db.model;
 
-import static java.util.Collections.emptyList;
-import static java.util.stream.Collectors.groupingBy;
-import static java.util.stream.Collectors.mapping;
-import static java.util.stream.Collectors.toList;
-
 import java.time.OffsetDateTime;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Objects;
-import java.util.Optional;
 
 import org.hibernate.annotations.GenericGenerator;
 
@@ -102,11 +94,6 @@ public class DelegateEntity {
 	public DelegateEntity withAgent(final ContactSettingEntity agent) {
 		this.agent = agent;
 		return this;
-	}
-
-	public Map<String, List<String>> filtersAsMap() {
-		return Optional.ofNullable(this.filters).orElse(emptyList()).stream()
-			.collect(groupingBy(Filter::getKey, HashMap::new, mapping(Filter::getValue, toList())));
 	}
 
 	public List<Filter> getFilters() {

@@ -46,6 +46,9 @@ public class ContactSettingEntity {
 	@Column(name = "modified")
 	private OffsetDateTime modified;
 
+	@Column(name = "created_by_id")
+	private String createdById;
+
 	@ElementCollection(fetch = FetchType.EAGER)
 	@CollectionTable(name = "contact_setting_channel",
 		joinColumns = @JoinColumn(
@@ -123,6 +126,19 @@ public class ContactSettingEntity {
 		return this;
 	}
 
+	public String getCreatedById() {
+		return createdById;
+	}
+
+	public void setCreatedById(final String createdById) {
+		this.createdById = createdById;
+	}
+
+	public ContactSettingEntity withCreatedById(final String createdById) {
+		this.createdById = createdById;
+		return this;
+	}
+
 	public List<Channel> getChannels() {
 		return channels;
 	}
@@ -138,7 +154,7 @@ public class ContactSettingEntity {
 
 	@Override
 	public int hashCode() {
-		return Objects.hash(alias, channels, created, id, modified, partyId);
+		return Objects.hash(alias, channels, created, createdById, id, modified, partyId);
 	}
 
 	@Override
@@ -146,18 +162,18 @@ public class ContactSettingEntity {
 		if (this == obj) {
 			return true;
 		}
-		if (!(obj instanceof final ContactSettingEntity other)) {
+		if (!(obj instanceof ContactSettingEntity other)) {
 			return false;
 		}
-		return Objects.equals(alias, other.alias) && Objects.equals(channels, other.channels) && Objects.equals(created, other.created) && Objects.equals(id, other.id) && Objects.equals(modified, other.modified) && Objects.equals(partyId,
-			other.partyId);
+		return Objects.equals(alias, other.alias) && Objects.equals(channels, other.channels) && Objects.equals(created, other.created) && Objects.equals(createdById, other.createdById) && Objects.equals(id, other.id) && Objects.equals(modified,
+			other.modified) && Objects.equals(partyId, other.partyId);
 	}
 
 	@Override
 	public String toString() {
 		final StringBuilder builder = new StringBuilder();
-		builder.append("ContactSettingEntity [id=").append(id).append(", partyId=").append(partyId).append(", alias=").append(alias).append(", created=").append(created).append(", modified=").append(modified).append(", channels=").append(
-			channels).append("]");
+		builder.append("ContactSettingEntity [id=").append(id).append(", partyId=").append(partyId).append(", alias=").append(alias).append(", created=").append(created).append(", modified=").append(modified).append(", createdById=").append(createdById)
+			.append(", channels=").append(channels).append("]");
 		return builder.toString();
 	}
 }

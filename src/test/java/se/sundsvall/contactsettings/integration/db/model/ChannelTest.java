@@ -11,8 +11,6 @@ import static org.hamcrest.core.AllOf.allOf;
 
 import org.junit.jupiter.api.Test;
 
-import se.sundsvall.contactsettings.integration.db.model.enums.ContactMethod;
-
 class ChannelTest {
 
 	@Test
@@ -29,7 +27,7 @@ class ChannelTest {
 	void hasValidBuilderMethods() {
 
 		final var alias = "alias";
-		final var contactMethod = ContactMethod.EMAIL;
+		final var contactMethod = "EMAIL";
 		final var destination = "destination";
 		final var disabled = true;
 

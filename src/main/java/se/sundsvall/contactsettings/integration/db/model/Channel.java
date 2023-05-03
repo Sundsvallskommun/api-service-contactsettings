@@ -1,20 +1,15 @@
 package se.sundsvall.contactsettings.integration.db.model;
 
-import static jakarta.persistence.EnumType.STRING;
-
 import java.util.Objects;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;
-import jakarta.persistence.Enumerated;
-import se.sundsvall.contactsettings.integration.db.model.enums.ContactMethod;
 
 @Embeddable
 public class Channel {
 
 	@Column(name = "contact_method")
-	@Enumerated(STRING)
-	private ContactMethod contactMethod;
+	private String contactMethod;
 
 	@Column(name = "alias")
 	private String alias;
@@ -29,15 +24,15 @@ public class Channel {
 		return new Channel();
 	}
 
-	public ContactMethod getContactMethod() {
+	public String getContactMethod() {
 		return contactMethod;
 	}
 
-	public void setContactMethod(final ContactMethod contactMethod) {
+	public void setContactMethod(final String contactMethod) {
 		this.contactMethod = contactMethod;
 	}
 
-	public Channel withContactMethod(final ContactMethod contactMethod) {
+	public Channel withContactMethod(final String contactMethod) {
 		this.contactMethod = contactMethod;
 		return this;
 	}

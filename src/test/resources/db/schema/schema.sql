@@ -3,6 +3,7 @@
        id varchar(255) not null,
         alias varchar(255),
         created datetime(6),
+        created_by_id varchar(255),
         modified datetime(6),
         party_id varchar(255),
         primary key (id)

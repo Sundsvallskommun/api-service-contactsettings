@@ -42,6 +42,7 @@ class ContactSettingEntityTest {
 		final var alias = "alias";
 		final var channels = List.of(Channel.create());
 		final var created = now();
+		final var createdById = randomUUID().toString();
 		final var id = randomUUID().toString();
 		final var modified = now();
 		final var partyId = randomUUID().toString();
@@ -50,6 +51,7 @@ class ContactSettingEntityTest {
 			.withAlias(alias)
 			.withChannels(channels)
 			.withCreated(created)
+			.withCreatedById(createdById)
 			.withId(id)
 			.withModified(modified)
 			.withPartyId(partyId);
@@ -58,6 +60,7 @@ class ContactSettingEntityTest {
 		assertThat(entity.getAlias()).isEqualTo(alias);
 		assertThat(entity.getChannels()).isEqualTo(channels);
 		assertThat(entity.getCreated()).isEqualTo(created);
+		assertThat(entity.getCreatedById()).isEqualTo(createdById);
 		assertThat(entity.getId()).isEqualTo(id);
 		assertThat(entity.getModified()).isEqualTo(modified);
 		assertThat(entity.getPartyId()).isEqualTo(partyId);

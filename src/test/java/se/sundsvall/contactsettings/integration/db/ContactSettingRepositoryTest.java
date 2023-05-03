@@ -8,8 +8,6 @@ import static org.assertj.core.api.Assertions.tuple;
 import static org.assertj.core.api.Assertions.within;
 import static org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase.Replace.NONE;
 import static org.springframework.transaction.annotation.Propagation.NOT_SUPPORTED;
-import static se.sundsvall.contactsettings.integration.db.model.enums.ContactMethod.EMAIL;
-import static se.sundsvall.contactsettings.integration.db.model.enums.ContactMethod.SMS;
 
 import java.util.List;
 import java.util.UUID;
@@ -24,7 +22,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import se.sundsvall.contactsettings.integration.db.model.Channel;
 import se.sundsvall.contactsettings.integration.db.model.ContactSettingEntity;
-import se.sundsvall.contactsettings.integration.db.model.enums.ContactMethod;
 
 /**
  * ContactSettingRepository tests
@@ -63,7 +60,7 @@ class ContactSettingRepositoryTest {
 		assertThat(result.getModified()).isNull();
 		assertThat(result.getChannels())
 			.extracting(Channel::getAlias, Channel::getContactMethod, Channel::getDestination)
-			.containsExactly(tuple("Email", EMAIL, "0701234567"));
+			.containsExactly(tuple("Email", "EMAIL", "0701234567"));
 	}
 
 	@Test
@@ -75,13 +72,13 @@ class ContactSettingRepositoryTest {
 		assertThat(entity.getChannels())
 			.extracting(Channel::getAlias, Channel::getContactMethod, Channel::getDestination)
 			.containsExactly(
-				tuple("Email", EMAIL, "john.smith@example.com"),
-				tuple("SMS", SMS, "46701111111"));
+				tuple("Email", "EMAIL", "john.smith@example.com"),
+				tuple("SMS", "SMS", "46701111111"));
 
 		// Act
 		entity.setAlias("changed-alias");
 		entity.getChannels().stream()
-			.filter(c -> ContactMethod.EMAIL.equals(c.getContactMethod()))
+			.filter(c -> "EMAIL".equals(c.getContactMethod()))
 			.findFirst()
 			.orElseThrow()
 			.setDestination("changed.email@example.com");
@@ -95,8 +92,41 @@ class ContactSettingRepositoryTest {
 		assertThat(result.getChannels())
 			.extracting(Channel::getAlias, Channel::getContactMethod, Channel::getDestination)
 			.containsExactly(
-				tuple("Email", EMAIL, "changed.email@example.com"),
-				tuple("SMS", SMS, "46701111111"));
+				tuple("Email", "EMAIL", "changed.email@example.com"),
+				tuple("SMS", "SMS", "46701111111"));
+	}
+
+	@Test
+	void findByChannelsDestination() {
+
+		// Arrange
+		final var destinationSearchParameter = "46701111111";
+
+		// Act
+		final var result = contactSettingRepository.findByChannelsDestination(destinationSearchParameter);
+
+		// Assert
+		assertThat(result).hasSize(1);
+		assertThat(result.get(0).getId()).isEqualTo(CONTACT_SETTING_ENTITY_ID);
+		assertThat(result.get(0).getPartyId()).isEqualTo(CONTACT_SETTING_ENTITY_PARTY_ID);
+		assertThat(result.get(0).getChannels())
+			.extracting(Channel::getAlias, Channel::getContactMethod, Channel::getDestination)
+			.containsExactly(
+				tuple("Email", "EMAIL", "john.smith@example.com"),
+				tuple("SMS", "SMS", "46701111111"));
+	}
+
+	@Test
+	void findByChannelsDestinationNotFound() {
+
+		// Arrange
+		final var destinationSearchParameter = "non-existing";
+
+		// Act
+		final var result = contactSettingRepository.findByChannelsDestination(destinationSearchParameter);
+
+		// Assert
+		assertThat(result).isEmpty();
 	}
 
 	@Test
@@ -112,8 +142,8 @@ class ContactSettingRepositoryTest {
 		assertThat(result.getChannels())
 			.extracting(Channel::getAlias, Channel::getContactMethod, Channel::getDestination)
 			.containsExactly(
-				tuple("Email", EMAIL, "john.smith@example.com"),
-				tuple("SMS", SMS, "46701111111"));
+				tuple("Email", "EMAIL", "john.smith@example.com"),
+				tuple("SMS", "SMS", "46701111111"));
 	}
 
 	@Test
@@ -131,7 +161,7 @@ class ContactSettingRepositoryTest {
 			.withAlias("alias")
 			.withChannels(List.of(Channel.create()
 				.withAlias("Email")
-				.withContactMethod(ContactMethod.EMAIL)
+				.withContactMethod("EMAIL")
 				.withDestination("0701234567")))
 			.withPartyId(randomUUID().toString());
 	}
