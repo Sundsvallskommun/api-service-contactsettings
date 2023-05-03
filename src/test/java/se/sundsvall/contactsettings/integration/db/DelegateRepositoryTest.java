@@ -4,11 +4,13 @@ import static java.time.OffsetDateTime.now;
 import static java.time.temporal.ChronoUnit.SECONDS;
 import static java.util.UUID.randomUUID;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.tuple;
 import static org.assertj.core.api.Assertions.within;
 import static org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase.Replace.NONE;
 import static org.springframework.transaction.annotation.Propagation.NOT_SUPPORTED;
 
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 import org.junit.jupiter.api.Test;
@@ -22,6 +24,7 @@ import org.springframework.transaction.annotation.Transactional;
 import se.sundsvall.contactsettings.integration.db.model.Channel;
 import se.sundsvall.contactsettings.integration.db.model.ContactSettingEntity;
 import se.sundsvall.contactsettings.integration.db.model.DelegateEntity;
+import se.sundsvall.contactsettings.integration.db.model.Filter;
 import se.sundsvall.contactsettings.integration.db.model.enums.ContactMethod;
 
 /**
@@ -81,12 +84,22 @@ class DelegateRepositoryTest {
 		assertThat(entity.getAgent().getAlias()).isEqualTo("Jane Doe");
 
 		// Act
-		final var result = delegateRepository.save(entity.withFilter("changed-filter"));
+		final var result = delegateRepository.save(entity.withFilters(List.of(
+			Filter.create().withKey("filter1").withValue("value1"),
+			Filter.create().withKey("filter1").withValue("value2"),
+			Filter.create().withKey("filter2").withValue("value3"))));
 
 		// Assert
 		assertThat(result).isNotNull();
-		assertThat(result.getFilter()).isEqualTo("changed-filter");
-		assertThat(result.getModified()).isCloseTo(now(), within(2, SECONDS));
+		assertThat(result.getFilters())
+			.extracting(Filter::getKey, Filter::getValue)
+			.containsExactly(
+				tuple("filter1", "value1"),
+				tuple("filter1", "value2"),
+				tuple("filter2", "value3"));
+		assertThat(result.filtersAsMap()).isEqualTo(Map.of(
+			"filter1", List.of("value1", "value2"),
+			"filter2", List.of("value3")));
 	}
 
 	@Test

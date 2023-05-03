@@ -1,11 +1,22 @@
 package se.sundsvall.contactsettings.integration.db.model;
 
+import static java.util.Collections.emptyList;
+import static java.util.stream.Collectors.groupingBy;
+import static java.util.stream.Collectors.mapping;
+import static java.util.stream.Collectors.toList;
+
 import java.time.OffsetDateTime;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 
 import org.hibernate.annotations.GenericGenerator;
 
+import jakarta.persistence.CollectionTable;
 import jakarta.persistence.Column;
+import jakarta.persistence.ElementCollection;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EntityListeners;
 import jakarta.persistence.FetchType;
@@ -28,9 +39,6 @@ public class DelegateEntity {
 	@Column(name = "id")
 	private String id;
 
-	@Column(name = "filter")
-	private String filter;
-
 	@ManyToOne(optional = false, fetch = FetchType.EAGER)
 	@JoinColumn(name = "principal_id", nullable = false, updatable = false, foreignKey = @ForeignKey(name = "fk_delegate_principal_id_contact_setting_id"))
 	private ContactSettingEntity principal;
@@ -38,6 +46,14 @@ public class DelegateEntity {
 	@ManyToOne(optional = false, fetch = FetchType.EAGER)
 	@JoinColumn(name = "agent_id", nullable = false, updatable = false, foreignKey = @ForeignKey(name = "fk_delegate_agent_id_contact_setting_id"))
 	private ContactSettingEntity agent;
+
+	@ElementCollection(fetch = FetchType.EAGER)
+	@CollectionTable(name = "delegate_filter",
+		joinColumns = @JoinColumn(
+			name = "delegate_id",
+			referencedColumnName = "id",
+			foreignKey = @ForeignKey(name = "fk_delegate_delegate_filter")))
+	private List<Filter> filters;
 
 	@Column(name = "created")
 	private OffsetDateTime created;
@@ -59,19 +75,6 @@ public class DelegateEntity {
 
 	public DelegateEntity withId(final String id) {
 		this.id = id;
-		return this;
-	}
-
-	public String getFilter() {
-		return filter;
-	}
-
-	public void setFilter(final String filter) {
-		this.filter = filter;
-	}
-
-	public DelegateEntity withFilter(final String filter) {
-		this.filter = filter;
 		return this;
 	}
 
@@ -98,6 +101,24 @@ public class DelegateEntity {
 
 	public DelegateEntity withAgent(final ContactSettingEntity agent) {
 		this.agent = agent;
+		return this;
+	}
+
+	public Map<String, List<String>> filtersAsMap() {
+		return Optional.ofNullable(this.filters).orElse(emptyList()).stream()
+			.collect(groupingBy(Filter::getKey, HashMap::new, mapping(Filter::getValue, toList())));
+	}
+
+	public List<Filter> getFilters() {
+		return filters;
+	}
+
+	public void setFilters(final List<Filter> filters) {
+		this.filters = filters;
+	}
+
+	public DelegateEntity withFilters(final List<Filter> filters) {
+		this.filters = filters;
 		return this;
 	}
 
@@ -129,7 +150,7 @@ public class DelegateEntity {
 
 	@Override
 	public int hashCode() {
-		return Objects.hash(agent, created, filter, id, modified, principal);
+		return Objects.hash(agent, created, filters, id, modified, principal);
 	}
 
 	@Override
@@ -140,13 +161,13 @@ public class DelegateEntity {
 		if (!(obj instanceof final DelegateEntity other)) {
 			return false;
 		}
-		return Objects.equals(agent, other.agent) && Objects.equals(created, other.created) && Objects.equals(filter, other.filter) && Objects.equals(id, other.id) && Objects.equals(modified, other.modified) && Objects.equals(principal, other.principal);
+		return Objects.equals(agent, other.agent) && Objects.equals(created, other.created) && Objects.equals(filters, other.filters) && Objects.equals(id, other.id) && Objects.equals(modified, other.modified) && Objects.equals(principal, other.principal);
 	}
 
 	@Override
 	public String toString() {
 		final StringBuilder builder = new StringBuilder();
-		builder.append("DelegateEntity [id=").append(id).append(", filter=").append(filter).append(", principal=").append(principal).append(", agent=").append(agent).append(", created=").append(created).append(", modified=").append(modified).append("]");
+		builder.append("DelegateEntity [id=").append(id).append(", principal=").append(principal).append(", agent=").append(agent).append(", filters=").append(filters).append(", created=").append(created).append(", modified=").append(modified).append("]");
 		return builder.toString();
 	}
 }
