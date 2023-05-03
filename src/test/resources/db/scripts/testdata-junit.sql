@@ -13,6 +13,6 @@ INSERT INTO contact_setting_channel (contact_setting_id, alias, contact_method, 
 INSERT INTO delegate (id, principal_id, agent_id) VALUES 
 	-- Joe Doe delegates to Jane Doe.
 	('4d6adb65-172a-4671-a667-5e142bfc353e', '534ba8a0-7484-45b3-b041-ff90f1228c16', '07025549-3fbd-4db2-ab40-e1b93034b254'); 
-
+    -- The "Joe -> Jane"-delegate is filtered on facilityId.
 INSERT INTO delegate_filter (delegate_id, `key`, value) VALUES 
-	('4d6adb65-172a-4671-a667-5e142bfc353e', 'FilterA', 'filter-value'); 
+	('4d6adb65-172a-4671-a667-5e142bfc353e', 'facility-id', '123456789'); 

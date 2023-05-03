@@ -103,75 +103,50 @@ class DelegateRepositoryTest {
 	}
 
 	@Test
-	void findByAgentPartyId() {
+	void findByAgentId() {
 
 		// Act
-		final var result = delegateRepository.findByAgentPartyId(DELEGATE_ENTITY_AGENT_PARTY_ID).orElseThrow();
+		final var result = delegateRepository.findByAgentId(DELEGATE_ENTITY_AGENT_ID);
 
 		// Assert
-		assertThat(result).isNotNull();
-		assertThat(result.getId()).isEqualTo(DELEGATE_ENTITY_ID);
-		assertThat(result.getAgent().getId()).isEqualTo(DELEGATE_ENTITY_AGENT_ID);
-		assertThat(result.getAgent().getPartyId()).isEqualTo(DELEGATE_ENTITY_AGENT_PARTY_ID);
-		assertThat(result.getPrincipal().getId()).isEqualTo(DELEGATE_ENTITY_PRINCIPAL_ID);
-		assertThat(result.getPrincipal().getPartyId()).isEqualTo(DELEGATE_ENTITY_PRINCIPAL_PARTY_ID);
+		assertThat(result).hasSize(1);
+		assertThat(result.get(0).getId()).isEqualTo(DELEGATE_ENTITY_ID);
+		assertThat(result.get(0).getAgent().getId()).isEqualTo(DELEGATE_ENTITY_AGENT_ID);
+		assertThat(result.get(0).getAgent().getPartyId()).isEqualTo(DELEGATE_ENTITY_AGENT_PARTY_ID);
+		assertThat(result.get(0).getPrincipal().getId()).isEqualTo(DELEGATE_ENTITY_PRINCIPAL_ID);
+		assertThat(result.get(0).getPrincipal().getPartyId()).isEqualTo(DELEGATE_ENTITY_PRINCIPAL_PARTY_ID);
 	}
 
 	@Test
-	void findByAgentPartyIdNotFound() {
+	void findByAgentIdNotFound() {
 
 		// Act
-		final var result = delegateRepository.findByAgentPartyId("non-existing");
-
-		// Assert
-		assertThat(result).isEmpty();
-	}
-
-	@Test
-	void findByPrincipalPartyId() {
-
-		// Act
-		final var result = delegateRepository.findByPrincipalPartyId(DELEGATE_ENTITY_PRINCIPAL_PARTY_ID).orElseThrow();
-
-		// Assert
-		assertThat(result).isNotNull();
-		assertThat(result.getId()).isEqualTo(DELEGATE_ENTITY_ID);
-		assertThat(result.getAgent().getId()).isEqualTo(DELEGATE_ENTITY_AGENT_ID);
-		assertThat(result.getAgent().getPartyId()).isEqualTo(DELEGATE_ENTITY_AGENT_PARTY_ID);
-		assertThat(result.getPrincipal().getId()).isEqualTo(DELEGATE_ENTITY_PRINCIPAL_ID);
-		assertThat(result.getPrincipal().getPartyId()).isEqualTo(DELEGATE_ENTITY_PRINCIPAL_PARTY_ID);
-	}
-
-	@Test
-	void findByPrincipalPartyIdNotFound() {
-
-		// Act
-		final var result = delegateRepository.findByPrincipalPartyId("non-existing");
+		final var result = delegateRepository.findByAgentId("non-existing");
 
 		// Assert
 		assertThat(result).isEmpty();
 	}
 
 	@Test
-	void findByAgentPartyIdAndPrincipalPartyId() {
+	void findByPrincipalId() {
 
 		// Act
-		final var result = delegateRepository.findByAgentPartyIdAndPrincipalPartyId(DELEGATE_ENTITY_AGENT_PARTY_ID, DELEGATE_ENTITY_PRINCIPAL_PARTY_ID).orElseThrow();
+		final var result = delegateRepository.findByPrincipalId(DELEGATE_ENTITY_PRINCIPAL_ID);
 
 		// Assert
-		assertThat(result).isNotNull();
-		assertThat(result.getId()).isEqualTo(DELEGATE_ENTITY_ID);
-		assertThat(result.getAgent().getId()).isEqualTo(DELEGATE_ENTITY_AGENT_ID);
-		assertThat(result.getAgent().getPartyId()).isEqualTo(DELEGATE_ENTITY_AGENT_PARTY_ID);
-		assertThat(result.getPrincipal().getId()).isEqualTo(DELEGATE_ENTITY_PRINCIPAL_ID);
-		assertThat(result.getPrincipal().getPartyId()).isEqualTo(DELEGATE_ENTITY_PRINCIPAL_PARTY_ID);
+		assertThat(result).hasSize(1);
+		assertThat(result.get(0).getId()).isEqualTo(DELEGATE_ENTITY_ID);
+		assertThat(result.get(0).getAgent().getId()).isEqualTo(DELEGATE_ENTITY_AGENT_ID);
+		assertThat(result.get(0).getAgent().getPartyId()).isEqualTo(DELEGATE_ENTITY_AGENT_PARTY_ID);
+		assertThat(result.get(0).getPrincipal().getId()).isEqualTo(DELEGATE_ENTITY_PRINCIPAL_ID);
+		assertThat(result.get(0).getPrincipal().getPartyId()).isEqualTo(DELEGATE_ENTITY_PRINCIPAL_PARTY_ID);
 	}
 
 	@Test
-	void findByAgentPartyIdAndPrincipalPartyIdNotFound() {
+	void findByPrincipalIdNotFound() {
 
 		// Act
-		final var result = delegateRepository.findByAgentPartyIdAndPrincipalPartyId("non-existing", "non-existing");
+		final var result = delegateRepository.findByPrincipalId("non-existing");
 
 		// Assert
 		assertThat(result).isEmpty();

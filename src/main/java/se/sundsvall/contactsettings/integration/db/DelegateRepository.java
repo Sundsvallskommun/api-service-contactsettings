@@ -1,6 +1,6 @@
 package se.sundsvall.contactsettings.integration.db;
 
-import java.util.Optional;
+import java.util.List;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.repository.CrudRepository;
@@ -12,27 +12,18 @@ import se.sundsvall.contactsettings.integration.db.model.DelegateEntity;
 public interface DelegateRepository extends CrudRepository<DelegateEntity, String>, JpaRepository<DelegateEntity, String> {
 
 	/**
-	 * Find by agent partyId. I.e. the delegate agents partyId.
+	 * Find by agent contact settings ID. I.e. the delegate agents (contactSetting) ID.
 	 *
-	 * @param agentPartyId the partyId of the agent.
+	 * @param contactSettingsId the contactSettingsId.
 	 * @return an Optional ContactSettingEntity.
 	 */
-	Optional<DelegateEntity> findByAgentPartyId(String agentPartyId);
+	List<DelegateEntity> findByAgentId(String contactSettingsId);
 
 	/**
-	 * Find by principal partyId. I.e. the delegate principals partyId.
+	 * Find by principal contact settings ID. I.e. the delegate principal (contactSetting) ID.
 	 *
-	 * @param principalPartyId the partyId of the principal.
+	 * @param contactSettingsId the contactSettingsId.
 	 * @return an Optional ContactSettingEntity.
 	 */
-	Optional<DelegateEntity> findByPrincipalPartyId(String principalPartyId);
-
-	/**
-	 * Find by agent partyId and principal partyId.
-	 *
-	 * @param principalPartyId the partyId of the principal.
-	 * @param agentPartyId     the partyId of the agent.
-	 * @return an Optional ContactSettingEntity.
-	 */
-	Optional<DelegateEntity> findByAgentPartyIdAndPrincipalPartyId(String agentPartyId, String principalPartyId);
+	List<DelegateEntity> findByPrincipalId(String contactSettingsId);
 }
