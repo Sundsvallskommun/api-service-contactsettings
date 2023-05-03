@@ -11,13 +11,11 @@ import static org.hamcrest.core.AllOf.allOf;
 
 import org.junit.jupiter.api.Test;
 
-import se.sundsvall.contactsettings.integration.db.model.enums.ContactMethod;
-
-class ChannelTest {
+class FilterTest {
 
 	@Test
 	void testBean() {
-		assertThat(Channel.class, allOf(
+		assertThat(Filter.class, allOf(
 			hasValidBeanConstructor(),
 			hasValidGettersAndSetters(),
 			hasValidBeanHashCode(),
@@ -28,27 +26,21 @@ class ChannelTest {
 	@Test
 	void hasValidBuilderMethods() {
 
-		final var alias = "alias";
-		final var contactMethod = ContactMethod.EMAIL;
-		final var destination = "destination";
-		final var disabled = true;
+		final var key = "key";
+		final var value = "value";
 
-		final var entity = Channel.create()
-			.withAlias(alias)
-			.withContactMethod(contactMethod)
-			.withDestination(destination)
-			.withDisabled(disabled);
+		final var entity = Filter.create()
+			.withKey(key)
+			.withValue(value);
 
 		assertThat(entity).hasNoNullFieldsOrProperties();
-		assertThat(entity.getAlias()).isEqualTo(alias);
-		assertThat(entity.getContactMethod()).isEqualTo(contactMethod);
-		assertThat(entity.getDestination()).isEqualTo(destination);
-		assertThat(entity.isDisabled()).isEqualTo(disabled);
+		assertThat(entity.getKey()).isEqualTo(key);
+		assertThat(entity.getValue()).isEqualTo(value);
 	}
 
 	@Test
 	void hasNoDirtOnCreatedBean() {
-		assertThat(new Channel()).hasAllNullFieldsOrPropertiesExcept("disabled");
-		assertThat(Channel.create()).hasAllNullFieldsOrPropertiesExcept("disabled");
+		assertThat(new Filter()).hasAllNullFieldsOrProperties();
+		assertThat(Filter.create()).hasAllNullFieldsOrProperties();
 	}
 }

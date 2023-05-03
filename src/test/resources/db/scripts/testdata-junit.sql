@@ -10,6 +10,9 @@ INSERT INTO contact_setting_channel (contact_setting_id, alias, contact_method, 
 	('534ba8a0-7484-45b3-b041-ff90f1228c16', 'SMS', 'SMS', '46702222222', 0),
 	('07025549-3fbd-4db2-ab40-e1b93034b254', 'Email', 'EMAIL', 'jane.doe@example.com', 0);
 
-INSERT INTO delegate (id, filter, principal_id, agent_id) VALUES 
-	-- Joe Doe delegates to Jane Doe, because they are married and love each other.
-	('4d6adb65-172a-4671-a667-5e142bfc353e', 'Filter A', '534ba8a0-7484-45b3-b041-ff90f1228c16', '07025549-3fbd-4db2-ab40-e1b93034b254'); 
+INSERT INTO delegate (id, principal_id, agent_id) VALUES 
+	-- Joe Doe delegates to Jane Doe.
+	('4d6adb65-172a-4671-a667-5e142bfc353e', '534ba8a0-7484-45b3-b041-ff90f1228c16', '07025549-3fbd-4db2-ab40-e1b93034b254'); 
+
+INSERT INTO delegate_filter (delegate_id, `key`, value) VALUES 
+	('4d6adb65-172a-4671-a667-5e142bfc353e', 'FilterA', 'filter-value'); 
