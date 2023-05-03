@@ -2,6 +2,8 @@ package se.sundsvall.contactsettings.api.model;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 
+import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 
 @Schema(description = "Delegate model")
@@ -10,8 +12,8 @@ public class Delegate {
 	@Schema(description = "Unique id for the contact setting", example = "0d64c132-3aea-11ec-8d3d-0242ac130003")
 	private String contactSettingId;
 
-	@Schema(description = "Filter used by this delagate")
-	private Filter filter;
+	@Schema(description = "Filter used by this delegate")
+	private Map<String, List<String>> filter;
 
 	public static Delegate create() {
 		return new Delegate();
@@ -30,15 +32,15 @@ public class Delegate {
 		return this;
 	}
 
-	public Filter getFilter() {
+	public Map<String, List<String>> getFilter() {
 		return filter;
 	}
 
-	public void setFilter(Filter filter) {
+	public void setFilter(Map<String, List<String>> filter) {
 		this.filter = filter;
 	}
 
-	public Delegate withFilter(Filter filter) {
+	public Delegate withFilter(Map<String, List<String>> filter) {
 		this.filter = filter;
 		return this;
 	}

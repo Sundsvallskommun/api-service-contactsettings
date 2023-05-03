@@ -3,6 +3,7 @@ package se.sundsvall.contactsettings.api.model;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
+import java.util.Map;
 
 import static com.google.code.beanmatchers.BeanMatchers.hasValidBeanConstructor;
 import static com.google.code.beanmatchers.BeanMatchers.hasValidBeanEquals;
@@ -27,7 +28,7 @@ class DelegateTest {
 	@Test
 	void testBuilderMethods() {
 		final var contactSettingId = "contactSettingId";
-		final var filter = Filter.create().withKey("key").withValues(List.of("value"));
+		final var filter = Map.of("key", List.of("value"));
 
 		final var bean = Delegate.create()
 			.withContactSettingId(contactSettingId)
