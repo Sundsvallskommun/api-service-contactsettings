@@ -89,7 +89,7 @@ public class Channel {
 		if (!(obj instanceof final Channel other)) {
 			return false;
 		}
-		return Objects.equals(alias, other.alias) && (contactMethod == other.contactMethod) && Objects.equals(destination, other.destination) && (disabled == other.disabled);
+		return Objects.equals(alias, other.alias) && Objects.equals(contactMethod, other.contactMethod) && Objects.equals(destination, other.destination) && (disabled == other.disabled);
 	}
 
 	@Override
