@@ -1,7 +1,7 @@
 package se.sundsvall.contactsettings.api.validator;
 
 import static java.lang.annotation.ElementType.FIELD;
-import static java.lang.annotation.ElementType.METHOD;
+import static java.lang.annotation.ElementType.PARAMETER;
 import static java.lang.annotation.RetentionPolicy.RUNTIME;
 import static org.hibernate.validator.constraints.CompositionType.OR;
 
@@ -29,7 +29,7 @@ import se.sundsvall.dept44.common.validators.annotation.ValidMSISDN;
 @Email
 @ConstraintComposition(OR)
 @ReportAsSingleViolation
-@Target({ METHOD, FIELD })
+@Target({ PARAMETER, FIELD })
 @Retention(RUNTIME)
 @Constraint(validatedBy = {})
 public @interface ValidDestination {
