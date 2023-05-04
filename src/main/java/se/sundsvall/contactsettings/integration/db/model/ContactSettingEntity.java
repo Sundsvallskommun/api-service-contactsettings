@@ -162,7 +162,7 @@ public class ContactSettingEntity {
 		if (this == obj) {
 			return true;
 		}
-		if (!(obj instanceof ContactSettingEntity other)) {
+		if (!(obj instanceof final ContactSettingEntity other)) {
 			return false;
 		}
 		return Objects.equals(alias, other.alias) && Objects.equals(channels, other.channels) && Objects.equals(created, other.created) && Objects.equals(createdById, other.createdById) && Objects.equals(id, other.id) && Objects.equals(modified,
