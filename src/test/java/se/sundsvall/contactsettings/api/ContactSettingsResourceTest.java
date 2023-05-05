@@ -1,5 +1,16 @@
 package se.sundsvall.contactsettings.api;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT;
+import static org.springframework.http.MediaType.ALL;
+import static org.springframework.http.MediaType.APPLICATION_JSON;
+import static org.springframework.web.util.UriComponentsBuilder.fromPath;
+import static se.sundsvall.contactsettings.api.model.enums.ContactMethod.EMAIL;
+
+import java.util.List;
+import java.util.Map;
+import java.util.UUID;
+
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -8,20 +19,10 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.reactive.server.WebTestClient;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
+
 import se.sundsvall.contactsettings.Application;
 import se.sundsvall.contactsettings.api.model.ContactChannel;
 import se.sundsvall.contactsettings.api.model.ContactSetting;
-
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
-
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT;
-import static org.springframework.http.MediaType.ALL;
-import static org.springframework.http.MediaType.APPLICATION_JSON;
-import static org.springframework.web.util.UriComponentsBuilder.fromPath;
-import static se.sundsvall.contactsettings.api.model.enums.ContactMethod.EMAIL;
 
 @SpringBootTest(classes = Application.class, webEnvironment = RANDOM_PORT)
 @ActiveProfiles("junit")
@@ -56,7 +57,7 @@ class ContactSettingsResourceTest {
 				.build(Map.of("id", CONTACT_SETTING_ID)).toString()))
 			.expectBody().isEmpty();
 
-		//TODO Add verifications
+		// TODO Add verifications
 	}
 
 	@Test
@@ -64,7 +65,7 @@ class ContactSettingsResourceTest {
 
 		// Call
 		final var response = webTestClient.get()
-			.uri(builder -> builder.path(PATH + "/{id}").build(Map.of( "id", CONTACT_SETTING_ID)))
+			.uri(builder -> builder.path(PATH + "/{id}").build(Map.of("id", CONTACT_SETTING_ID)))
 			.exchange()
 			.expectStatus().isOk()
 			.expectHeader().contentType(APPLICATION_JSON)
@@ -73,7 +74,7 @@ class ContactSettingsResourceTest {
 			.getResponseBody();
 
 		// Verification
-		//TODO Add verifications
+		// TODO Add verifications
 		assertThat(response).isNotNull().isEqualTo(ContactSetting.create().withId(CONTACT_SETTING_ID));
 	}
 
@@ -82,7 +83,7 @@ class ContactSettingsResourceTest {
 
 		// Call
 		final var response = webTestClient.get()
-			.uri(builder -> builder.path(PATH + "/party/{id}").build(Map.of( "id", PARTY_ID)))
+			.uri(builder -> builder.path(PATH + "/party/{id}").build(Map.of("id", PARTY_ID)))
 			.exchange()
 			.expectStatus().isOk()
 			.expectHeader().contentType(APPLICATION_JSON)
@@ -91,7 +92,7 @@ class ContactSettingsResourceTest {
 			.getResponseBody();
 
 		// Verification
-		//TODO Add verifications
+		// TODO Add verifications
 		assertThat(response).isNotNull().isEqualTo(ContactSetting.create().withPartyId(PARTY_ID));
 	}
 
@@ -113,7 +114,7 @@ class ContactSettingsResourceTest {
 			.getResponseBody();
 
 		// Verification
-		//TODO Add verifications
+		// TODO Add verifications
 		assertThat(response).isEqualTo(contactSetting);
 	}
 
@@ -142,8 +143,8 @@ class ContactSettingsResourceTest {
 	@Test
 	void getContactSettings() {
 		// Parameter values
-		MultiValueMap<String, String> parameters = new LinkedMultiValueMap<>();
-		MultiValueMap<String, String> filter = new LinkedMultiValueMap<>();
+		final MultiValueMap<String, String> parameters = new LinkedMultiValueMap<>();
+		final MultiValueMap<String, String> filter = new LinkedMultiValueMap<>();
 		parameters.add("partyId", PARTY_ID);
 		filter.add("filterKey", List.of("filter1", "filter2").toString());
 		parameters.addAll(filter);
@@ -159,7 +160,7 @@ class ContactSettingsResourceTest {
 			.getResponseBody();
 
 		// Verification
-		//TODO Add verifications
+		// TODO Add verifications
 		assertThat(response).isNotNull().hasSize(1);
 	}
 
@@ -176,7 +177,7 @@ class ContactSettingsResourceTest {
 			.getResponseBody();
 
 		// Verification
-		//TODO Add verifications
+		// TODO Add verifications
 		assertThat(response).isNotNull().hasSize(1);
 	}
 
@@ -188,7 +189,7 @@ class ContactSettingsResourceTest {
 			.expectStatus().isNoContent()
 			.expectBody().isEmpty();
 
-		//TODO Add verifications
+		// TODO Add verifications
 	}
 
 	private static ContactSetting createContactSettingInstance() {

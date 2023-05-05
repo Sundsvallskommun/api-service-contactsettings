@@ -1,4 +1,4 @@
-package se.sundsvall.contactsettings.api.model;
+package se.sundsvall.contactsettings.integration.db.model;
 
 import static com.google.code.beanmatchers.BeanMatchers.hasValidBeanConstructor;
 import static com.google.code.beanmatchers.BeanMatchers.hasValidBeanEquals;
@@ -7,10 +7,11 @@ import static com.google.code.beanmatchers.BeanMatchers.hasValidBeanToString;
 import static com.google.code.beanmatchers.BeanMatchers.hasValidGettersAndSetters;
 import static com.google.code.beanmatchers.BeanMatchers.registerValueGenerator;
 import static java.time.OffsetDateTime.now;
+import static java.util.UUID.randomUUID;
 import static org.apache.commons.lang3.RandomUtils.nextInt;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.hamcrest.CoreMatchers.allOf;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.core.AllOf.allOf;
 
 import java.time.OffsetDateTime;
 import java.util.List;
@@ -18,7 +19,7 @@ import java.util.List;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
-class ContactSettingTest {
+class ContactSettingEntityTest {
 
 	@BeforeAll
 	static void setup() {
@@ -27,7 +28,7 @@ class ContactSettingTest {
 
 	@Test
 	void testBean() {
-		assertThat(ContactSetting.class, allOf(
+		assertThat(ContactSettingEntity.class, allOf(
 			hasValidBeanConstructor(),
 			hasValidGettersAndSetters(),
 			hasValidBeanHashCode(),
@@ -36,41 +37,38 @@ class ContactSettingTest {
 	}
 
 	@Test
-	void testBuilderMethods() {
+	void hasValidBuilderMethods() {
 
-		final var id = "id";
-		final var partyId = "partyId";
-		final var created = now();
-		final var createdById = "createdById";
 		final var alias = "alias";
+		final var channels = List.of(Channel.create());
+		final var created = now();
+		final var createdById = randomUUID().toString();
+		final var id = randomUUID().toString();
 		final var modified = now();
-		final var contactChannels = List.of(ContactChannel.create());
-		final var isVirtual = true;
+		final var partyId = randomUUID().toString();
 
-		final var bean = ContactSetting.create()
+		final var entity = ContactSettingEntity.create()
+			.withAlias(alias)
+			.withChannels(channels)
 			.withCreated(created)
 			.withCreatedById(createdById)
 			.withId(id)
 			.withModified(modified)
-			.withPartyId(partyId)
-			.withAlias(alias)
-			.withContactChannels(contactChannels)
-			.withVirtual(isVirtual);
+			.withPartyId(partyId);
 
-		assertThat(bean).isNotNull().hasNoNullFieldsOrProperties();
-		assertThat(bean.getId()).isEqualTo(id);
-		assertThat(bean.getCreated()).isEqualTo(created);
-		assertThat(bean.getCreatedById()).isEqualTo(createdById);
-		assertThat(bean.getModified()).isEqualTo(modified);
-		assertThat(bean.getPartyId()).isEqualTo(partyId);
-		assertThat(bean.getAlias()).isEqualTo(alias);
-		assertThat(bean.getContactChannels()).isEqualTo(contactChannels);
-		assertThat(bean.isVirtual()).isEqualTo(isVirtual);
+		assertThat(entity).hasNoNullFieldsOrProperties();
+		assertThat(entity.getAlias()).isEqualTo(alias);
+		assertThat(entity.getChannels()).isEqualTo(channels);
+		assertThat(entity.getCreated()).isEqualTo(created);
+		assertThat(entity.getCreatedById()).isEqualTo(createdById);
+		assertThat(entity.getId()).isEqualTo(id);
+		assertThat(entity.getModified()).isEqualTo(modified);
+		assertThat(entity.getPartyId()).isEqualTo(partyId);
 	}
 
 	@Test
-	void testNoDirtOnCreatedBean() {
-		assertThat(ContactSetting.create()).hasAllNullFieldsOrPropertiesExcept("virtual");
-		assertThat(new ContactSetting()).hasAllNullFieldsOrPropertiesExcept("virtual");
+	void hasNoDirtOnCreatedBean() {
+		assertThat(new ContactSettingEntity()).hasAllNullFieldsOrProperties();
+		assertThat(ContactSettingEntity.create()).hasAllNullFieldsOrProperties();
 	}
 }

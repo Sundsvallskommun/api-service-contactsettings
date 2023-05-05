@@ -1,20 +1,26 @@
 package se.sundsvall.contactsettings.api.model;
 
-import io.swagger.v3.oas.annotations.media.Schema;
-import se.sundsvall.contactsettings.api.model.enums.ContactMethod;
-
 import java.util.Objects;
+
+import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import se.sundsvall.contactsettings.api.model.enums.ContactMethod;
 
 @Schema(description = "Contact channel model")
 public class ContactChannel {
 
 	@Schema(description = "Method of contact", example = "SMS")
+	@NotNull
 	private ContactMethod contactMethod;
 
 	@Schema(description = "Alias for the destination", example = "Privat mobil")
+	@NotBlank
 	private String alias;
 
-	@Schema(description = "Point of destination", example = "0701234567")
+	@Schema(description = "Point of destination", example = "46701234567")
+	// TODO: Activate when dept44 2.0.2 is released.
+	// @ValidDestination
 	private String destination;
 
 	@Schema(description = "Signal if channel should be used or not when sending message", example = "true")
@@ -28,11 +34,11 @@ public class ContactChannel {
 		return contactMethod;
 	}
 
-	public void setContactMethod(ContactMethod contactMethod) {
+	public void setContactMethod(final ContactMethod contactMethod) {
 		this.contactMethod = contactMethod;
 	}
 
-	public ContactChannel withContactMethod(ContactMethod contactMethod) {
+	public ContactChannel withContactMethod(final ContactMethod contactMethod) {
 		this.contactMethod = contactMethod;
 		return this;
 	}
@@ -41,11 +47,11 @@ public class ContactChannel {
 		return alias;
 	}
 
-	public void setAlias(String alias) {
+	public void setAlias(final String alias) {
 		this.alias = alias;
 	}
 
-	public ContactChannel withAlias(String alias) {
+	public ContactChannel withAlias(final String alias) {
 		this.alias = alias;
 		return this;
 	}
@@ -54,11 +60,11 @@ public class ContactChannel {
 		return destination;
 	}
 
-	public void setDestination(String destination) {
+	public void setDestination(final String destination) {
 		this.destination = destination;
 	}
 
-	public ContactChannel withDestination(String destination) {
+	public ContactChannel withDestination(final String destination) {
 		this.destination = destination;
 		return this;
 	}
@@ -67,11 +73,11 @@ public class ContactChannel {
 		return disabled;
 	}
 
-	public void setDisabled(boolean disabled) {
+	public void setDisabled(final boolean disabled) {
 		this.disabled = disabled;
 	}
 
-	public ContactChannel withDisabled(boolean disabled) {
+	public ContactChannel withDisabled(final boolean disabled) {
 		this.disabled = disabled;
 		return this;
 	}
@@ -82,17 +88,16 @@ public class ContactChannel {
 	}
 
 	@Override
-	public boolean equals(Object obj) {
+	public boolean equals(final Object obj) {
 		if (this == obj) {
 			return true;
 		}
 
-		if (!(obj instanceof ContactChannel)) {
+		if (!(obj instanceof final ContactChannel other)) {
 			return false;
 		}
 
-		ContactChannel other = (ContactChannel) obj;
-		return Objects.equals(contactMethod, other.contactMethod) && Objects.equals(alias, other.alias) && Objects.equals(destination, other.destination) && disabled == other.disabled;
+		return Objects.equals(contactMethod, other.contactMethod) && Objects.equals(alias, other.alias) && Objects.equals(destination, other.destination) && (disabled == other.disabled);
 	}
 
 	@Override
