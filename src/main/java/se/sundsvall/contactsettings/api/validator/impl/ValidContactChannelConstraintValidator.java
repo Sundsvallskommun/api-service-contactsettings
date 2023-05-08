@@ -27,14 +27,14 @@ public class ValidContactChannelConstraintValidator implements ConstraintValidat
 		return switch (value.getContactMethod()) {
 			case EMAIL -> {
 				if (!EMAIL_PATTERN.matcher(Optional.ofNullable(value.getDestination()).orElse("")).matches()) {
-					setValidationMessage(context, String.format(EMAIL_VALIDATION_MESSAGE, value.getDestination(), EMAIL_PATTERN.pattern()));
+					setValidationMessage(context, String.format(EMAIL_VALIDATION_MESSAGE, value.getDestination()));
 					yield false;
 				}
 				yield true;
 			}
 			case SMS -> {
 				if (!MSISDN_PATTERN.matcher(Optional.ofNullable(value.getDestination()).orElse("")).matches()) {
-					setValidationMessage(context, String.format(SMS_VALIDATION_MESSAGE, value.getDestination(), MSISDN_PATTERN.pattern()));
+					setValidationMessage(context, String.format(SMS_VALIDATION_MESSAGE, value.getDestination()));
 					yield false;
 				}
 				yield true;
