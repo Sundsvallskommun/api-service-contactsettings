@@ -4,7 +4,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT;
 import static org.springframework.http.MediaType.ALL;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
-import static org.springframework.web.util.UriComponentsBuilder.fromPath;
 import static se.sundsvall.contactsettings.api.model.enums.ContactMethod.EMAIL;
 
 import java.util.List;
@@ -15,6 +14,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
+import org.springframework.http.HttpHeaders;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.reactive.server.WebTestClient;
 import org.springframework.util.LinkedMultiValueMap;
@@ -23,6 +23,8 @@ import org.springframework.util.MultiValueMap;
 import se.sundsvall.contactsettings.Application;
 import se.sundsvall.contactsettings.api.model.ContactChannel;
 import se.sundsvall.contactsettings.api.model.ContactSetting;
+import se.sundsvall.contactsettings.api.model.ContactSettingCreateRequest;
+import se.sundsvall.contactsettings.api.model.ContactSettingUpdateRequest;
 
 @SpringBootTest(classes = Application.class, webEnvironment = RANDOM_PORT)
 @ActiveProfiles("junit")
@@ -42,8 +44,9 @@ class ContactSettingsResourceTest {
 
 	@Test
 	void createContactSetting() {
+
 		// Parameter values
-		final var contactSetting = createContactSettingInstance();
+		final var contactSetting = contactSettingCreateRequest();
 
 		// Call
 		webTestClient.post()
@@ -53,8 +56,7 @@ class ContactSettingsResourceTest {
 			.exchange()
 			.expectStatus().isCreated()
 			.expectHeader().contentType(ALL)
-			.expectHeader().location("http://localhost:".concat(String.valueOf(port)).concat(fromPath(PATH + "/{id}")
-				.build(Map.of("id", CONTACT_SETTING_ID)).toString()))
+			.expectHeader().exists(HttpHeaders.LOCATION)
 			.expectBody().isEmpty();
 
 		// TODO Add verifications
@@ -99,13 +101,13 @@ class ContactSettingsResourceTest {
 	@Test
 	void updateContactSettingFullRequest() {
 		// Parameter values
-		final var contactSetting = createContactSettingInstance();
+		final var contactSettingUpdateRequest = contactSettingUpdateRequest();
 
 		// Call
 		final var response = webTestClient.patch()
 			.uri(builder -> builder.path(PATH + "/{id}").build(Map.of("id", CONTACT_SETTING_ID)))
 			.contentType(APPLICATION_JSON)
-			.bodyValue(contactSetting)
+			.bodyValue(contactSettingUpdateRequest)
 			.exchange()
 			.expectStatus().isOk()
 			.expectHeader().contentType(APPLICATION_JSON)
@@ -115,13 +117,17 @@ class ContactSettingsResourceTest {
 
 		// Verification
 		// TODO Add verifications
-		assertThat(response).isEqualTo(contactSetting);
+		assertThat(response).isNotNull();
+		assertThat(response.getId()).isEqualTo(CONTACT_SETTING_ID);
+		assertThat(response.getContactChannels()).isEqualTo(contactSettingUpdateRequest.getContactChannels());
+		assertThat(response.getAlias()).isEqualTo(contactSettingUpdateRequest.getAlias());
 	}
 
 	@Test
 	void updateErrandEmptyRequest() {
+
 		// Parameter values
-		final var emptyInstance = ContactSetting.create();
+		final var emptyInstance = ContactSettingUpdateRequest.create();
 		final var updatedInstance = ContactSetting.create().withId(CONTACT_SETTING_ID);
 
 		// Call
@@ -192,16 +198,24 @@ class ContactSettingsResourceTest {
 		// TODO Add verifications
 	}
 
-	private static ContactSetting createContactSettingInstance() {
-		return ContactSetting.create()
-			.withId(CONTACT_SETTING_ID)
+	private static ContactSettingCreateRequest contactSettingCreateRequest() {
+		return ContactSettingCreateRequest.create()
 			.withPartyId(PARTY_ID)
 			.withContactChannels(List.of(ContactChannel.create()
 				.withContactMethod(EMAIL)
 				.withDestination("test.testsson@test.se")
 				.withAlias("test")
 				.withDisabled(true)))
-			.withAlias("alias")
-			.withVirtual(false);
+			.withAlias("alias");
+	}
+
+	private static ContactSettingUpdateRequest contactSettingUpdateRequest() {
+		return ContactSettingUpdateRequest.create()
+			.withContactChannels(List.of(ContactChannel.create()
+				.withContactMethod(EMAIL)
+				.withDestination("test.testsson@test.se")
+				.withAlias("test")
+				.withDisabled(true)))
+			.withAlias("alias");
 	}
 }

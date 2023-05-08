@@ -11,23 +11,17 @@ import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.format.annotation.DateTimeFormat.ISO;
 
 import io.swagger.v3.oas.annotations.media.Schema;
-import jakarta.validation.constraints.NotNull;
-import se.sundsvall.dept44.common.validators.annotation.ValidUuid;
 
-@Schema(description = "Delegate model")
+@Schema(description = "Delegate model", accessMode = READ_ONLY)
 public class Delegate {
 
-	@Schema(description = "Unique id for the delegate", example = "0d64c132-3aea-11ec-8d3d-0242ac130003")
+	@Schema(description = "Unique id for the delegate", example = "0d64c132-3aea-11ec-8d3d-0242ac130003", accessMode = READ_ONLY)
 	private String id;
 
-	@Schema(description = "Unique id for the delegate principal (owner)", example = "0d64c132-3aea-11ec-8d3d-0242ac130003")
-	@NotNull
-	@ValidUuid
+	@Schema(description = "Unique id for the delegate principal (owner)", example = "0d64c132-3aea-11ec-8d3d-0242ac130003", accessMode = READ_ONLY)
 	private String principalId;
 
-	@Schema(description = "Unique id for the delegate agent", example = "0d64c132-3aea-11ec-8d3d-0242ac130003")
-	@NotNull
-	@ValidUuid
+	@Schema(description = "Unique id for the delegate agent", example = "0d64c132-3aea-11ec-8d3d-0242ac130003", accessMode = READ_ONLY)
 	private String agentId;
 
 	@Schema(description = "Timestamp when delegate was created", example = "2000-10-31T01:30:00.000+02:00", accessMode = READ_ONLY)

@@ -7,10 +7,7 @@ import static org.springframework.boot.test.context.SpringBootTest.WebEnvironmen
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 import static org.springframework.http.MediaType.APPLICATION_PROBLEM_JSON;
 import static org.zalando.problem.Status.BAD_REQUEST;
-import static se.sundsvall.contactsettings.api.model.enums.ContactMethod.EMAIL;
-import static se.sundsvall.contactsettings.api.model.enums.ContactMethod.SMS;
 
-import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
@@ -24,16 +21,14 @@ import org.zalando.problem.violations.ConstraintViolationProblem;
 import org.zalando.problem.violations.Violation;
 
 import se.sundsvall.contactsettings.Application;
-import se.sundsvall.contactsettings.api.model.ContactChannel;
-import se.sundsvall.contactsettings.api.model.ContactSettingCreateRequest;
-import se.sundsvall.contactsettings.api.model.ContactSettingUpdateRequest;
+import se.sundsvall.contactsettings.api.model.DelegateCreateRequest;
+import se.sundsvall.contactsettings.api.model.DelegateUpdateRequest;
 
 @SpringBootTest(classes = Application.class, webEnvironment = RANDOM_PORT)
 @ActiveProfiles("junit")
-class ContactSettingsResourceFailuresTest {
+class DelegateResourceFailuresTest {
 
-	private static final String PATH = "/settings";
-	private static final String CONTACT_SETTING_ID = UUID.randomUUID().toString();
+	private static final String DELEGATE_ID = UUID.randomUUID().toString();
 
 	@Autowired
 	private WebTestClient webTestClient;
@@ -41,9 +36,9 @@ class ContactSettingsResourceFailuresTest {
 	@Test
 	void createMissingBody() {
 
-		// Call
+		// Act
 		final var response = webTestClient.post()
-			.uri(PATH)
+			.uri("/delegates")
 			.contentType(APPLICATION_JSON)
 			.exchange()
 			.expectStatus().isBadRequest()
@@ -52,25 +47,27 @@ class ContactSettingsResourceFailuresTest {
 			.returnResult()
 			.getResponseBody();
 
+		// Assert
 		assertThat(response).isNotNull();
 		assertThat(response.getTitle()).isEqualTo("Bad Request");
 		assertThat(response.getStatus()).isEqualTo(BAD_REQUEST);
 		assertThat(response.getDetail()).isEqualTo(
-			"Required request body is missing: public org.springframework.http.ResponseEntity<java.lang.Void> se.sundsvall.contactsettings.api.ContactSettingsResource.createContactSetting(org.springframework.web.util.UriComponentsBuilder,se.sundsvall.contactsettings.api.model.ContactSettingCreateRequest)");
+			"Required request body is missing: public org.springframework.http.ResponseEntity<java.lang.Void> se.sundsvall.contactsettings.api.DelegateResource.createDelegate(org.springframework.web.util.UriComponentsBuilder,se.sundsvall.contactsettings.api.model.DelegateCreateRequest)");
 
 		// TODO Add verifications
 	}
 
 	@Test
-	void createWithInvalidPartyId() {
+	void createWithInvalidAgentId() {
 
-		final var body = ContactSettingCreateRequest.create()
-			.withCreatedById(randomUUID().toString())
-			.withPartyId("not-valid-party-id");
+		// Arrange
+		final var body = DelegateCreateRequest.create()
+			.withAgentId("invalid-agentId")
+			.withPrincipalId(randomUUID().toString());
 
-		// Call
+		// Act
 		final var response = webTestClient.post()
-			.uri(PATH)
+			.uri("/delegates")
 			.contentType(APPLICATION_JSON)
 			.bodyValue(body)
 			.exchange()
@@ -80,26 +77,28 @@ class ContactSettingsResourceFailuresTest {
 			.returnResult()
 			.getResponseBody();
 
+		// Assert
 		assertThat(response).isNotNull();
 		assertThat(response.getTitle()).isEqualTo("Constraint Violation");
 		assertThat(response.getStatus()).isEqualTo(BAD_REQUEST);
 		assertThat(response.getViolations())
 			.extracting(Violation::getField, Violation::getMessage)
-			.containsExactlyInAnyOrder(tuple("partyId", "not a valid UUID"));
+			.containsExactlyInAnyOrder(tuple("agentId", "not a valid UUID"));
 
 		// TODO Add verifications
 	}
 
 	@Test
-	void createWithInvalidCreatedById() {
+	void createWithInvalidPrincipalId() {
 
-		final var body = ContactSettingCreateRequest.create()
-			.withCreatedById("invalid-uuid")
-			.withPartyId(randomUUID().toString());
+		// Arrange
+		final var body = DelegateCreateRequest.create()
+			.withAgentId(randomUUID().toString())
+			.withPrincipalId("invalid-principalId");
 
-		// Call
+		// Act
 		final var response = webTestClient.post()
-			.uri(PATH)
+			.uri("/delegates")
 			.contentType(APPLICATION_JSON)
 			.bodyValue(body)
 			.exchange()
@@ -109,72 +108,13 @@ class ContactSettingsResourceFailuresTest {
 			.returnResult()
 			.getResponseBody();
 
+		// Assert
 		assertThat(response).isNotNull();
 		assertThat(response.getTitle()).isEqualTo("Constraint Violation");
 		assertThat(response.getStatus()).isEqualTo(BAD_REQUEST);
 		assertThat(response.getViolations())
 			.extracting(Violation::getField, Violation::getMessage)
-			.containsExactlyInAnyOrder(tuple("createdById", "not a valid UUID"));
-
-		// TODO Add verifications
-	}
-
-	@Test
-	void createWithInvalidEmailChannel() {
-
-		final var body = ContactSettingCreateRequest.create()
-			.withCreatedById(randomUUID().toString())
-			.withPartyId(UUID.randomUUID().toString())
-			.withContactChannels(List.of(ContactChannel.create().withContactMethod(EMAIL).withDestination("invalid")));
-
-		// Call
-		final var response = webTestClient.post()
-			.uri(PATH)
-			.contentType(APPLICATION_JSON)
-			.bodyValue(body)
-			.exchange()
-			.expectStatus().isBadRequest()
-			.expectHeader().contentType(APPLICATION_PROBLEM_JSON)
-			.expectBody(ConstraintViolationProblem.class)
-			.returnResult()
-			.getResponseBody();
-
-		assertThat(response).isNotNull();
-		assertThat(response.getTitle()).isEqualTo("Constraint Violation");
-		assertThat(response.getStatus()).isEqualTo(BAD_REQUEST);
-		assertThat(response.getViolations())
-			.extracting(Violation::getField, Violation::getMessage)
-			.containsExactlyInAnyOrder(tuple("contactChannels[0]", "The email destination value 'invalid' is not valid! Example of a valid value: hello@example.com"));
-
-		// TODO Add verifications
-	}
-
-	@Test
-	void createWithInvalidSMSChannel() {
-
-		final var body = ContactSettingCreateRequest.create()
-			.withCreatedById(randomUUID().toString())
-			.withPartyId(UUID.randomUUID().toString())
-			.withContactChannels(List.of(ContactChannel.create().withContactMethod(SMS).withDestination("invalid")));
-
-		// Call
-		final var response = webTestClient.post()
-			.uri(PATH)
-			.contentType(APPLICATION_JSON)
-			.bodyValue(body)
-			.exchange()
-			.expectStatus().isBadRequest()
-			.expectHeader().contentType(APPLICATION_PROBLEM_JSON)
-			.expectBody(ConstraintViolationProblem.class)
-			.returnResult()
-			.getResponseBody();
-
-		assertThat(response).isNotNull();
-		assertThat(response.getTitle()).isEqualTo("Constraint Violation");
-		assertThat(response.getStatus()).isEqualTo(BAD_REQUEST);
-		assertThat(response.getViolations())
-			.extracting(Violation::getField, Violation::getMessage)
-			.containsExactlyInAnyOrder(tuple("contactChannels[0]", "The SMS destination value 'invalid' is not valid! Example of a valid value: +46701234567"));
+			.containsExactlyInAnyOrder(tuple("principalId", "not a valid UUID"));
 
 		// TODO Add verifications
 	}
@@ -182,9 +122,9 @@ class ContactSettingsResourceFailuresTest {
 	@Test
 	void updateMissingBody() {
 
-		// Call
+		// Act
 		final var response = webTestClient.patch()
-			.uri(PATH + "/" + CONTACT_SETTING_ID)
+			.uri(builder -> builder.path("/delegates/{id}").build(Map.of("id", DELEGATE_ID)))
 			.contentType(APPLICATION_JSON)
 			.exchange()
 			.expectStatus().isBadRequest()
@@ -193,11 +133,12 @@ class ContactSettingsResourceFailuresTest {
 			.returnResult()
 			.getResponseBody();
 
+		// Assert
 		assertThat(response).isNotNull();
 		assertThat(response.getTitle()).isEqualTo("Bad Request");
 		assertThat(response.getStatus()).isEqualTo(BAD_REQUEST);
 		assertThat(response.getDetail()).isEqualTo(
-			"Required request body is missing: public org.springframework.http.ResponseEntity<se.sundsvall.contactsettings.api.model.ContactSetting> se.sundsvall.contactsettings.api.ContactSettingsResource.updateContactSetting(java.lang.String,se.sundsvall.contactsettings.api.model.ContactSettingUpdateRequest)");
+			"Required request body is missing: public org.springframework.http.ResponseEntity<se.sundsvall.contactsettings.api.model.Delegate> se.sundsvall.contactsettings.api.DelegateResource.updateDelegate(java.lang.String,se.sundsvall.contactsettings.api.model.DelegateUpdateRequest)");
 
 		// TODO Add verifications
 	}
@@ -205,10 +146,12 @@ class ContactSettingsResourceFailuresTest {
 	@Test
 	void updateInvalidId() {
 
-		final var body = ContactSettingUpdateRequest.create().withAlias("alias");
-		// Call
+		// Arrange
+		final var body = DelegateUpdateRequest.create();
+
+		// Act
 		final var response = webTestClient.patch()
-			.uri(builder -> builder.path("/settings/{id}").build(Map.of("id", "not-valid-id")))
+			.uri(builder -> builder.path("/delegates/{id}").build(Map.of("id", "not-valid-id")))
 			.contentType(APPLICATION_JSON)
 			.bodyValue(body)
 			.exchange()
@@ -218,68 +161,13 @@ class ContactSettingsResourceFailuresTest {
 			.returnResult()
 			.getResponseBody();
 
+		// Assert
 		assertThat(response).isNotNull();
 		assertThat(response.getTitle()).isEqualTo("Constraint Violation");
 		assertThat(response.getStatus()).isEqualTo(BAD_REQUEST);
 		assertThat(response.getViolations())
 			.extracting(Violation::getField, Violation::getMessage)
-			.containsExactlyInAnyOrder(tuple("updateContactSetting.id", "not a valid UUID"));
-
-		// TODO Add verifications
-	}
-
-	@Test
-	void updateWithInvalidEmailChannel() {
-
-		final var body = ContactSettingUpdateRequest.create()
-			.withContactChannels(List.of(ContactChannel.create().withContactMethod(EMAIL).withDestination("invalid")));
-
-		// Call
-		final var response = webTestClient.patch()
-			.uri(PATH + "/" + CONTACT_SETTING_ID)
-			.contentType(APPLICATION_JSON)
-			.bodyValue(body)
-			.exchange()
-			.expectStatus().isBadRequest()
-			.expectHeader().contentType(APPLICATION_PROBLEM_JSON)
-			.expectBody(ConstraintViolationProblem.class)
-			.returnResult()
-			.getResponseBody();
-
-		assertThat(response).isNotNull();
-		assertThat(response.getTitle()).isEqualTo("Constraint Violation");
-		assertThat(response.getStatus()).isEqualTo(BAD_REQUEST);
-		assertThat(response.getViolations())
-			.extracting(Violation::getField, Violation::getMessage)
-			.containsExactlyInAnyOrder(tuple("contactChannels[0]", "The email destination value 'invalid' is not valid! Example of a valid value: hello@example.com"));
-
-		// TODO Add verifications
-	}
-
-	@Test
-	void updateWithInvalidSMSChannel() {
-
-		final var body = ContactSettingUpdateRequest.create()
-			.withContactChannels(List.of(ContactChannel.create().withContactMethod(SMS).withDestination("invalid")));
-
-		// Call
-		final var response = webTestClient.patch()
-			.uri(PATH + "/" + CONTACT_SETTING_ID)
-			.contentType(APPLICATION_JSON)
-			.bodyValue(body)
-			.exchange()
-			.expectStatus().isBadRequest()
-			.expectHeader().contentType(APPLICATION_PROBLEM_JSON)
-			.expectBody(ConstraintViolationProblem.class)
-			.returnResult()
-			.getResponseBody();
-
-		assertThat(response).isNotNull();
-		assertThat(response.getTitle()).isEqualTo("Constraint Violation");
-		assertThat(response.getStatus()).isEqualTo(BAD_REQUEST);
-		assertThat(response.getViolations())
-			.extracting(Violation::getField, Violation::getMessage)
-			.containsExactlyInAnyOrder(tuple("contactChannels[0]", "The SMS destination value 'invalid' is not valid! Example of a valid value: +46701234567"));
+			.containsExactlyInAnyOrder(tuple("updateDelegate.id", "not a valid UUID"));
 
 		// TODO Add verifications
 	}
@@ -287,9 +175,9 @@ class ContactSettingsResourceFailuresTest {
 	@Test
 	void deleteInvalidId() {
 
-		// Call
+		// Act
 		final var response = webTestClient.delete()
-			.uri(builder -> builder.path("/settings/{id}").build(Map.of("id", "not-valid-id")))
+			.uri(builder -> builder.path("/delegates/{id}").build(Map.of("id", "not-valid-id")))
 			.exchange()
 			.expectStatus().isBadRequest()
 			.expectHeader().contentType(APPLICATION_PROBLEM_JSON)
@@ -297,12 +185,13 @@ class ContactSettingsResourceFailuresTest {
 			.returnResult()
 			.getResponseBody();
 
+		// Assert
 		assertThat(response).isNotNull();
 		assertThat(response.getTitle()).isEqualTo("Constraint Violation");
 		assertThat(response.getStatus()).isEqualTo(BAD_REQUEST);
 		assertThat(response.getViolations())
 			.extracting(Violation::getField, Violation::getMessage)
-			.containsExactlyInAnyOrder(tuple("deleteContactSetting.id", "not a valid UUID"));
+			.containsExactlyInAnyOrder(tuple("deleteDelegate.id", "not a valid UUID"));
 
 		// TODO Add verifications
 	}
@@ -310,9 +199,9 @@ class ContactSettingsResourceFailuresTest {
 	@Test
 	void readInvalidId() {
 
-		// Call
+		// Act
 		final var response = webTestClient.get()
-			.uri(builder -> builder.path("/settings/{id}").build(Map.of("id", "not-valid-id")))
+			.uri(builder -> builder.path("/delegates/{id}").build(Map.of("id", "not-valid-id")))
 			.exchange()
 			.expectStatus().isBadRequest()
 			.expectHeader().contentType(APPLICATION_PROBLEM_JSON)
@@ -320,22 +209,23 @@ class ContactSettingsResourceFailuresTest {
 			.returnResult()
 			.getResponseBody();
 
+		// Assert
 		assertThat(response).isNotNull();
 		assertThat(response.getTitle()).isEqualTo("Constraint Violation");
 		assertThat(response.getStatus()).isEqualTo(BAD_REQUEST);
 		assertThat(response.getViolations())
 			.extracting(Violation::getField, Violation::getMessage)
-			.containsExactlyInAnyOrder(tuple("getContactSetting.id", "not a valid UUID"));
+			.containsExactlyInAnyOrder(tuple("getDelegate.id", "not a valid UUID"));
 
 		// TODO Add verifications
 	}
 
 	@Test
-	void getContactSettingsInvalidPartyId() {
+	void getDelegatesMissingParameters() {
 
-		// Call
+		// Act
 		final var response = webTestClient.get()
-			.uri(builder -> builder.path(PATH).queryParam("partyId", "not-valid-party-id").build())
+			.uri(builder -> builder.path("/delegates").build())
 			.exchange()
 			.expectStatus().isBadRequest()
 			.expectHeader().contentType(APPLICATION_PROBLEM_JSON)
@@ -343,12 +233,65 @@ class ContactSettingsResourceFailuresTest {
 			.returnResult()
 			.getResponseBody();
 
+		// Assert
 		assertThat(response).isNotNull();
 		assertThat(response.getTitle()).isEqualTo("Constraint Violation");
 		assertThat(response.getStatus()).isEqualTo(BAD_REQUEST);
 		assertThat(response.getViolations())
 			.extracting(Violation::getField, Violation::getMessage)
-			.containsExactlyInAnyOrder(tuple("partyId", "not a valid UUID"));
+			.containsExactlyInAnyOrder(tuple("getDelegatesParameters", "One of agentId or principalId must be provided!"));
+
+		// TODO Add verifications
+	}
+
+	@Test
+	void getDelegatesInvalidAgentId() {
+
+		// Act
+		final var response = webTestClient.get()
+			.uri(builder -> builder.path("/delegates")
+				.queryParam("agentId", "not-valid-uuid")
+				.queryParam("principalId", randomUUID().toString()).build())
+			.exchange()
+			.expectStatus().isBadRequest()
+			.expectHeader().contentType(APPLICATION_PROBLEM_JSON)
+			.expectBody(ConstraintViolationProblem.class)
+			.returnResult()
+			.getResponseBody();
+
+		// Assert
+		assertThat(response).isNotNull();
+		assertThat(response.getTitle()).isEqualTo("Constraint Violation");
+		assertThat(response.getStatus()).isEqualTo(BAD_REQUEST);
+		assertThat(response.getViolations())
+			.extracting(Violation::getField, Violation::getMessage)
+			.containsExactlyInAnyOrder(tuple("agentId", "not a valid UUID"));
+
+		// TODO Add verifications
+	}
+
+	@Test
+	void getDelegatesInvalidPrincipalId() {
+
+		// Act
+		final var response = webTestClient.get()
+			.uri(builder -> builder.path("/delegates")
+				.queryParam("agentId", randomUUID().toString())
+				.queryParam("principalId", "not-valid-uuid").build())
+			.exchange()
+			.expectStatus().isBadRequest()
+			.expectHeader().contentType(APPLICATION_PROBLEM_JSON)
+			.expectBody(ConstraintViolationProblem.class)
+			.returnResult()
+			.getResponseBody();
+
+		// Assert
+		assertThat(response).isNotNull();
+		assertThat(response.getTitle()).isEqualTo("Constraint Violation");
+		assertThat(response.getStatus()).isEqualTo(BAD_REQUEST);
+		assertThat(response.getViolations())
+			.extracting(Violation::getField, Violation::getMessage)
+			.containsExactlyInAnyOrder(tuple("principalId", "not a valid UUID"));
 
 		// TODO Add verifications
 	}
