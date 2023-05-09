@@ -1,32 +1,34 @@
 package se.sundsvall.contactsettings.api;
 
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.web.reactive.server.WebTestClient;
+import org.zalando.problem.Problem;
+import org.zalando.problem.violations.ConstraintViolationProblem;
+import org.zalando.problem.violations.Violation;
+import se.sundsvall.contactsettings.Application;
+import se.sundsvall.contactsettings.api.model.ContactChannel;
+import se.sundsvall.contactsettings.api.model.ContactSettingCreateRequest;
+import se.sundsvall.contactsettings.api.model.ContactSettingUpdateRequest;
+import se.sundsvall.contactsettings.service.ContactSettingsService;
+
+import java.util.List;
+import java.util.Map;
+import java.util.UUID;
+
 import static java.util.UUID.randomUUID;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.tuple;
+import static org.mockito.Mockito.verifyNoInteractions;
 import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 import static org.springframework.http.MediaType.APPLICATION_PROBLEM_JSON;
 import static org.zalando.problem.Status.BAD_REQUEST;
 import static se.sundsvall.contactsettings.api.model.enums.ContactMethod.EMAIL;
 import static se.sundsvall.contactsettings.api.model.enums.ContactMethod.SMS;
-
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
-
-import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.web.reactive.server.WebTestClient;
-import org.zalando.problem.Problem;
-import org.zalando.problem.violations.ConstraintViolationProblem;
-import org.zalando.problem.violations.Violation;
-
-import se.sundsvall.contactsettings.Application;
-import se.sundsvall.contactsettings.api.model.ContactChannel;
-import se.sundsvall.contactsettings.api.model.ContactSettingCreateRequest;
-import se.sundsvall.contactsettings.api.model.ContactSettingUpdateRequest;
 
 @SpringBootTest(classes = Application.class, webEnvironment = RANDOM_PORT)
 @ActiveProfiles("junit")
@@ -37,6 +39,9 @@ class ContactSettingsResourceFailuresTest {
 
 	@Autowired
 	private WebTestClient webTestClient;
+
+	@MockBean
+	private ContactSettingsService contactSettingsServiceMock;
 
 	@Test
 	void createMissingBody() {
@@ -58,11 +63,11 @@ class ContactSettingsResourceFailuresTest {
 		assertThat(response.getDetail()).isEqualTo(
 			"Required request body is missing: public org.springframework.http.ResponseEntity<java.lang.Void> se.sundsvall.contactsettings.api.ContactSettingsResource.createContactSetting(org.springframework.web.util.UriComponentsBuilder,se.sundsvall.contactsettings.api.model.ContactSettingCreateRequest)");
 
-		// TODO Add verifications
+		verifyNoInteractions(contactSettingsServiceMock);
 	}
 
 	@Test
-	void createWithInvalidPartyId() {
+	void createWithNotValidPartyId() {
 
 		final var body = ContactSettingCreateRequest.create()
 			.withCreatedById(randomUUID().toString())
@@ -87,7 +92,7 @@ class ContactSettingsResourceFailuresTest {
 			.extracting(Violation::getField, Violation::getMessage)
 			.containsExactlyInAnyOrder(tuple("partyId", "not a valid UUID"));
 
-		// TODO Add verifications
+		verifyNoInteractions(contactSettingsServiceMock);
 	}
 
 	@Test
@@ -225,7 +230,7 @@ class ContactSettingsResourceFailuresTest {
 			.extracting(Violation::getField, Violation::getMessage)
 			.containsExactlyInAnyOrder(tuple("updateContactSetting.id", "not a valid UUID"));
 
-		// TODO Add verifications
+		verifyNoInteractions(contactSettingsServiceMock);
 	}
 
 	@Test
@@ -253,7 +258,7 @@ class ContactSettingsResourceFailuresTest {
 			.extracting(Violation::getField, Violation::getMessage)
 			.containsExactlyInAnyOrder(tuple("contactChannels[0]", "The email destination value 'invalid' is not valid! Example of a valid value: hello@example.com"));
 
-		// TODO Add verifications
+		verifyNoInteractions(contactSettingsServiceMock);
 	}
 
 	@Test
@@ -304,7 +309,7 @@ class ContactSettingsResourceFailuresTest {
 			.extracting(Violation::getField, Violation::getMessage)
 			.containsExactlyInAnyOrder(tuple("deleteContactSetting.id", "not a valid UUID"));
 
-		// TODO Add verifications
+		verifyNoInteractions(contactSettingsServiceMock);
 	}
 
 	@Test
@@ -327,7 +332,7 @@ class ContactSettingsResourceFailuresTest {
 			.extracting(Violation::getField, Violation::getMessage)
 			.containsExactlyInAnyOrder(tuple("getContactSetting.id", "not a valid UUID"));
 
-		// TODO Add verifications
+		verifyNoInteractions(contactSettingsServiceMock);
 	}
 
 	@Test
@@ -350,6 +355,6 @@ class ContactSettingsResourceFailuresTest {
 			.extracting(Violation::getField, Violation::getMessage)
 			.containsExactlyInAnyOrder(tuple("partyId", "not a valid UUID"));
 
-		// TODO Add verifications
+		verifyNoInteractions(contactSettingsServiceMock);
 	}
 }
