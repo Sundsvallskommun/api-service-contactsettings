@@ -1,21 +1,21 @@
 package se.sundsvall.contactsettings.service.mapper;
 
-import static java.util.Collections.emptyList;
-import static java.util.Collections.emptyMap;
-import static java.util.Objects.isNull;
-import static java.util.stream.Collectors.groupingBy;
-import static java.util.stream.Collectors.mapping;
-import static java.util.stream.Collectors.toList;
+import se.sundsvall.contactsettings.api.model.Delegate;
+import se.sundsvall.contactsettings.integration.db.model.ContactSettingEntity;
+import se.sundsvall.contactsettings.integration.db.model.DelegateEntity;
+import se.sundsvall.contactsettings.integration.db.model.Filter;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
-import se.sundsvall.contactsettings.api.model.Delegate;
-import se.sundsvall.contactsettings.integration.db.model.ContactSettingEntity;
-import se.sundsvall.contactsettings.integration.db.model.DelegateEntity;
-import se.sundsvall.contactsettings.integration.db.model.Filter;
+import static java.util.Collections.emptyList;
+import static java.util.Collections.emptyMap;
+import static java.util.Objects.isNull;
+import static java.util.stream.Collectors.groupingBy;
+import static java.util.stream.Collectors.mapping;
+import static java.util.stream.Collectors.toList;
 
 public class DelegateMapper {
 
@@ -33,6 +33,12 @@ public class DelegateMapper {
 			.withId(delegateEntity.getId())
 			.withModified(delegateEntity.getModified())
 			.withPrincipalId(Optional.ofNullable(delegateEntity.getPrincipal()).orElse(ContactSettingEntity.create()).getId());
+	}
+
+	public static List<Delegate> toDelegates(final List<DelegateEntity> delegateEntities) {
+		return Optional.ofNullable(delegateEntities).orElse(emptyList()).stream()
+			.map(DelegateMapper::toDelegate)
+			.toList();
 	}
 
 	public static DelegateEntity toDelegateEntity(final Delegate delegate) {
