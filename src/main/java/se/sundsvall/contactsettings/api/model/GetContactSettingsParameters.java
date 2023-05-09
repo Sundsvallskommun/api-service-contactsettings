@@ -1,5 +1,7 @@
 package se.sundsvall.contactsettings.api.model;
 
+import static io.swagger.v3.oas.annotations.media.Schema.RequiredMode.REQUIRED;
+
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -10,7 +12,7 @@ import se.sundsvall.dept44.common.validators.annotation.ValidUuid;
 @Schema(description = "Get contact settings request model")
 public class GetContactSettingsParameters {
 
-	@Schema(description = "Unique id for the person or organization to whom the contact setting applies", example = "15aee472-46ab-4f03-9605-68bd64ebc73f")
+	@Schema(description = "Unique id for the person or organization to whom the contact setting applies", example = "15aee472-46ab-4f03-9605-68bd64ebc73f", requiredMode = REQUIRED)
 	@ValidUuid
 	private String partyId;
 
@@ -57,7 +59,7 @@ public class GetContactSettingsParameters {
 		if (o == this) {
 			return true;
 		}
-		if (!(o instanceof GetContactSettingsParameters getContactSettingsParameters)) {
+		if (!(o instanceof final GetContactSettingsParameters getContactSettingsParameters)) {
 			return false;
 		}
 		return Objects.equals(partyId, getContactSettingsParameters.partyId) && Objects.equals(filter, getContactSettingsParameters.filter);
