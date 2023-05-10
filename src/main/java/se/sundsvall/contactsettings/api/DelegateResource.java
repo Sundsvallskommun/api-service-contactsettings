@@ -10,6 +10,7 @@ import static org.springframework.http.ResponseEntity.noContent;
 import static org.springframework.http.ResponseEntity.ok;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -62,7 +63,7 @@ public class DelegateResource {
 		final UriComponentsBuilder uriComponentsBuilder, @NotNull @Valid @RequestBody final DelegateCreateRequest body) {
 
 		return created(uriComponentsBuilder
-			.path("/delegates/{id}").buildAndExpand(delegateService.create(body).getId()).toUri())
+			.path("/delegates/{id}").buildAndExpand(Optional.ofNullable(delegateService.create(body)).orElse(Delegate.create()).getId()).toUri())
 			.header(CONTENT_TYPE, ALL_VALUE)
 			.build();
 	}
