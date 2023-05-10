@@ -151,6 +151,31 @@ class DelegateRepositoryTest {
 	}
 
 	@Test
+	void findByPrincipalIdAndAgentId() {
+
+		// Act
+		final var result = delegateRepository.findByPrincipalIdAndAgentId(DELEGATE_ENTITY_PRINCIPAL_ID, DELEGATE_ENTITY_AGENT_ID);
+
+		// Assert
+		assertThat(result).hasSize(1);
+		assertThat(result.get(0).getId()).isEqualTo(DELEGATE_ENTITY_ID);
+		assertThat(result.get(0).getAgent().getId()).isEqualTo(DELEGATE_ENTITY_AGENT_ID);
+		assertThat(result.get(0).getAgent().getPartyId()).isEqualTo(DELEGATE_ENTITY_AGENT_PARTY_ID);
+		assertThat(result.get(0).getPrincipal().getId()).isEqualTo(DELEGATE_ENTITY_PRINCIPAL_ID);
+		assertThat(result.get(0).getPrincipal().getPartyId()).isEqualTo(DELEGATE_ENTITY_PRINCIPAL_PARTY_ID);
+	}
+
+	@Test
+	void findByPrincipalIdAndAgentIdNotFound() {
+
+		// Act
+		final var result = delegateRepository.findByPrincipalIdAndAgentId(DELEGATE_ENTITY_PRINCIPAL_ID, "non-existing");
+
+		// Assert
+		assertThat(result).isEmpty();
+	}
+
+	@Test
 	void delete() {
 
 		// Arrange

@@ -3,6 +3,7 @@ package se.sundsvall.contactsettings.api;
 import static java.util.UUID.randomUUID;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.tuple;
+import static org.mockito.Mockito.verifyNoInteractions;
 import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 import static org.springframework.http.MediaType.APPLICATION_PROBLEM_JSON;
@@ -14,6 +15,7 @@ import java.util.UUID;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.reactive.server.WebTestClient;
 import org.zalando.problem.Problem;
@@ -23,12 +25,16 @@ import org.zalando.problem.violations.Violation;
 import se.sundsvall.contactsettings.Application;
 import se.sundsvall.contactsettings.api.model.DelegateCreateRequest;
 import se.sundsvall.contactsettings.api.model.DelegateUpdateRequest;
+import se.sundsvall.contactsettings.service.DelegateService;
 
 @SpringBootTest(classes = Application.class, webEnvironment = RANDOM_PORT)
 @ActiveProfiles("junit")
 class DelegateResourceFailuresTest {
 
 	private static final String DELEGATE_ID = UUID.randomUUID().toString();
+
+	@MockBean
+	private DelegateService delegateServiceMock;
 
 	@Autowired
 	private WebTestClient webTestClient;
@@ -54,7 +60,7 @@ class DelegateResourceFailuresTest {
 		assertThat(response.getDetail()).isEqualTo(
 			"Required request body is missing: public org.springframework.http.ResponseEntity<java.lang.Void> se.sundsvall.contactsettings.api.DelegateResource.createDelegate(org.springframework.web.util.UriComponentsBuilder,se.sundsvall.contactsettings.api.model.DelegateCreateRequest)");
 
-		// TODO Add verifications
+		verifyNoInteractions(delegateServiceMock);
 	}
 
 	@Test
@@ -85,7 +91,7 @@ class DelegateResourceFailuresTest {
 			.extracting(Violation::getField, Violation::getMessage)
 			.containsExactlyInAnyOrder(tuple("agentId", "not a valid UUID"));
 
-		// TODO Add verifications
+		verifyNoInteractions(delegateServiceMock);
 	}
 
 	@Test
@@ -116,7 +122,7 @@ class DelegateResourceFailuresTest {
 			.extracting(Violation::getField, Violation::getMessage)
 			.containsExactlyInAnyOrder(tuple("principalId", "not a valid UUID"));
 
-		// TODO Add verifications
+		verifyNoInteractions(delegateServiceMock);
 	}
 
 	@Test
@@ -140,7 +146,7 @@ class DelegateResourceFailuresTest {
 		assertThat(response.getDetail()).isEqualTo(
 			"Required request body is missing: public org.springframework.http.ResponseEntity<se.sundsvall.contactsettings.api.model.Delegate> se.sundsvall.contactsettings.api.DelegateResource.updateDelegate(java.lang.String,se.sundsvall.contactsettings.api.model.DelegateUpdateRequest)");
 
-		// TODO Add verifications
+		verifyNoInteractions(delegateServiceMock);
 	}
 
 	@Test
@@ -169,7 +175,7 @@ class DelegateResourceFailuresTest {
 			.extracting(Violation::getField, Violation::getMessage)
 			.containsExactlyInAnyOrder(tuple("updateDelegate.id", "not a valid UUID"));
 
-		// TODO Add verifications
+		verifyNoInteractions(delegateServiceMock);
 	}
 
 	@Test
@@ -193,7 +199,7 @@ class DelegateResourceFailuresTest {
 			.extracting(Violation::getField, Violation::getMessage)
 			.containsExactlyInAnyOrder(tuple("deleteDelegate.id", "not a valid UUID"));
 
-		// TODO Add verifications
+		verifyNoInteractions(delegateServiceMock);
 	}
 
 	@Test
@@ -217,7 +223,7 @@ class DelegateResourceFailuresTest {
 			.extracting(Violation::getField, Violation::getMessage)
 			.containsExactlyInAnyOrder(tuple("getDelegate.id", "not a valid UUID"));
 
-		// TODO Add verifications
+		verifyNoInteractions(delegateServiceMock);
 	}
 
 	@Test
@@ -241,7 +247,7 @@ class DelegateResourceFailuresTest {
 			.extracting(Violation::getField, Violation::getMessage)
 			.containsExactlyInAnyOrder(tuple("getDelegatesParameters", "One of agentId or principalId must be provided!"));
 
-		// TODO Add verifications
+		verifyNoInteractions(delegateServiceMock);
 	}
 
 	@Test
@@ -267,7 +273,7 @@ class DelegateResourceFailuresTest {
 			.extracting(Violation::getField, Violation::getMessage)
 			.containsExactlyInAnyOrder(tuple("agentId", "not a valid UUID"));
 
-		// TODO Add verifications
+		verifyNoInteractions(delegateServiceMock);
 	}
 
 	@Test
@@ -293,6 +299,6 @@ class DelegateResourceFailuresTest {
 			.extracting(Violation::getField, Violation::getMessage)
 			.containsExactlyInAnyOrder(tuple("principalId", "not a valid UUID"));
 
-		// TODO Add verifications
+		verifyNoInteractions(delegateServiceMock);
 	}
 }

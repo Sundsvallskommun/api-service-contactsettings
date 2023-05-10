@@ -25,4 +25,13 @@ public interface DelegateRepository extends JpaRepository<DelegateEntity, String
 	 * @return an Optional ContactSettingEntity.
 	 */
 	List<DelegateEntity> findByPrincipalId(String contactSettingsId);
+
+	/**
+	 * Find by principal contact settings ID. I.e. the delegate principal (contactSetting) ID.
+	 *
+	 * @param principalContactSettingsId the contactSettingsId of the principal (delegate owner).
+	 * @param agentContactSettingsId     the contactSettingsId of the agent.
+	 * @return an Optional ContactSettingEntity.
+	 */
+	List<DelegateEntity> findByPrincipalIdAndAgentId(String principalContactSettingsId, String agentContactSettingsId);
 }
