@@ -25,6 +25,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
+import static org.zalando.problem.Status.CONFLICT;
 import static org.zalando.problem.Status.NOT_FOUND;
 
 @ExtendWith(MockitoExtension.class)
@@ -41,6 +42,7 @@ class ContactSettingsServiceTest {
 	@Test
 	void createContactSetting() {
 		//Mock
+		when(repositoryMock.findByPartyId(any(String.class))).thenReturn(Optional.empty());
 		when(repositoryMock.save(any(ContactSettingEntity.class))).thenReturn(ContactSettingEntity.create().withId(ID));
 
 		//Call
@@ -49,8 +51,25 @@ class ContactSettingsServiceTest {
 		//Assert and verify
 		assertThat(result).isEqualTo(ID);
 
+		verify(repositoryMock).findByPartyId(any(String.class));
 		verify(repositoryMock).save(any(ContactSettingEntity.class));
 		verifyNoMoreInteractions(repositoryMock);
+	}
+
+	@Test
+	void createContactSettingPartyIdExists() {
+		//Parameters
+		final var contactSettingCreateRequest = buildContactSettingCreateRequest();
+		//Mock
+		when(repositoryMock.findByPartyId(any(String.class))).thenReturn(Optional.of(ContactSettingEntity.create().withId(ID)));
+
+		//Call
+		final var exception = assertThrows(ThrowableProblem.class, () -> service.createContactSetting(contactSettingCreateRequest));
+
+		//Assert and verify
+		assertThat(exception.getStatus()).isEqualTo(CONFLICT);
+		assertThat(exception.getTitle()).isEqualTo(CONFLICT.getReasonPhrase());
+		assertThat(exception.getDetail()).isEqualTo(String.format("A contact-setting with party-id '%s' already exists", buildContactSettingCreateRequest().getPartyId()));
 	}
 
 	@Test

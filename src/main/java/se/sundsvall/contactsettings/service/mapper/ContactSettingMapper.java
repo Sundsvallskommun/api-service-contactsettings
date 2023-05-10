@@ -44,13 +44,11 @@ public class ContactSettingMapper {
 			return null;
 		}
 
-		boolean isVirtual = contactSettingEntity.getPartyId() == null;
-
 		return ContactSetting.create()
 			.withId(contactSettingEntity.getId())
 			.withPartyId(contactSettingEntity.getPartyId())
 			.withContactChannels(toContactChannels(contactSettingEntity.getChannels()))
-			.withVirtual(isVirtual)
+			.withVirtual(isNull(contactSettingEntity.getPartyId()))
 			.withAlias(contactSettingEntity.getAlias())
 			.withCreated(contactSettingEntity.getCreated())
 			.withModified(contactSettingEntity.getModified())
