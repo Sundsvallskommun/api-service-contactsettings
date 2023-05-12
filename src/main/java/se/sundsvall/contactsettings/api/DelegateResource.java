@@ -10,7 +10,9 @@ import static org.springframework.http.ResponseEntity.noContent;
 import static org.springframework.http.ResponseEntity.ok;
 
 import java.util.List;
+import java.util.Optional;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -35,11 +37,11 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
-import se.sundsvall.contactsettings.api.model.ContactSetting;
 import se.sundsvall.contactsettings.api.model.Delegate;
 import se.sundsvall.contactsettings.api.model.DelegateCreateRequest;
 import se.sundsvall.contactsettings.api.model.DelegateUpdateRequest;
 import se.sundsvall.contactsettings.api.model.GetDelegatesParameters;
+import se.sundsvall.contactsettings.service.DelegateService;
 import se.sundsvall.dept44.common.validators.annotation.ValidUuid;
 
 @RestController
@@ -48,16 +50,22 @@ import se.sundsvall.dept44.common.validators.annotation.ValidUuid;
 @Tag(name = "Delegates", description = "Delegate operations")
 public class DelegateResource {
 
+	@Autowired
+	private DelegateService delegateService;
+
 	@PostMapping(consumes = APPLICATION_JSON_VALUE, produces = { APPLICATION_JSON_VALUE, APPLICATION_PROBLEM_JSON_VALUE })
 	@Operation(summary = "Create delegate")
 	@ApiResponse(responseCode = "201", headers = @Header(name = LOCATION, schema = @Schema(type = "string")), description = "Successful operation", content = @Content(mediaType = ALL_VALUE, schema = @Schema(implementation = Void.class)))
 	@ApiResponse(responseCode = "400", description = "Bad request", content = @Content(mediaType = APPLICATION_PROBLEM_JSON_VALUE, schema = @Schema(oneOf = { Problem.class, ConstraintViolationProblem.class })))
+	@ApiResponse(responseCode = "409", description = "Conflict", content = @Content(mediaType = APPLICATION_PROBLEM_JSON_VALUE, schema = @Schema(implementation = Problem.class)))
 	@ApiResponse(responseCode = "500", description = "Internal Server error", content = @Content(mediaType = APPLICATION_PROBLEM_JSON_VALUE, schema = @Schema(implementation = Problem.class)))
 	public ResponseEntity<Void> createDelegate(
 		final UriComponentsBuilder uriComponentsBuilder, @NotNull @Valid @RequestBody final DelegateCreateRequest body) {
 
-		// TODO Implement call to service-layer
-		return created(uriComponentsBuilder.path("/delegates/{id}").buildAndExpand(ContactSetting.create().getId()).toUri()).header(CONTENT_TYPE, ALL_VALUE).build();
+		return created(uriComponentsBuilder
+			.path("/delegates/{id}").buildAndExpand(Optional.ofNullable(delegateService.create(body)).orElse(Delegate.create()).getId()).toUri())
+			.header(CONTENT_TYPE, ALL_VALUE)
+			.build();
 	}
 
 	@PatchMapping(path = "/{id}", consumes = APPLICATION_JSON_VALUE, produces = { APPLICATION_JSON_VALUE, APPLICATION_PROBLEM_JSON_VALUE })
@@ -70,8 +78,7 @@ public class DelegateResource {
 		@Parameter(name = "id", description = "Delegate ID", example = "81471222-5798-11e9-ae24-57fa13b361e1") @ValidUuid @PathVariable(name = "id") final String id,
 		@NotNull @Valid @RequestBody final DelegateUpdateRequest body) {
 
-		// TODO Implement call to service-layer
-		return ok(Delegate.create());
+		return ok(delegateService.update(id, body));
 	}
 
 	@DeleteMapping(path = "/{id}", produces = APPLICATION_PROBLEM_JSON_VALUE)
@@ -83,7 +90,7 @@ public class DelegateResource {
 	public ResponseEntity<Void> deleteDelegate(
 		@Parameter(name = "id", description = "Delegate ID", example = "81471222-5798-11e9-ae24-57fa13b361e1") @ValidUuid @PathVariable(name = "id") final String id) {
 
-		// TODO Implement call to service-layer
+		delegateService.delete(id);
 		return noContent().build();
 	}
 
@@ -96,8 +103,7 @@ public class DelegateResource {
 	public ResponseEntity<Delegate> getDelegate(
 		@Parameter(name = "id", description = "Delegate ID", example = "81471222-5798-11e9-ae24-57fa13b361e1") @ValidUuid @PathVariable(name = "id") final String id) {
 
-		// TODO Implement call to service-layer
-		return ok(Delegate.create());
+		return ok(delegateService.read(id));
 	}
 
 	@GetMapping(produces = { APPLICATION_JSON_VALUE, APPLICATION_PROBLEM_JSON_VALUE })
@@ -109,7 +115,6 @@ public class DelegateResource {
 	public ResponseEntity<List<Delegate>> getDelegatesByParameters(
 		@NotNull @Valid final GetDelegatesParameters queryParameters) {
 
-		// TODO Implement call to service-layer
-		return ok(List.of(Delegate.create()));
+		return ok(delegateService.find(queryParameters));
 	}
 }

@@ -1,21 +1,24 @@
 package se.sundsvall.contactsettings.service.mapper;
 
-import se.sundsvall.contactsettings.api.model.Delegate;
-import se.sundsvall.contactsettings.integration.db.model.ContactSettingEntity;
-import se.sundsvall.contactsettings.integration.db.model.DelegateEntity;
-import se.sundsvall.contactsettings.integration.db.model.Filter;
-
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-
 import static java.util.Collections.emptyList;
 import static java.util.Collections.emptyMap;
 import static java.util.Objects.isNull;
 import static java.util.stream.Collectors.groupingBy;
 import static java.util.stream.Collectors.mapping;
 import static java.util.stream.Collectors.toList;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+
+import se.sundsvall.contactsettings.api.model.Delegate;
+import se.sundsvall.contactsettings.api.model.DelegateCreateRequest;
+import se.sundsvall.contactsettings.api.model.DelegateUpdateRequest;
+import se.sundsvall.contactsettings.integration.db.model.ContactSettingEntity;
+import se.sundsvall.contactsettings.integration.db.model.DelegateEntity;
+import se.sundsvall.contactsettings.integration.db.model.Filter;
 
 public class DelegateMapper {
 
@@ -35,22 +38,26 @@ public class DelegateMapper {
 			.withPrincipalId(Optional.ofNullable(delegateEntity.getPrincipal()).orElse(ContactSettingEntity.create()).getId());
 	}
 
-	public static List<Delegate> toDelegates(final List<DelegateEntity> delegateEntities) {
-		return Optional.ofNullable(delegateEntities).orElse(emptyList()).stream()
-			.map(DelegateMapper::toDelegate)
-			.toList();
-	}
-
-	public static DelegateEntity toDelegateEntity(final Delegate delegate) {
-		if (isNull(delegate)) {
+	public static DelegateEntity toDelegateEntity(final DelegateCreateRequest delegateCreateRequest) {
+		if (isNull(delegateCreateRequest)) {
 			return null;
 		}
 
 		return DelegateEntity.create()
-			.withAgent(ContactSettingEntity.create().withId(delegate.getAgentId()))
-			.withFilters(toListFilter(delegate.getFilter()))
-			.withId(delegate.getId())
-			.withPrincipal(ContactSettingEntity.create().withId(delegate.getPrincipalId()));
+			.withAgent(ContactSettingEntity.create().withId(delegateCreateRequest.getAgentId()))
+			.withFilters(toListFilter(delegateCreateRequest.getFilter()))
+			.withPrincipal(ContactSettingEntity.create().withId(delegateCreateRequest.getPrincipalId()));
+	}
+
+	public static DelegateEntity mergeIntoDelegateEntity(final DelegateEntity existingDelegateEntity, final DelegateUpdateRequest delegateUpdateRequest) {
+		if (isNull(existingDelegateEntity)) {
+			return null;
+		}
+
+		Optional.ofNullable(delegateUpdateRequest.getFilter())
+			.ifPresent(filter -> existingDelegateEntity.setFilters(toListFilter(filter)));
+
+		return existingDelegateEntity;
 	}
 
 	private static Map<String, List<String>> toMapFilter(final List<Filter> listFilter) {
@@ -59,9 +66,9 @@ public class DelegateMapper {
 	}
 
 	private static List<Filter> toListFilter(final Map<String, List<String>> mapFilter) {
-		return Optional.ofNullable(mapFilter).orElse(emptyMap()).entrySet().stream()
+		return new ArrayList<>(Optional.ofNullable(mapFilter).orElse(emptyMap()).entrySet().stream()
 			.flatMap(entry -> entry.getValue().stream()
 				.map(value -> Filter.create().withKey(entry.getKey()).withValue(value)))
-			.toList();
+			.toList());
 	}
 }
