@@ -1,5 +1,6 @@
 package se.sundsvall.contactsettings.service;
 
+import static com.nimbusds.oauth2.sdk.util.CollectionUtils.isNotEmpty;
 import static java.lang.String.format;
 import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
@@ -8,6 +9,7 @@ import static se.sundsvall.contactsettings.service.mapper.ContactSettingMapper.t
 import static se.sundsvall.contactsettings.service.mapper.ContactSettingMapper.toContactSettingEntityFromCreateRequest;
 import static se.sundsvall.contactsettings.service.mapper.ContactSettingMapper.toContactSettingEntityFromUpdateRequest;
 
+import java.util.Optional;
 import java.util.stream.Stream;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -39,14 +41,13 @@ public class ContactSettingsService {
 	private DelegateRepository delegateRepository;
 
 	public String createContactSetting(final ContactSettingCreateRequest contactSettingCreateRequest) {
-		if (!isNull(contactSettingCreateRequest.getPartyId())) {
-			contactSettingRepository.findByPartyId(contactSettingCreateRequest.getPartyId())
-				.ifPresent(contactSettingEntity -> {
-					throw Problem.valueOf(Status.CONFLICT, String.format(PARTY_ID_ALREADY_EXISTS, contactSettingCreateRequest.getPartyId()));
-				});
-		}
-		final var entity = contactSettingRepository.save(toContactSettingEntityFromCreateRequest(contactSettingCreateRequest));
-		return entity.getId();
+		Optional.ofNullable(contactSettingCreateRequest.getPartyId()).ifPresent(partyId -> {
+			if (isNotEmpty(contactSettingRepository.findByPartyId(partyId))) {
+				throw Problem.valueOf(Status.CONFLICT, String.format(PARTY_ID_ALREADY_EXISTS, contactSettingCreateRequest.getPartyId()));
+			}
+		});
+
+		return contactSettingRepository.save(toContactSettingEntityFromCreateRequest(contactSettingCreateRequest)).getId();
 	}
 
 	public ContactSetting readContactSetting(final String id) {

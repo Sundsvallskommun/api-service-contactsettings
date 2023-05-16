@@ -52,7 +52,7 @@ class ContactSettingsServiceTest {
 	void createContactSetting() {
 
 		// Arrange
-		when(contactSettingRepositoryMock.findByPartyId(any(String.class))).thenReturn(Optional.empty());
+		when(contactSettingRepositoryMock.findByPartyId(any(String.class))).thenReturn(emptyList());
 		when(contactSettingRepositoryMock.save(any(ContactSettingEntity.class))).thenReturn(ContactSettingEntity.create().withId(ID));
 
 		// Act
@@ -71,7 +71,7 @@ class ContactSettingsServiceTest {
 
 		// Arrange
 		final var contactSettingCreateRequest = buildContactSettingCreateRequest();
-		when(contactSettingRepositoryMock.findByPartyId(any(String.class))).thenReturn(Optional.of(ContactSettingEntity.create().withId(ID)));
+		when(contactSettingRepositoryMock.findByPartyId(any(String.class))).thenReturn(List.of(ContactSettingEntity.create().withId(ID)));
 
 		// Act
 		final var exception = assertThrows(ThrowableProblem.class, () -> service.createContactSetting(contactSettingCreateRequest));
