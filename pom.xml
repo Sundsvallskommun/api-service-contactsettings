@@ -18,7 +18,7 @@
 		<published.container.port.test>8803</published.container.port.test>
 		<published.container.port.production>8812</published.container.port.production>
 		<!-- Service properties -->
-		<testcontainers.version>1.18.0</testcontainers.version>
+		<testcontainers.version>1.18.1</testcontainers.version>
 	</properties>
 	<dependencies>
 		<dependency>
