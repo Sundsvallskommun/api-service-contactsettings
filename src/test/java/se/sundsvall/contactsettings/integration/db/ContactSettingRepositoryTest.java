@@ -40,6 +40,7 @@ class ContactSettingRepositoryTest {
 
 	private static final String CONTACT_SETTING_ENTITY_ID = "a42bfd69-ab22-443c-bdef-1cc6a70bcab3";
 	private static final String CONTACT_SETTING_ENTITY_PARTY_ID = "db96ca23-7c52-412e-b251-f75fb45551d5";
+	private static final String CONTACT_SETTING_VIRTUAL_ENTITY_ID = "2c94ea99-a1b4-4073-b094-9ff79bad23b0";
 
 	@Autowired
 	private ContactSettingRepository contactSettingRepository;
@@ -151,6 +152,29 @@ class ContactSettingRepositoryTest {
 
 		// Act
 		final var result = contactSettingRepository.findById("non-existing");
+
+		// Assert
+		assertThat(result).isEmpty();
+	}
+
+	@Test
+	void findByCreatedById() {
+
+		// Act
+		final var result = contactSettingRepository.findByCreatedById(CONTACT_SETTING_ENTITY_ID);
+
+		// Assert
+		assertThat(result).hasSize(1);
+		assertThat(result)
+			.extracting(ContactSettingEntity::getAlias, ContactSettingEntity::getId, ContactSettingEntity::getCreatedById)
+			.containsExactly(tuple("Virtual friend", CONTACT_SETTING_VIRTUAL_ENTITY_ID, CONTACT_SETTING_ENTITY_ID));
+	}
+
+	@Test
+	void findByCreatedByIdNotFound() {
+
+		// Act
+		final var result = contactSettingRepository.findByCreatedById("non-existing");
 
 		// Assert
 		assertThat(result).isEmpty();

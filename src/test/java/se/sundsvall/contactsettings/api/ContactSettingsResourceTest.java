@@ -1,26 +1,5 @@
 package se.sundsvall.contactsettings.api;
 
-import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.boot.test.web.server.LocalServerPort;
-import org.springframework.http.HttpHeaders;
-import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.web.reactive.server.WebTestClient;
-import org.springframework.util.LinkedMultiValueMap;
-import org.springframework.util.MultiValueMap;
-import se.sundsvall.contactsettings.Application;
-import se.sundsvall.contactsettings.api.model.ContactChannel;
-import se.sundsvall.contactsettings.api.model.ContactSetting;
-import se.sundsvall.contactsettings.api.model.ContactSettingCreateRequest;
-import se.sundsvall.contactsettings.api.model.ContactSettingUpdateRequest;
-import se.sundsvall.contactsettings.service.ContactSettingsService;
-
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
-
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
@@ -31,6 +10,28 @@ import static org.springframework.boot.test.context.SpringBootTest.WebEnvironmen
 import static org.springframework.http.MediaType.ALL;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 import static se.sundsvall.contactsettings.api.model.enums.ContactMethod.EMAIL;
+
+import java.util.List;
+import java.util.Map;
+import java.util.UUID;
+
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.boot.test.web.server.LocalServerPort;
+import org.springframework.http.HttpHeaders;
+import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.web.reactive.server.WebTestClient;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
+
+import se.sundsvall.contactsettings.Application;
+import se.sundsvall.contactsettings.api.model.ContactChannel;
+import se.sundsvall.contactsettings.api.model.ContactSetting;
+import se.sundsvall.contactsettings.api.model.ContactSettingCreateRequest;
+import se.sundsvall.contactsettings.api.model.ContactSettingUpdateRequest;
+import se.sundsvall.contactsettings.service.ContactSettingsService;
 
 @SpringBootTest(classes = Application.class, webEnvironment = RANDOM_PORT)
 @ActiveProfiles("junit")
@@ -95,21 +96,21 @@ class ContactSettingsResourceTest {
 	}
 
 	@Test
-	void readContactSettingByPartyId() {
+	void readContactSettingChildren() {
 
 		// Call
 		final var response = webTestClient.get()
-			.uri(builder -> builder.path(PATH + "/party/{id}").build(Map.of("id", PARTY_ID)))
+			.uri(builder -> builder.path(PATH + "/{id}/children").build(Map.of("id", CONTACT_SETTING_ID)))
 			.exchange()
 			.expectStatus().isOk()
 			.expectHeader().contentType(APPLICATION_JSON)
-			.expectBody(ContactSetting.class)
+			.expectBodyList(ContactSetting.class)
 			.returnResult()
 			.getResponseBody();
 
 		// Verification
 		// TODO Add verifications
-		assertThat(response).isNotNull().isEqualTo(ContactSetting.create().withPartyId(PARTY_ID));
+		assertThat(response).isNotNull();
 	}
 
 	@Test
@@ -196,7 +197,7 @@ class ContactSettingsResourceTest {
 	void getContactSettingsByContactChannelDestination() {
 		// Call
 		final var response = webTestClient.get()
-			.uri(builder -> builder.path(PATH + "/contact-channel/{destination}").build(Map.of("destination", CONTACT_CHANNEL_DESTINATION)))
+			.uri(builder -> builder.path(PATH + "/contact-channels/{destination}").build(Map.of("destination", CONTACT_CHANNEL_DESTINATION)))
 			.exchange()
 			.expectStatus().isOk()
 			.expectHeader().contentType(APPLICATION_JSON)

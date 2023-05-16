@@ -15,15 +15,23 @@ public interface ContactSettingRepository extends JpaRepository<ContactSettingEn
 	 * Find by partyId.
 	 *
 	 * @param partyId of the ContactSetting owner.
-	 * @return an Optional ContactSettingEntity.
+	 * @return a List of ContactSettingEntity objects.
 	 */
 	Optional<ContactSettingEntity> findByPartyId(String partyId);
+
+	/**
+	 * Find by createdById.
+	 *
+	 * @param createdById the id of the ContactSetting that created the instance to find.
+	 * @return an Optional ContactSettingEntity.
+	 */
+	List<ContactSettingEntity> findByCreatedById(String createdById);
 
 	/**
 	 * Find by channel destination (SMS, EMAIL, etc.).
 	 *
 	 * @param destination channel-destination of the ContactSettings to find.
-	 * @return an Optional ContactSettingEntity.
+	 * @return a List of ContactSettingEntity objects.
 	 */
 	List<ContactSettingEntity> findByChannelsDestination(String destination);
 }

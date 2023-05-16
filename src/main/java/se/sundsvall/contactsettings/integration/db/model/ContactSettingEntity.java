@@ -23,7 +23,8 @@ import se.sundsvall.contactsettings.integration.db.model.listener.ContactSetting
 @Entity
 @Table(name = "contact_setting",
 	indexes = {
-		@Index(name = "contact_setting_party_id_index", columnList = "party_id")
+		@Index(name = "contact_setting_party_id_index", columnList = "party_id"),
+		@Index(name = "contact_setting_created_by_id_index", columnList = "created_by_id")
 	})
 @EntityListeners(ContactSettingEntityListener.class)
 public class ContactSettingEntity {

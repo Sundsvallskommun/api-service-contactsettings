@@ -32,6 +32,7 @@
         value varchar(255)
     ) engine=InnoDB;
 create index contact_setting_party_id_index on contact_setting (party_id);
+create index contact_setting_created_by_id_index on contact_setting (created_by_id);
 
     alter table if exists contact_setting_channel
        add constraint fk_contact_setting_contact_setting_channel
