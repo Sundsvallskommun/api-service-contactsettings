@@ -11,11 +11,6 @@ public class ValidGetDelegatesParametersConstraintValidator implements Constrain
 
 	private static final String VALIDATION_MESSAGE = "One of agentId or principalId must be provided!";
 
-	private void setValidationMessage(final ConstraintValidatorContext context, final String message) {
-		context.disableDefaultConstraintViolation();
-		context.buildConstraintViolationWithTemplate(message).addConstraintViolation();
-	}
-
 	@Override
 	public boolean isValid(final GetDelegatesParameters value, final ConstraintValidatorContext context) {
 		if (isNull(value) || (isNull(value.getAgentId()) && isNull(value.getPrincipalId()))) {
@@ -24,5 +19,10 @@ public class ValidGetDelegatesParametersConstraintValidator implements Constrain
 		}
 
 		return true;
+	}
+
+	private void setValidationMessage(final ConstraintValidatorContext context, final String message) {
+		context.disableDefaultConstraintViolation();
+		context.buildConstraintViolationWithTemplate(message).addConstraintViolation();
 	}
 }

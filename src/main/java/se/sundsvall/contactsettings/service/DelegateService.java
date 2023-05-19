@@ -36,6 +36,7 @@ public class DelegateService {
 	private static final String ERROR_MESSAGE_PRINCIPAL_NOT_FOUND = "No principal with contactSettingsId: '%s' exists!";
 	private static final String ERROR_MESSAGE_AGENT_NOT_FOUND = "No agent with contactSettingsId: '%s' exists!";
 	private static final String ERROR_MESSAGE_DELEGATE_ALREADY_EXIST = "A delegate with this this principal and agent already exists!";
+	private static final String ERROR_MESSAGE_CIRCULAR_REFERENCES_NOT_ALLOWED = "A delegate where the agent is principal and principal is agent already exists. Circular references are not allowed!";
 
 	@Autowired
 	private DelegateRepository delegateRepository;
@@ -45,20 +46,11 @@ public class DelegateService {
 
 	public Delegate create(final DelegateCreateRequest delegateCreateRequest) {
 
-		// Verify that agent exists.
-		if (!contactSettingRepository.existsById(delegateCreateRequest.getAgentId())) {
-			throw Problem.valueOf(NOT_FOUND, String.format(ERROR_MESSAGE_AGENT_NOT_FOUND, delegateCreateRequest.getAgentId()));
-		}
-
-		// Verify that principal exists.
-		if (!contactSettingRepository.existsById(delegateCreateRequest.getPrincipalId())) {
-			throw Problem.valueOf(NOT_FOUND, String.format(ERROR_MESSAGE_PRINCIPAL_NOT_FOUND, delegateCreateRequest.getPrincipalId()));
-		}
-
-		// Verify that delegate does not already exists.
-		if (!delegateRepository.findByPrincipalIdAndAgentId(delegateCreateRequest.getPrincipalId(), delegateCreateRequest.getAgentId()).isEmpty()) {
-			throw Problem.valueOf(CONFLICT, ERROR_MESSAGE_DELEGATE_ALREADY_EXIST);
-		}
+		// Verifications:
+		verifyThatAgentExists(delegateCreateRequest.getAgentId());
+		verifyThatPrincipalExists(delegateCreateRequest.getPrincipalId());
+		verifyThatDelegateDoesNotAlreadyExist(delegateCreateRequest.getPrincipalId(), delegateCreateRequest.getAgentId());
+		verifyThatNoCircularReferencesOccurs(delegateCreateRequest.getPrincipalId(), delegateCreateRequest.getAgentId());
 
 		// All good: proceed
 		return toDelegate(delegateRepository.save(toDelegateEntity(delegateCreateRequest)));
@@ -109,5 +101,29 @@ public class DelegateService {
 			.distinct()
 			.map(DelegateMapper::toDelegate)
 			.toList();
+	}
+
+	private void verifyThatAgentExists(String agentId) {
+		if (!contactSettingRepository.existsById(agentId)) {
+			throw Problem.valueOf(NOT_FOUND, String.format(ERROR_MESSAGE_AGENT_NOT_FOUND, agentId));
+		}
+	}
+
+	private void verifyThatPrincipalExists(String principalId) {
+		if (!contactSettingRepository.existsById(principalId)) {
+			throw Problem.valueOf(NOT_FOUND, String.format(ERROR_MESSAGE_PRINCIPAL_NOT_FOUND, principalId));
+		}
+	}
+
+	private void verifyThatDelegateDoesNotAlreadyExist(String principalId, String agentId) {
+		if (!delegateRepository.findByPrincipalIdAndAgentId(principalId, agentId).isEmpty()) {
+			throw Problem.valueOf(CONFLICT, ERROR_MESSAGE_DELEGATE_ALREADY_EXIST);
+		}
+	}
+
+	private void verifyThatNoCircularReferencesOccurs(String principalId, String agentId) {
+		if (!delegateRepository.findByPrincipalIdAndAgentId(agentId, principalId).isEmpty()) {
+			throw Problem.valueOf(CONFLICT, ERROR_MESSAGE_CIRCULAR_REFERENCES_NOT_ALLOWED);
+		}
 	}
 }

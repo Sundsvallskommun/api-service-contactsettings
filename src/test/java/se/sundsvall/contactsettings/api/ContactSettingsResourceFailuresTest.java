@@ -1,24 +1,5 @@
 package se.sundsvall.contactsettings.api;
 
-import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.web.reactive.server.WebTestClient;
-import org.zalando.problem.Problem;
-import org.zalando.problem.violations.ConstraintViolationProblem;
-import org.zalando.problem.violations.Violation;
-import se.sundsvall.contactsettings.Application;
-import se.sundsvall.contactsettings.api.model.ContactChannel;
-import se.sundsvall.contactsettings.api.model.ContactSettingCreateRequest;
-import se.sundsvall.contactsettings.api.model.ContactSettingUpdateRequest;
-import se.sundsvall.contactsettings.service.ContactSettingsService;
-
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
-
 import static java.util.UUID.randomUUID;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.tuple;
@@ -29,6 +10,26 @@ import static org.springframework.http.MediaType.APPLICATION_PROBLEM_JSON;
 import static org.zalando.problem.Status.BAD_REQUEST;
 import static se.sundsvall.contactsettings.api.model.enums.ContactMethod.EMAIL;
 import static se.sundsvall.contactsettings.api.model.enums.ContactMethod.SMS;
+
+import java.util.List;
+import java.util.Map;
+import java.util.UUID;
+
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.web.reactive.server.WebTestClient;
+import org.zalando.problem.Problem;
+import org.zalando.problem.violations.ConstraintViolationProblem;
+import org.zalando.problem.violations.Violation;
+
+import se.sundsvall.contactsettings.Application;
+import se.sundsvall.contactsettings.api.model.ContactChannel;
+import se.sundsvall.contactsettings.api.model.ContactSettingCreateRequest;
+import se.sundsvall.contactsettings.api.model.ContactSettingUpdateRequest;
+import se.sundsvall.contactsettings.service.ContactSettingsService;
 
 @SpringBootTest(classes = Application.class, webEnvironment = RANDOM_PORT)
 @ActiveProfiles("junit")

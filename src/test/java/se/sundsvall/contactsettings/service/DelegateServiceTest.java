@@ -188,6 +188,41 @@ class DelegateServiceTest {
 	}
 
 	@Test
+	void createCircularReferences() {
+
+		// Arrange
+		final var agentId = randomUUID().toString();
+		final var principalId = randomUUID().toString();
+		final var delegateCreateRequest = DelegateCreateRequest.create()
+			.withAgentId(agentId)
+			.withPrincipalId(principalId)
+			.withFilter(Map.of(
+				"key1", List.of("value1", "value2", "value3"),
+				"key2", List.of("value4", "value5"),
+				"key3", List.of("value6")));
+
+		when(contactSettingRepositoryMock.existsById(agentId)).thenReturn(true);
+		when(contactSettingRepositoryMock.existsById(principalId)).thenReturn(true);
+		when(delegateRepositoryMock.findByPrincipalIdAndAgentId(principalId, agentId)).thenReturn(emptyList());
+		when(delegateRepositoryMock.findByPrincipalIdAndAgentId(agentId, principalId)).thenReturn(List.of(DelegateEntity.create()));
+
+		// Act
+		final var exception = assertThrows(ThrowableProblem.class, () -> service.create(delegateCreateRequest));
+
+		// Assert.
+		assertThat(exception).isNotNull();
+		assertThat(exception.getStatus()).isEqualTo(CONFLICT);
+		assertThat(exception.getDetail()).isEqualTo("A delegate where the agent is principal and principal is agent already exists. Circular references are not allowed!");
+		assertThat(exception.getMessage()).isEqualTo("Conflict: A delegate where the agent is principal and principal is agent already exists. Circular references are not allowed!");
+
+		verify(contactSettingRepositoryMock).existsById(agentId);
+		verify(contactSettingRepositoryMock).existsById(principalId);
+		verify(delegateRepositoryMock).findByPrincipalIdAndAgentId(principalId, agentId);
+		verify(delegateRepositoryMock).findByPrincipalIdAndAgentId(agentId, principalId);
+		verify(delegateRepositoryMock, never()).save(any());
+	}
+
+	@Test
 	void read() {
 
 		// Arrange
