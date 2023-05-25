@@ -1,0 +1,24 @@
+[
+  {
+    "id": "336e4854-87f4-4407-9618-9fcf37e2f14f",
+    "principalId": "6c22993a-26b3-4a1f-805e-33a8c2b7c7e5",
+    "agentId": "41e31470-150b-4db1-b3c1-c8f4108051ab",
+    "created":"2023-07-21T12:02:00+02:00",
+    "filter": {
+      "contract-id": [
+        "456"
+      ]
+    }
+  },
+  {
+    "id": "7d5fbffc-d1ff-4fff-86de-8158b4e34459",
+    "principalId": "6c22993a-26b3-4a1f-805e-33a8c2b7c7e5",
+    "agentId": "1aa6df8d-6f5f-4e00-91aa-43dee8cfaef7",
+    "created":"2023-06-20T12:01:00+02:00",
+    "filter": {
+      "facility-id": [
+        "123"
+      ]
+    }
+  }
+]

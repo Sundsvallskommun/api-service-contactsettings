@@ -1,6 +1,8 @@
 package se.sundsvall.contactsettings.service;
 
 import static java.lang.String.format;
+import static java.time.OffsetDateTime.now;
+import static java.time.temporal.ChronoUnit.MILLIS;
 import static java.util.Collections.emptyList;
 import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
@@ -11,6 +13,7 @@ import static se.sundsvall.contactsettings.service.mapper.DelegateMapper.mergeIn
 import static se.sundsvall.contactsettings.service.mapper.DelegateMapper.toDelegate;
 import static se.sundsvall.contactsettings.service.mapper.DelegateMapper.toDelegateEntity;
 
+import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -36,7 +39,6 @@ public class DelegateService {
 	private static final String ERROR_MESSAGE_PRINCIPAL_NOT_FOUND = "No principal with contactSettingsId: '%s' exists!";
 	private static final String ERROR_MESSAGE_AGENT_NOT_FOUND = "No agent with contactSettingsId: '%s' exists!";
 	private static final String ERROR_MESSAGE_DELEGATE_ALREADY_EXIST = "A delegate with this this principal and agent already exists!";
-	private static final String ERROR_MESSAGE_CIRCULAR_REFERENCES_NOT_ALLOWED = "A delegate where the agent is principal and principal is agent already exists. Circular references are not allowed!";
 
 	@Autowired
 	private DelegateRepository delegateRepository;
@@ -50,7 +52,6 @@ public class DelegateService {
 		verifyThatAgentExists(delegateCreateRequest.getAgentId());
 		verifyThatPrincipalExists(delegateCreateRequest.getPrincipalId());
 		verifyThatDelegateDoesNotAlreadyExist(delegateCreateRequest.getPrincipalId(), delegateCreateRequest.getAgentId());
-		verifyThatNoCircularReferencesOccurs(delegateCreateRequest.getPrincipalId(), delegateCreateRequest.getAgentId());
 
 		// All good: proceed
 		return toDelegate(delegateRepository.save(toDelegateEntity(delegateCreateRequest)));
@@ -71,7 +72,8 @@ public class DelegateService {
 		final var delegateEntity = delegateRepository.findById(id).orElseThrow(() -> Problem.valueOf(NOT_FOUND, format(ERROR_MESSAGE_DELEGATE_NOT_FOUND, id)));
 
 		// All good: proceed
-		return toDelegate(delegateRepository.save(mergeIntoDelegateEntity(delegateEntity, delegateUpdateRequest)));
+		return toDelegate(delegateRepository.save(mergeIntoDelegateEntity(delegateEntity, delegateUpdateRequest)
+			.withModified(now(ZoneId.systemDefault()).truncatedTo(MILLIS))));
 	}
 
 	public void delete(final String id) {
@@ -118,12 +120,6 @@ public class DelegateService {
 	private void verifyThatDelegateDoesNotAlreadyExist(String principalId, String agentId) {
 		if (!delegateRepository.findByPrincipalIdAndAgentId(principalId, agentId).isEmpty()) {
 			throw Problem.valueOf(CONFLICT, ERROR_MESSAGE_DELEGATE_ALREADY_EXIST);
-		}
-	}
-
-	private void verifyThatNoCircularReferencesOccurs(String principalId, String agentId) {
-		if (!delegateRepository.findByPrincipalIdAndAgentId(agentId, principalId).isEmpty()) {
-			throw Problem.valueOf(CONFLICT, ERROR_MESSAGE_CIRCULAR_REFERENCES_NOT_ALLOWED);
 		}
 	}
 }

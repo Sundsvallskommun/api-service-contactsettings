@@ -1,0 +1,15 @@
+{
+  "principalId": "6c22993a-26b3-4a1f-805e-33a8c2b7c7e5",
+  "agentId": "a552e909-d2b1-4f08-acbe-938040f95ff3",
+  "filter": {
+    "additionalProp1": [
+      "1"
+    ],
+    "additionalProp2": [
+      "2"
+    ],
+    "additionalProp3": [
+      "3"
+    ]
+  }
+}
