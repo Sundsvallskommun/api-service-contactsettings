@@ -1,6 +1,7 @@
 package se.sundsvall.contactsettings.integration.db;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 
@@ -14,9 +15,9 @@ public interface ContactSettingRepository extends JpaRepository<ContactSettingEn
 	 * Find by partyId.
 	 *
 	 * @param partyId of the ContactSetting owner.
-	 * @return a List of ContactSettingEntity objects.
+	 * @return an Optional of ContactSettingEntity objects.
 	 */
-	List<ContactSettingEntity> findByPartyId(String partyId);
+	Optional<ContactSettingEntity> findByPartyId(String partyId);
 
 	/**
 	 * Find by createdById.

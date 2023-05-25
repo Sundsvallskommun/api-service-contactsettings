@@ -4,15 +4,15 @@ import static java.util.Objects.isNull;
 
 import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;
-import se.sundsvall.contactsettings.api.model.GetDelegatesParameters;
-import se.sundsvall.contactsettings.api.validator.ValidGetDelegatesParameters;
+import se.sundsvall.contactsettings.api.model.FindDelegatesParameters;
+import se.sundsvall.contactsettings.api.validator.ValidFindDelegatesParameters;
 
-public class ValidGetDelegatesParametersConstraintValidator implements ConstraintValidator<ValidGetDelegatesParameters, GetDelegatesParameters> {
+public class ValidFindDelegatesParametersConstraintValidator implements ConstraintValidator<ValidFindDelegatesParameters, FindDelegatesParameters> {
 
 	private static final String VALIDATION_MESSAGE = "One of agentId or principalId must be provided!";
 
 	@Override
-	public boolean isValid(final GetDelegatesParameters value, final ConstraintValidatorContext context) {
+	public boolean isValid(final FindDelegatesParameters value, final ConstraintValidatorContext context) {
 		if (isNull(value) || (isNull(value.getAgentId()) && isNull(value.getPrincipalId()))) {
 			setValidationMessage(context, VALIDATION_MESSAGE);
 			return false;

@@ -17,10 +17,10 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import jakarta.validation.ConstraintValidatorContext;
 import jakarta.validation.ConstraintValidatorContext.ConstraintViolationBuilder;
-import se.sundsvall.contactsettings.api.model.GetDelegatesParameters;
+import se.sundsvall.contactsettings.api.model.FindDelegatesParameters;
 
 @ExtendWith(MockitoExtension.class)
-class ValidGetDelegatesParametersConstraintValidatorTest {
+class ValidFindDelegatesParametersConstraintValidatorTest {
 
 	@Mock
 	private ConstraintViolationBuilder constraintViolationBuilderMock;
@@ -29,11 +29,11 @@ class ValidGetDelegatesParametersConstraintValidatorTest {
 	private ConstraintValidatorContext constraintValidatorContextMock;
 
 	@InjectMocks
-	private ValidGetDelegatesParametersConstraintValidator validator;
+	private ValidFindDelegatesParametersConstraintValidator validator;
 
 	@ParameterizedTest
 	@MethodSource("validContactChannelProvider")
-	void validContactChannel(final GetDelegatesParameters getDelegatesParameters, final boolean exprectedResult) {
+	void validContactChannel(final FindDelegatesParameters getDelegatesParameters, final boolean exprectedResult) {
 
 		// Arrange
 		lenient().when(constraintValidatorContextMock.buildConstraintViolationWithTemplate(any())).thenReturn(constraintViolationBuilderMock);
@@ -48,12 +48,12 @@ class ValidGetDelegatesParametersConstraintValidatorTest {
 	private static Stream<Arguments> validContactChannelProvider() {
 		return Stream.of(
 			// Valid email addresses.
-			Arguments.of(GetDelegatesParameters.create().withAgentId(randomUUID().toString()), true),
-			Arguments.of(GetDelegatesParameters.create().withPrincipalId(randomUUID().toString()), true),
-			Arguments.of(GetDelegatesParameters.create().withAgentId(randomUUID().toString()).withPrincipalId(randomUUID().toString()), true),
+			Arguments.of(FindDelegatesParameters.create().withAgentId(randomUUID().toString()), true),
+			Arguments.of(FindDelegatesParameters.create().withPrincipalId(randomUUID().toString()), true),
+			Arguments.of(FindDelegatesParameters.create().withAgentId(randomUUID().toString()).withPrincipalId(randomUUID().toString()), true),
 
 			// Invalid email addresses.
-			Arguments.of(GetDelegatesParameters.create(), false),
+			Arguments.of(FindDelegatesParameters.create(), false),
 			Arguments.of(null, false));
 	}
 }
