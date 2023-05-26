@@ -90,14 +90,15 @@ public class ContactSettingsService {
 		return Stream.concat(
 			Stream.of(contactSetting), // This will ensure that returned list always contains the provided contactSetting.
 			delegateRepository.findByPrincipalId(contactSetting.getId()).stream() // Find all agents for this contactSetting.
-				.filter(delegate -> filtersAreEqual(delegate.getFilters(), filter)) // Filter must match provided filter.
+				.filter(delegate -> matchFilters(delegate.getFilters(), filter)) // Filter must match provided filter.
 				.map(DelegateEntity::getAgent) // Extract agent from delegate.
 				.filter(agent -> !lookupRegistry.contains(agent.getId())) // The lookupRegistry must not already contain the ID of this agent (prevent circular references).
 				.flatMap(agent -> searchAndCollectFromDelegateChain(agent, filter, lookupRegistry).stream())) // Recurse.
 			.toList();
 	}
 
-	private boolean filtersAreEqual(List<Filter> filter1, List<Filter> filter2) {
+	// TODO: This method will be refactored in https://jira.sundsvall.se/browse/UF-5328
+	private boolean matchFilters(List<Filter> filter1, List<Filter> filter2) {
 		return isEqualCollection(
 			Optional.ofNullable(filter1).orElse(emptyList()),
 			Optional.ofNullable(filter2).orElse(emptyList()));
