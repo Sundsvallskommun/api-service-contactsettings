@@ -29,7 +29,7 @@ import org.zalando.problem.ThrowableProblem;
 import se.sundsvall.contactsettings.api.model.Delegate;
 import se.sundsvall.contactsettings.api.model.DelegateCreateRequest;
 import se.sundsvall.contactsettings.api.model.DelegateUpdateRequest;
-import se.sundsvall.contactsettings.api.model.GetDelegatesParameters;
+import se.sundsvall.contactsettings.api.model.FindDelegatesParameters;
 import se.sundsvall.contactsettings.integration.db.ContactSettingRepository;
 import se.sundsvall.contactsettings.integration.db.DelegateRepository;
 import se.sundsvall.contactsettings.integration.db.model.ContactSettingEntity;
@@ -363,7 +363,7 @@ class DelegateServiceTest {
 				Filter.create().withKey("key1").withValue("value2"),
 				Filter.create().withKey("key2").withValue("value3")))
 			.withId(id);
-		final var parameters = GetDelegatesParameters.create().withAgentId(agentId);
+		final var parameters = FindDelegatesParameters.create().withAgentId(agentId);
 
 		when(delegateRepositoryMock.findByAgentId(any())).thenReturn(List.of(delgateEntity));
 
@@ -387,7 +387,7 @@ class DelegateServiceTest {
 
 		// Arrange
 		final var agentId = randomUUID().toString();
-		final var parameters = GetDelegatesParameters.create().withAgentId(agentId);
+		final var parameters = FindDelegatesParameters.create().withAgentId(agentId);
 
 		when(delegateRepositoryMock.findByAgentId(any())).thenReturn(emptyList());
 
@@ -415,7 +415,7 @@ class DelegateServiceTest {
 				Filter.create().withKey("key1").withValue("value2"),
 				Filter.create().withKey("key2").withValue("value3")))
 			.withId(id);
-		final var parameters = GetDelegatesParameters.create().withPrincipalId(principalId);
+		final var parameters = FindDelegatesParameters.create().withPrincipalId(principalId);
 
 		when(delegateRepositoryMock.findByPrincipalId(any())).thenReturn(List.of(delgateEntity));
 
@@ -439,7 +439,7 @@ class DelegateServiceTest {
 
 		// Arrange
 		final var principalId = randomUUID().toString();
-		final var parameters = GetDelegatesParameters.create().withPrincipalId(principalId);
+		final var parameters = FindDelegatesParameters.create().withPrincipalId(principalId);
 
 		when(delegateRepositoryMock.findByPrincipalId(any())).thenReturn(emptyList());
 
@@ -471,7 +471,7 @@ class DelegateServiceTest {
 				Filter.create().withKey("key1").withValue("value2"),
 				Filter.create().withKey("key2").withValue("value3")))
 			.withId(id);
-		final var parameters = GetDelegatesParameters.create().withAgentId(agentId).withPrincipalId(principalId);
+		final var parameters = FindDelegatesParameters.create().withAgentId(agentId).withPrincipalId(principalId);
 
 		when(delegateRepositoryMock.findByPrincipalIdAndAgentId(any(), any())).thenReturn(List.of(delgateEntity));
 
@@ -498,7 +498,7 @@ class DelegateServiceTest {
 		final var principalAndAgentId = randomUUID().toString();
 		final var agentId = principalAndAgentId;
 		final var principalId = principalAndAgentId;
-		final var parameters = GetDelegatesParameters.create().withAgentId(agentId).withPrincipalId(principalId);
+		final var parameters = FindDelegatesParameters.create().withAgentId(agentId).withPrincipalId(principalId);
 
 		when(delegateRepositoryMock.findByPrincipalIdAndAgentId(any(), any())).thenReturn(emptyList());
 

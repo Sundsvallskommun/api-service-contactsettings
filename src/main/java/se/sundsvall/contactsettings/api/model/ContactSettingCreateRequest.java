@@ -7,16 +7,18 @@ import java.util.Objects;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import se.sundsvall.contactsettings.api.validator.ValidContactChannel;
+import se.sundsvall.contactsettings.api.validator.ValidContactSettingCreateRequest;
 import se.sundsvall.dept44.common.validators.annotation.ValidUuid;
 
 @Schema(description = "Contact setting create request model")
+@ValidContactSettingCreateRequest
 public class ContactSettingCreateRequest {
 
-	@Schema(description = "ID for the person or organization to whom the contact setting applies", example = "15aee472-46ab-4f03-9605-68bd64ebc73f", requiredMode = REQUIRED)
-	@ValidUuid
+	@Schema(description = "ID for the person or organization to whom the contact setting applies. Set to null when creating a 'virtual' contact setting.", example = "15aee472-46ab-4f03-9605-68bd64ebc73f", requiredMode = REQUIRED)
+	@ValidUuid(nullable = true)
 	private String partyId;
 
-	@Schema(description = "ID of the contact setting that created this instance. Applicable for virtual contact settings.", example = "9ca9425e-42cf-4145-a9e7-d77e1ea9e5b0", requiredMode = REQUIRED)
+	@Schema(description = "ID of the contact setting that created this instance. Mandatory for virtual contact settings.", example = "9ca9425e-42cf-4145-a9e7-d77e1ea9e5b0", requiredMode = REQUIRED)
 	@ValidUuid(nullable = true)
 	private String createdById;
 

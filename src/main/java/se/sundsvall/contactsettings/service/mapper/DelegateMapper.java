@@ -60,15 +60,15 @@ public class DelegateMapper {
 		return existingDelegateEntity;
 	}
 
-	private static Map<String, List<String>> toMapFilter(final List<Filter> listFilter) {
-		return Optional.ofNullable(listFilter).orElse(emptyList()).stream()
-			.collect(groupingBy(Filter::getKey, HashMap::new, mapping(Filter::getValue, toList())));
-	}
-
-	private static List<Filter> toListFilter(final Map<String, List<String>> mapFilter) {
+	public static List<Filter> toListFilter(final Map<String, List<String>> mapFilter) {
 		return new ArrayList<>(Optional.ofNullable(mapFilter).orElse(emptyMap()).entrySet().stream()
 			.flatMap(entry -> entry.getValue().stream()
 				.map(value -> Filter.create().withKey(entry.getKey()).withValue(value)))
 			.toList());
+	}
+
+	private static Map<String, List<String>> toMapFilter(final List<Filter> listFilter) {
+		return Optional.ofNullable(listFilter).orElse(emptyList()).stream()
+			.collect(groupingBy(Filter::getKey, HashMap::new, mapping(Filter::getValue, toList())));
 	}
 }

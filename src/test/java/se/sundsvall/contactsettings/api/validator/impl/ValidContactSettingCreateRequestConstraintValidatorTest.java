@@ -17,10 +17,10 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import jakarta.validation.ConstraintValidatorContext;
 import jakarta.validation.ConstraintValidatorContext.ConstraintViolationBuilder;
-import se.sundsvall.contactsettings.api.model.GetDelegatesParameters;
+import se.sundsvall.contactsettings.api.model.ContactSettingCreateRequest;
 
 @ExtendWith(MockitoExtension.class)
-class ValidGetDelegatesParametersConstraintValidatorTest {
+class ValidContactSettingCreateRequestConstraintValidatorTest {
 
 	@Mock
 	private ConstraintViolationBuilder constraintViolationBuilderMock;
@@ -29,31 +29,31 @@ class ValidGetDelegatesParametersConstraintValidatorTest {
 	private ConstraintValidatorContext constraintValidatorContextMock;
 
 	@InjectMocks
-	private ValidGetDelegatesParametersConstraintValidator validator;
+	private ValidContactSettingCreateRequestConstraintValidator validator;
 
 	@ParameterizedTest
-	@MethodSource("validContactChannelProvider")
-	void validContactChannel(final GetDelegatesParameters getDelegatesParameters, final boolean exprectedResult) {
+	@MethodSource("validContactSettingCreateRequestProvider")
+	void validContactChannel(final ContactSettingCreateRequest contactSettingCreateRequest, final boolean exprectedResult) {
 
 		// Arrange
 		lenient().when(constraintValidatorContextMock.buildConstraintViolationWithTemplate(any())).thenReturn(constraintViolationBuilderMock);
 
 		// Act
-		final var isValid = validator.isValid(getDelegatesParameters, constraintValidatorContextMock);
+		final var isValid = validator.isValid(contactSettingCreateRequest, constraintValidatorContextMock);
 
 		// Assert
 		assertThat(isValid).isEqualTo(exprectedResult);
 	}
 
-	private static Stream<Arguments> validContactChannelProvider() {
+	private static Stream<Arguments> validContactSettingCreateRequestProvider() {
 		return Stream.of(
-			// Valid email addresses.
-			Arguments.of(GetDelegatesParameters.create().withAgentId(randomUUID().toString()), true),
-			Arguments.of(GetDelegatesParameters.create().withPrincipalId(randomUUID().toString()), true),
-			Arguments.of(GetDelegatesParameters.create().withAgentId(randomUUID().toString()).withPrincipalId(randomUUID().toString()), true),
+			// Valid ContactSettingCreateRequest objects.
+			Arguments.of(ContactSettingCreateRequest.create().withPartyId(randomUUID().toString()).withCreatedById(randomUUID().toString()), true),
+			Arguments.of(ContactSettingCreateRequest.create().withPartyId(randomUUID().toString()), true),
+			Arguments.of(ContactSettingCreateRequest.create().withCreatedById(randomUUID().toString()), true),
 
-			// Invalid email addresses.
-			Arguments.of(GetDelegatesParameters.create(), false),
+			// Invalid ContactSettingCreateRequest objects.
+			Arguments.of(ContactSettingCreateRequest.create(), false),
 			Arguments.of(null, false));
 	}
 }

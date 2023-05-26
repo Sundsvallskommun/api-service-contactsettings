@@ -3,12 +3,12 @@ package se.sundsvall.contactsettings.api.model;
 import java.util.Objects;
 
 import io.swagger.v3.oas.annotations.media.Schema;
-import se.sundsvall.contactsettings.api.validator.ValidGetDelegatesParameters;
+import se.sundsvall.contactsettings.api.validator.ValidFindDelegatesParameters;
 import se.sundsvall.dept44.common.validators.annotation.ValidUuid;
 
-@ValidGetDelegatesParameters
+@ValidFindDelegatesParameters
 @Schema(description = "GetDelegatesParameters model")
-public class GetDelegatesParameters {
+public class FindDelegatesParameters {
 
 	@Schema(description = "Agent contact settings ID", example = "15aee472-46ab-4f03-9605-68bd64ebc73f")
 	@ValidUuid(nullable = true)
@@ -18,8 +18,8 @@ public class GetDelegatesParameters {
 	@ValidUuid(nullable = true)
 	private String principalId;
 
-	public static GetDelegatesParameters create() {
-		return new GetDelegatesParameters();
+	public static FindDelegatesParameters create() {
+		return new FindDelegatesParameters();
 	}
 
 	public String getAgentId() {
@@ -30,7 +30,7 @@ public class GetDelegatesParameters {
 		this.agentId = agentId;
 	}
 
-	public GetDelegatesParameters withAgentId(final String agentId) {
+	public FindDelegatesParameters withAgentId(final String agentId) {
 		this.agentId = agentId;
 		return this;
 	}
@@ -43,7 +43,7 @@ public class GetDelegatesParameters {
 		this.principalId = principalId;
 	}
 
-	public GetDelegatesParameters withPrincipalId(final String principalId) {
+	public FindDelegatesParameters withPrincipalId(final String principalId) {
 		this.principalId = principalId;
 		return this;
 	}
@@ -58,7 +58,7 @@ public class GetDelegatesParameters {
 		if (this == obj) {
 			return true;
 		}
-		if (!(obj instanceof final GetDelegatesParameters other)) {
+		if (!(obj instanceof final FindDelegatesParameters other)) {
 			return false;
 		}
 		return Objects.equals(agentId, other.agentId) && Objects.equals(principalId, other.principalId);
@@ -67,7 +67,7 @@ public class GetDelegatesParameters {
 	@Override
 	public String toString() {
 		final StringBuilder builder = new StringBuilder();
-		builder.append("GetDelegatesParameters [agentId=").append(agentId).append(", principalId=").append(principalId).append("]");
+		builder.append("FindDelegatesParameters [agentId=").append(agentId).append(", principalId=").append(principalId).append("]");
 		return builder.toString();
 	}
 }

@@ -1,5 +1,11 @@
 package se.sundsvall.contactsettings.service.mapper;
 
+import static java.util.Collections.emptyList;
+import static java.util.Objects.isNull;
+
+import java.util.List;
+import java.util.Optional;
+
 import se.sundsvall.contactsettings.api.model.ContactChannel;
 import se.sundsvall.contactsettings.api.model.ContactSetting;
 import se.sundsvall.contactsettings.api.model.ContactSettingCreateRequest;
@@ -8,11 +14,6 @@ import se.sundsvall.contactsettings.api.model.enums.ContactMethod;
 import se.sundsvall.contactsettings.integration.db.model.Channel;
 import se.sundsvall.contactsettings.integration.db.model.ContactSettingEntity;
 
-import java.util.List;
-import java.util.Optional;
-
-import static java.util.Collections.emptyList;
-import static java.util.Objects.isNull;
 public class ContactSettingMapper {
 
 	private ContactSettingMapper() {}
@@ -62,10 +63,6 @@ public class ContactSettingMapper {
 	}
 
 	private static ContactChannel toContactChannel(final Channel channel) {
-		if (isNull(channel)) {
-			return null;
-		}
-
 		return ContactChannel.create()
 			.withDisabled(channel.isDisabled())
 			.withAlias(channel.getAlias())
@@ -80,10 +77,6 @@ public class ContactSettingMapper {
 	}
 
 	private static Channel toChannel(final ContactChannel contactChannel) {
-		if (isNull(contactChannel)) {
-			return null;
-		}
-
 		return Channel.create()
 			.withDisabled(contactChannel.isDisabled())
 			.withAlias(contactChannel.getAlias())

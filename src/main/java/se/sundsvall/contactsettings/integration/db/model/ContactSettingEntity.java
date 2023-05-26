@@ -1,10 +1,13 @@
 package se.sundsvall.contactsettings.integration.db.model;
 
+import static org.hibernate.annotations.TimeZoneStorageType.NORMALIZE;
+
 import java.time.OffsetDateTime;
 import java.util.List;
 import java.util.Objects;
 
-import org.hibernate.annotations.GenericGenerator;
+import org.hibernate.annotations.TimeZoneStorage;
+import org.hibernate.annotations.UuidGenerator;
 
 import jakarta.persistence.CollectionTable;
 import jakarta.persistence.Column;
@@ -13,7 +16,6 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.EntityListeners;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.ForeignKey;
-import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
 import jakarta.persistence.Index;
 import jakarta.persistence.JoinColumn;
@@ -23,14 +25,14 @@ import se.sundsvall.contactsettings.integration.db.model.listener.ContactSetting
 @Entity
 @Table(name = "contact_setting",
 	indexes = {
-		@Index(name = "contact_setting_party_id_index", columnList = "party_id")
+		@Index(name = "contact_setting_party_id_index", columnList = "party_id"),
+		@Index(name = "contact_setting_created_by_id_index", columnList = "created_by_id")
 	})
 @EntityListeners(ContactSettingEntityListener.class)
 public class ContactSettingEntity {
 
 	@Id
-	@GeneratedValue(generator = "uuid2")
-	@GenericGenerator(name = "uuid2", strategy = "org.hibernate.id.UUIDGenerator")
+	@UuidGenerator
 	@Column(name = "id")
 	private String id;
 
@@ -41,9 +43,11 @@ public class ContactSettingEntity {
 	private String alias;
 
 	@Column(name = "created")
+	@TimeZoneStorage(NORMALIZE)
 	private OffsetDateTime created;
 
 	@Column(name = "modified")
+	@TimeZoneStorage(NORMALIZE)
 	private OffsetDateTime modified;
 
 	@Column(name = "created_by_id")
