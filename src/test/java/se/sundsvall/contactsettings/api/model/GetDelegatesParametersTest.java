@@ -16,7 +16,7 @@ class GetDelegatesParametersTest {
 
 	@Test
 	void testBean() {
-		assertThat(GetDelegatesParameters.class, allOf(
+		assertThat(FindDelegatesParameters.class, allOf(
 			hasValidBeanConstructor(),
 			hasValidGettersAndSetters(),
 			hasValidBeanHashCode(),
@@ -30,7 +30,7 @@ class GetDelegatesParametersTest {
 		final var agentId = randomUUID().toString();
 		final var principalId = randomUUID().toString();
 
-		final var bean = GetDelegatesParameters.create()
+		final var bean = FindDelegatesParameters.create()
 			.withAgentId(agentId)
 			.withPrincipalId(principalId);
 
@@ -41,7 +41,7 @@ class GetDelegatesParametersTest {
 
 	@Test
 	void testNoDirtOnCreatedBean() {
-		assertThat(GetDelegatesParameters.create()).hasAllNullFieldsOrProperties();
-		assertThat(new GetDelegatesParameters()).hasAllNullFieldsOrProperties();
+		assertThat(FindDelegatesParameters.create()).hasAllNullFieldsOrProperties();
+		assertThat(new FindDelegatesParameters()).hasAllNullFieldsOrProperties();
 	}
 }

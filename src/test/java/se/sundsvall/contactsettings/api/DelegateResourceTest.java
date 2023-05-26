@@ -24,7 +24,7 @@ import se.sundsvall.contactsettings.Application;
 import se.sundsvall.contactsettings.api.model.Delegate;
 import se.sundsvall.contactsettings.api.model.DelegateCreateRequest;
 import se.sundsvall.contactsettings.api.model.DelegateUpdateRequest;
-import se.sundsvall.contactsettings.api.model.GetDelegatesParameters;
+import se.sundsvall.contactsettings.api.model.FindDelegatesParameters;
 import se.sundsvall.contactsettings.service.DelegateService;
 
 @SpringBootTest(classes = Application.class, webEnvironment = RANDOM_PORT)
@@ -144,7 +144,7 @@ class DelegateResourceTest {
 
 		// Assert
 		assertThat(response).isNotNull();
-		verify(delegateServiceMock).find(GetDelegatesParameters.create()
+		verify(delegateServiceMock).find(FindDelegatesParameters.create()
 			.withAgentId(agentId)
 			.withPrincipalId(null));
 	}
@@ -169,7 +169,7 @@ class DelegateResourceTest {
 
 		// Assert
 		assertThat(response).isNotNull();
-		verify(delegateServiceMock).find(GetDelegatesParameters.create()
+		verify(delegateServiceMock).find(FindDelegatesParameters.create()
 			.withAgentId(null)
 			.withPrincipalId(principalId));
 	}
@@ -196,7 +196,7 @@ class DelegateResourceTest {
 
 		// Assert
 		assertThat(response).isNotNull();
-		verify(delegateServiceMock).find(GetDelegatesParameters.create()
+		verify(delegateServiceMock).find(FindDelegatesParameters.create()
 			.withAgentId(agentId)
 			.withPrincipalId(principalId));
 	}

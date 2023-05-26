@@ -25,7 +25,7 @@ import org.zalando.problem.Problem;
 import se.sundsvall.contactsettings.api.model.Delegate;
 import se.sundsvall.contactsettings.api.model.DelegateCreateRequest;
 import se.sundsvall.contactsettings.api.model.DelegateUpdateRequest;
-import se.sundsvall.contactsettings.api.model.GetDelegatesParameters;
+import se.sundsvall.contactsettings.api.model.FindDelegatesParameters;
 import se.sundsvall.contactsettings.integration.db.ContactSettingRepository;
 import se.sundsvall.contactsettings.integration.db.DelegateRepository;
 import se.sundsvall.contactsettings.integration.db.model.DelegateEntity;
@@ -85,7 +85,7 @@ public class DelegateService {
 		delegateRepository.delete(entity);
 	}
 
-	public List<Delegate> find(final GetDelegatesParameters parameters) {
+	public List<Delegate> find(final FindDelegatesParameters parameters) {
 		if (isNull(parameters)) {
 			return emptyList();
 		}
