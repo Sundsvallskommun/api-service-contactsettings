@@ -82,7 +82,6 @@ public class ContactSettingsService {
 		// Call the actual search-and-collect logic.
 		return searchAndCollectFromDelegateChain(parent, toListFilter(filter), new HashSet<>()).stream()
 			.map(ContactSettingMapper::toContactSetting)
-			.distinct()
 			.toList();
 	}
 
