@@ -27,7 +27,7 @@ import static org.springframework.http.MediaType.APPLICATION_PROBLEM_JSON_VALUE;
 	"/db/scripts/truncate.sql",
 	"/db/scripts/testdata-it.sql"
 })
-public class DelegatesResourceIT extends AbstractAppTest {
+class DelegatesResourceIT extends AbstractAppTest {
 
 	private static final String PATH = "/delegates"; // 2281 is the municipalityId of Sundsvalls kommun
 	private static final String REQUEST_FILE = "request.json";
