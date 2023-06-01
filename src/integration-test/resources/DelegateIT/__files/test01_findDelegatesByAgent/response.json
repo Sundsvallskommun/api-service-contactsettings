@@ -1,0 +1,21 @@
+[
+	{
+		"id": "7d5fbffc-d1ff-4fff-86de-8158b4e34459",
+		"principalId": "6c22993a-26b3-4a1f-805e-33a8c2b7c7e5",
+		"agentId": "1aa6df8d-6f5f-4e00-91aa-43dee8cfaef7",
+		"created": "2023-06-20T12:01:00+02:00",
+		"filters": [
+			{
+				"id": "a28c428b-a374-417e-89ea-3dba7d30a2e9",
+				"alias": "Mr Blue delegates to Mr Pink",
+				"rules": [
+					{
+						"attributeName": "facilityId",
+						"operator": "EQUALS",
+						"attributeValue": "123"
+					}
+				]
+			}
+		]
+	}
+]

@@ -4,7 +4,6 @@ import static io.swagger.v3.oas.annotations.media.Schema.AccessMode.READ_ONLY;
 
 import java.time.OffsetDateTime;
 import java.util.List;
-import java.util.Map;
 import java.util.Objects;
 
 import org.springframework.format.annotation.DateTimeFormat;
@@ -32,8 +31,8 @@ public class Delegate {
 	@DateTimeFormat(iso = ISO.DATE_TIME)
 	private OffsetDateTime modified;
 
-	@Schema(description = "Filter used by this delegate")
-	private Map<String, List<String>> filter;
+	@Schema(description = "Filters used by this delegate")
+	private List<Filter> filters;
 
 	public static Delegate create() {
 		return new Delegate();
@@ -104,22 +103,22 @@ public class Delegate {
 		return this;
 	}
 
-	public Map<String, List<String>> getFilter() {
-		return filter;
+	public List<Filter> getFilters() {
+		return filters;
 	}
 
-	public void setFilter(final Map<String, List<String>> filter) {
-		this.filter = filter;
+	public void setFilters(final List<Filter> filters) {
+		this.filters = filters;
 	}
 
-	public Delegate withFilter(final Map<String, List<String>> filter) {
-		this.filter = filter;
+	public Delegate withFilters(final List<Filter> filters) {
+		this.filters = filters;
 		return this;
 	}
 
 	@Override
 	public int hashCode() {
-		return Objects.hash(agentId, created, filter, id, modified, principalId);
+		return Objects.hash(agentId, created, filters, id, modified, principalId);
 	}
 
 	@Override
@@ -130,14 +129,15 @@ public class Delegate {
 		if (!(obj instanceof final Delegate other)) {
 			return false;
 		}
-		return Objects.equals(agentId, other.agentId) && Objects.equals(created, other.created) && Objects.equals(filter, other.filter) && Objects.equals(id, other.id) && Objects.equals(modified, other.modified) && Objects.equals(principalId,
+		return Objects.equals(agentId, other.agentId) && Objects.equals(created, other.created) && Objects.equals(filters, other.filters) && Objects.equals(id, other.id) && Objects.equals(modified, other.modified) && Objects.equals(principalId,
 			other.principalId);
 	}
 
 	@Override
 	public String toString() {
 		final StringBuilder builder = new StringBuilder();
-		builder.append("Delegate [id=").append(id).append(", principalId=").append(principalId).append(", agentId=").append(agentId).append(", created=").append(created).append(", modified=").append(modified).append(", filter=").append(filter).append("]");
+		builder.append("Delegate [id=").append(id).append(", principalId=").append(principalId).append(", agentId=").append(agentId).append(", created=").append(created).append(", modified=").append(modified).append(", filters=").append(filters).append(
+			"]");
 		return builder.toString();
 	}
 }

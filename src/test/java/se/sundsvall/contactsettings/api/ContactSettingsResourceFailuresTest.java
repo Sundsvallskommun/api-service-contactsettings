@@ -45,7 +45,7 @@ class ContactSettingsResourceFailuresTest {
 	private ContactSettingsService contactSettingsServiceMock;
 
 	@Test
-	void createMissingBody() {
+	void createWithMissingBody() {
 
 		// Act
 		final var response = webTestClient.post()
@@ -195,7 +195,7 @@ class ContactSettingsResourceFailuresTest {
 	}
 
 	@Test
-	void updateMissingBody() {
+	void updateWithMissingBody() {
 
 		// Act
 		final var response = webTestClient.patch()
@@ -219,7 +219,7 @@ class ContactSettingsResourceFailuresTest {
 	}
 
 	@Test
-	void updateInvalidId() {
+	void updateWithInvalidId() {
 
 		// Arrange
 		final var body = ContactSettingUpdateRequest.create().withAlias("alias");
@@ -308,7 +308,7 @@ class ContactSettingsResourceFailuresTest {
 	}
 
 	@Test
-	void deleteInvalidId() {
+	void deleteWithInvalidId() {
 
 		// Act
 		final var response = webTestClient.delete()
@@ -332,7 +332,7 @@ class ContactSettingsResourceFailuresTest {
 	}
 
 	@Test
-	void readInvalidId() {
+	void readWithInvalidId() {
 
 		// Act
 		final var response = webTestClient.get()
@@ -356,7 +356,7 @@ class ContactSettingsResourceFailuresTest {
 	}
 
 	@Test
-	void findByPartyIdAndFilterInvalidPartyId() {
+	void findByPartyIdAndFilterWithInvalidPartyId() {
 
 		// Act
 		final var response = webTestClient.get()
@@ -382,7 +382,7 @@ class ContactSettingsResourceFailuresTest {
 	}
 
 	@Test
-	void findByPartyIdAndFilterMissingPartyId() {
+	void findByPartyIdAndFilterWithMissingPartyId() {
 
 		// Act
 		final var response = webTestClient.get()

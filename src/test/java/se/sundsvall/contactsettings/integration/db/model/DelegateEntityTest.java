@@ -45,12 +45,8 @@ class DelegateEntityTest {
 		final var modified = now();
 		final var principal = ContactSettingEntity.create();
 		final var filters = List.of(
-			Filter.create().withKey("bike").withValue("Honda"),
-			Filter.create().withKey("bike").withValue("Kawasaki"),
-			Filter.create().withKey("bike").withValue("Aprilia"),
-			Filter.create().withKey("car").withValue("Tesla"),
-			Filter.create().withKey("car").withValue("Volvo"),
-			Filter.create().withKey("truck").withValue("Scania"));
+			DelegateFilterEntity.create().withAlias("alias").withId("id").withFilterRules(List.of(
+				DelegateFilterRule.create().withAttributeName("attributeName").withAttributeValue("attributeValue").withOperator("operator"))));
 
 		final var entity = DelegateEntity.create()
 			.withAgent(agent)

@@ -14,7 +14,6 @@ import static org.hamcrest.MatcherAssert.assertThat;
 
 import java.time.OffsetDateTime;
 import java.util.List;
-import java.util.Map;
 
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -42,14 +41,16 @@ class DelegateTest {
 		final var agentId = "agentId";
 		final var created = now();
 		final var modified = now();
-		final var filter = Map.of("key", List.of("value"));
+		final var filters = List.of(Filter.create()
+			.withAlias("filter")
+			.withRules(List.of(Rule.create().withAttributeName("attribute").withAttributeValue("value"))));
 		final var id = "id";
 		final var principalId = "principalId";
 
 		final var bean = Delegate.create()
 			.withAgentId(agentId)
 			.withCreated(created)
-			.withFilter(filter)
+			.withFilters(filters)
 			.withId(id)
 			.withModified(modified)
 			.withPrincipalId(principalId);
@@ -58,7 +59,7 @@ class DelegateTest {
 		assertThat(bean.getAgentId()).isEqualTo(agentId);
 		assertThat(bean.getCreated()).isEqualTo(created);
 		assertThat(bean.getModified()).isEqualTo(modified);
-		assertThat(bean.getFilter()).isEqualTo(filter);
+		assertThat(bean.getFilters()).isEqualTo(filters);
 		assertThat(bean.getId()).isEqualTo(id);
 		assertThat(bean.getPrincipalId()).isEqualTo(principalId);
 	}

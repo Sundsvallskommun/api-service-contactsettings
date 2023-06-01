@@ -4,10 +4,12 @@ import java.util.List;
 import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.transaction.annotation.Transactional;
 
 import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
 import se.sundsvall.contactsettings.integration.db.model.ContactSettingEntity;
 
+@Transactional
 @CircuitBreaker(name = "contactSettingRepository")
 public interface ContactSettingRepository extends JpaRepository<ContactSettingEntity, String> {
 

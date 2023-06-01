@@ -8,6 +8,7 @@ import static org.mockito.Mockito.when;
 import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT;
 import static org.springframework.http.HttpHeaders.LOCATION;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
+import static se.sundsvall.contactsettings.api.model.enums.Operator.EQUALS;
 
 import java.util.List;
 import java.util.Map;
@@ -23,8 +24,9 @@ import org.springframework.test.web.reactive.server.WebTestClient;
 import se.sundsvall.contactsettings.Application;
 import se.sundsvall.contactsettings.api.model.Delegate;
 import se.sundsvall.contactsettings.api.model.DelegateCreateRequest;
-import se.sundsvall.contactsettings.api.model.DelegateUpdateRequest;
+import se.sundsvall.contactsettings.api.model.Filter;
 import se.sundsvall.contactsettings.api.model.FindDelegatesParameters;
+import se.sundsvall.contactsettings.api.model.Rule;
 import se.sundsvall.contactsettings.service.DelegateService;
 
 @SpringBootTest(classes = Application.class, webEnvironment = RANDOM_PORT)
@@ -46,7 +48,9 @@ class DelegateResourceTest {
 		final var body = DelegateCreateRequest.create()
 			.withAgentId(randomUUID().toString())
 			.withPrincipalId(randomUUID().toString())
-			.withFilter(Map.of("filterKey", List.of("value")));
+			.withFilters(List.of(Filter.create()
+				.withAlias("filter")
+				.withRules(List.of(Rule.create().withAttributeName("attribute").withOperator(EQUALS).withAttributeValue("value")))));
 
 		when(delegateServiceMock.create(any())).thenReturn(Delegate.create().withId(DELEGATE_ID));
 
@@ -82,33 +86,6 @@ class DelegateResourceTest {
 		// Assert
 		assertThat(response).isNotNull();
 		verify(delegateServiceMock).read(DELEGATE_ID);
-	}
-
-	@Test
-	void update() {
-
-		// Arrange
-		final var body = DelegateUpdateRequest.create()
-			.withFilter(Map.of("filterKey", List.of("value")));
-
-		when(delegateServiceMock.update(any(), any())).thenReturn(Delegate.create().withId(DELEGATE_ID));
-
-		// Act
-		final var response = webTestClient.patch()
-			.uri(builder -> builder.path("/delegates/{id}").build(Map.of("id", DELEGATE_ID)))
-			.contentType(APPLICATION_JSON)
-			.bodyValue(body)
-			.exchange()
-			.expectStatus().is2xxSuccessful()
-			.expectHeader().contentType(APPLICATION_JSON)
-			.expectBody(Delegate.class)
-			.returnResult()
-			.getResponseBody();
-
-		// Assert
-		assertThat(response).isNotNull();
-		assertThat(response.getId()).isEqualTo(DELEGATE_ID);
-		verify(delegateServiceMock).update(DELEGATE_ID, body);
 	}
 
 	@Test

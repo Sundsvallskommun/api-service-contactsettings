@@ -3,10 +3,10 @@ package se.sundsvall.contactsettings.api.model;
 import static io.swagger.v3.oas.annotations.media.Schema.RequiredMode.REQUIRED;
 
 import java.util.List;
-import java.util.Map;
 import java.util.Objects;
 
 import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.validation.Valid;
 import se.sundsvall.dept44.common.validators.annotation.ValidUuid;
 
 @Schema(description = "Delegate create request model")
@@ -20,8 +20,8 @@ public class DelegateCreateRequest {
 	@ValidUuid
 	private String agentId;
 
-	@Schema(description = "Filter used by this delegate")
-	private Map<String, List<String>> filter;
+	@Schema(description = "Filters used by this delegate")
+	private List<@Valid Filter> filters;
 
 	public static DelegateCreateRequest create() {
 		return new DelegateCreateRequest();
@@ -53,22 +53,22 @@ public class DelegateCreateRequest {
 		return this;
 	}
 
-	public Map<String, List<String>> getFilter() {
-		return filter;
+	public List<Filter> getFilters() {
+		return filters;
 	}
 
-	public void setFilter(final Map<String, List<String>> filter) {
-		this.filter = filter;
+	public void setFilters(final List<Filter> filters) {
+		this.filters = filters;
 	}
 
-	public DelegateCreateRequest withFilter(final Map<String, List<String>> filter) {
-		this.filter = filter;
+	public DelegateCreateRequest withFilters(final List<Filter> filters) {
+		this.filters = filters;
 		return this;
 	}
 
 	@Override
 	public int hashCode() {
-		return Objects.hash(agentId, filter, principalId);
+		return Objects.hash(agentId, filters, principalId);
 	}
 
 	@Override
@@ -79,13 +79,13 @@ public class DelegateCreateRequest {
 		if (!(obj instanceof final DelegateCreateRequest other)) {
 			return false;
 		}
-		return Objects.equals(agentId, other.agentId) && Objects.equals(filter, other.filter) && Objects.equals(principalId, other.principalId);
+		return Objects.equals(agentId, other.agentId) && Objects.equals(filters, other.filters) && Objects.equals(principalId, other.principalId);
 	}
 
 	@Override
 	public String toString() {
 		final StringBuilder builder = new StringBuilder();
-		builder.append("DelegateCreateRequest [principalId=").append(principalId).append(", agentId=").append(agentId).append(", filter=").append(filter).append("]");
+		builder.append("DelegateCreateRequest [principalId=").append(principalId).append(", agentId=").append(agentId).append(", filters=").append(filters).append("]");
 		return builder.toString();
 	}
 }

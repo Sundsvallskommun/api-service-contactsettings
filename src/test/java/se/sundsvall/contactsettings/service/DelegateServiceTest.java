@@ -14,7 +14,6 @@ import static org.zalando.problem.Status.CONFLICT;
 import static org.zalando.problem.Status.NOT_FOUND;
 
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 
 import org.junit.jupiter.api.Test;
@@ -28,13 +27,16 @@ import org.zalando.problem.ThrowableProblem;
 
 import se.sundsvall.contactsettings.api.model.Delegate;
 import se.sundsvall.contactsettings.api.model.DelegateCreateRequest;
-import se.sundsvall.contactsettings.api.model.DelegateUpdateRequest;
+import se.sundsvall.contactsettings.api.model.Filter;
 import se.sundsvall.contactsettings.api.model.FindDelegatesParameters;
+import se.sundsvall.contactsettings.api.model.Rule;
+import se.sundsvall.contactsettings.api.model.enums.Operator;
 import se.sundsvall.contactsettings.integration.db.ContactSettingRepository;
 import se.sundsvall.contactsettings.integration.db.DelegateRepository;
 import se.sundsvall.contactsettings.integration.db.model.ContactSettingEntity;
 import se.sundsvall.contactsettings.integration.db.model.DelegateEntity;
-import se.sundsvall.contactsettings.integration.db.model.Filter;
+import se.sundsvall.contactsettings.integration.db.model.DelegateFilterEntity;
+import se.sundsvall.contactsettings.integration.db.model.DelegateFilterRule;
 
 @ExtendWith(MockitoExtension.class)
 class DelegateServiceTest {
@@ -60,10 +62,19 @@ class DelegateServiceTest {
 		final var delegateCreateRequest = DelegateCreateRequest.create()
 			.withAgentId(agentId)
 			.withPrincipalId(principalId)
-			.withFilter(Map.of(
-				"key1", List.of("value1", "value2", "value3"),
-				"key2", List.of("value4", "value5"),
-				"key3", List.of("value6")));
+			.withFilters(List.of(
+				Filter.create()
+					.withAlias("Filter1")
+					.withRules(List.of(Rule.create()
+						.withAttributeName("key1")
+						.withOperator(Operator.EQUALS)
+						.withAttributeValue("value1"))),
+				Filter.create()
+					.withAlias("Filter2")
+					.withRules(List.of(Rule.create()
+						.withAttributeName("key2")
+						.withOperator(Operator.NOT_EQUALS)
+						.withAttributeValue("value2")))));
 
 		when(contactSettingRepositoryMock.existsById(any())).thenReturn(true);
 		when(delegateRepositoryMock.findByPrincipalIdAndAgentId(any(), any())).thenReturn(emptyList());
@@ -85,12 +96,18 @@ class DelegateServiceTest {
 		assertThat(capturedDelegateEntity.getAgent()).isEqualTo(ContactSettingEntity.create().withId(agentId));
 		assertThat(capturedDelegateEntity.getPrincipal()).isEqualTo(ContactSettingEntity.create().withId(principalId));
 		assertThat(capturedDelegateEntity.getFilters()).containsExactlyInAnyOrder(
-			Filter.create().withKey("key1").withValue("value1"),
-			Filter.create().withKey("key1").withValue("value2"),
-			Filter.create().withKey("key1").withValue("value3"),
-			Filter.create().withKey("key2").withValue("value4"),
-			Filter.create().withKey("key2").withValue("value5"),
-			Filter.create().withKey("key3").withValue("value6"));
+			DelegateFilterEntity.create()
+				.withAlias("Filter1")
+				.withFilterRules(List.of(DelegateFilterRule.create()
+					.withAttributeName("key1")
+					.withOperator(Operator.EQUALS.toString())
+					.withAttributeValue("value1"))),
+			DelegateFilterEntity.create()
+				.withAlias("Filter2")
+				.withFilterRules(List.of(DelegateFilterRule.create()
+					.withAttributeName("key2")
+					.withOperator(Operator.NOT_EQUALS.toString())
+					.withAttributeValue("value2"))));
 	}
 
 	@Test
@@ -101,11 +118,7 @@ class DelegateServiceTest {
 		final var principalId = randomUUID().toString();
 		final var delegateCreateRequest = DelegateCreateRequest.create()
 			.withAgentId(agentId)
-			.withPrincipalId(principalId)
-			.withFilter(Map.of(
-				"key1", List.of("value1", "value2", "value3"),
-				"key2", List.of("value4", "value5"),
-				"key3", List.of("value6")));
+			.withPrincipalId(principalId);
 
 		when(contactSettingRepositoryMock.existsById(agentId)).thenReturn(false);
 
@@ -115,8 +128,8 @@ class DelegateServiceTest {
 		// Assert.
 		assertThat(exception).isNotNull();
 		assertThat(exception.getStatus()).isEqualTo(NOT_FOUND);
-		assertThat(exception.getDetail()).isEqualTo("No agent with contactSettingsId: '" + agentId + "' exists!");
-		assertThat(exception.getMessage()).isEqualTo("Not Found: No agent with contactSettingsId: '" + agentId + "' exists!");
+		assertThat(exception.getDetail()).isEqualTo("No agent with contactSettingsId: '" + agentId + "' could be found!");
+		assertThat(exception.getMessage()).isEqualTo("Not Found: No agent with contactSettingsId: '" + agentId + "' could be found!");
 
 		verify(contactSettingRepositoryMock).existsById(agentId);
 		verify(contactSettingRepositoryMock, never()).existsById(principalId);
@@ -131,11 +144,7 @@ class DelegateServiceTest {
 		final var principalId = randomUUID().toString();
 		final var delegateCreateRequest = DelegateCreateRequest.create()
 			.withAgentId(agentId)
-			.withPrincipalId(principalId)
-			.withFilter(Map.of(
-				"key1", List.of("value1", "value2", "value3"),
-				"key2", List.of("value4", "value5"),
-				"key3", List.of("value6")));
+			.withPrincipalId(principalId);
 
 		when(contactSettingRepositoryMock.existsById(agentId)).thenReturn(true);
 		when(contactSettingRepositoryMock.existsById(principalId)).thenReturn(false);
@@ -146,8 +155,8 @@ class DelegateServiceTest {
 		// Assert.
 		assertThat(exception).isNotNull();
 		assertThat(exception.getStatus()).isEqualTo(NOT_FOUND);
-		assertThat(exception.getDetail()).isEqualTo("No principal with contactSettingsId: '" + principalId + "' exists!");
-		assertThat(exception.getMessage()).isEqualTo("Not Found: No principal with contactSettingsId: '" + principalId + "' exists!");
+		assertThat(exception.getDetail()).isEqualTo("No principal with contactSettingsId: '" + principalId + "' could be found!");
+		assertThat(exception.getMessage()).isEqualTo("Not Found: No principal with contactSettingsId: '" + principalId + "' could be found!");
 
 		verify(contactSettingRepositoryMock).existsById(agentId);
 		verify(contactSettingRepositoryMock).existsById(principalId);
@@ -162,11 +171,7 @@ class DelegateServiceTest {
 		final var principalId = randomUUID().toString();
 		final var delegateCreateRequest = DelegateCreateRequest.create()
 			.withAgentId(agentId)
-			.withPrincipalId(principalId)
-			.withFilter(Map.of(
-				"key1", List.of("value1", "value2", "value3"),
-				"key2", List.of("value4", "value5"),
-				"key3", List.of("value6")));
+			.withPrincipalId(principalId);
 
 		when(contactSettingRepositoryMock.existsById(agentId)).thenReturn(true);
 		when(contactSettingRepositoryMock.existsById(principalId)).thenReturn(true);
@@ -197,9 +202,18 @@ class DelegateServiceTest {
 		final var delgateEntity = DelegateEntity.create()
 			.withAgent(ContactSettingEntity.create().withId(agentId))
 			.withFilters(List.of(
-				Filter.create().withKey("key1").withValue("value1"),
-				Filter.create().withKey("key1").withValue("value2"),
-				Filter.create().withKey("key2").withValue("value3")))
+				DelegateFilterEntity.create()
+					.withAlias("Filter1")
+					.withFilterRules(List.of(DelegateFilterRule.create()
+						.withAttributeName("key1")
+						.withOperator(Operator.EQUALS.toString())
+						.withAttributeValue("value1"))),
+				DelegateFilterEntity.create()
+					.withAlias("Filter2")
+					.withFilterRules(List.of(DelegateFilterRule.create()
+						.withAttributeName("key2")
+						.withOperator(Operator.NOT_EQUALS.toString())
+						.withAttributeValue("value2")))))
 			.withId(delegateId)
 			.withPrincipal(ContactSettingEntity.create().withId(principalId));
 
@@ -213,9 +227,19 @@ class DelegateServiceTest {
 		assertThat(result.getId()).isEqualTo(delegateId);
 		assertThat(result.getAgentId()).isEqualTo(agentId);
 		assertThat(result.getPrincipalId()).isEqualTo(principalId);
-		assertThat(result.getFilter()).containsExactlyInAnyOrderEntriesOf(Map.of(
-			"key1", List.of("value1", "value2"),
-			"key2", List.of("value3")));
+		assertThat(result.getFilters()).containsExactly(
+			Filter.create()
+				.withAlias("Filter1")
+				.withRules(List.of(Rule.create()
+					.withAttributeName("key1")
+					.withOperator(Operator.EQUALS)
+					.withAttributeValue("value1"))),
+			Filter.create()
+				.withAlias("Filter2")
+				.withRules(List.of(Rule.create()
+					.withAttributeName("key2")
+					.withOperator(Operator.NOT_EQUALS)
+					.withAttributeValue("value2"))));
 
 		verify(delegateRepositoryMock).findById(delegateId);
 	}
@@ -234,72 +258,10 @@ class DelegateServiceTest {
 		// Assert.
 		assertThat(exception).isNotNull();
 		assertThat(exception.getStatus()).isEqualTo(NOT_FOUND);
-		assertThat(exception.getDetail()).isEqualTo("No delegate with id: '" + delegateId + "' exists!");
-		assertThat(exception.getMessage()).isEqualTo("Not Found: No delegate with id: '" + delegateId + "' exists!");
+		assertThat(exception.getDetail()).isEqualTo("No delegate with id: '" + delegateId + "' could be found!");
+		assertThat(exception.getMessage()).isEqualTo("Not Found: No delegate with id: '" + delegateId + "' could be found!");
 
 		verify(delegateRepositoryMock).findById(delegateId);
-	}
-
-	@Test
-	void update() {
-
-		// Arrange
-		final var delegateId = "id";
-		final var delgateEntity = DelegateEntity.create()
-			.withAgent(ContactSettingEntity.create().withId(randomUUID().toString()))
-			.withFilters(List.of(
-				Filter.create().withKey("key1").withValue("oldValue1"),
-				Filter.create().withKey("key1").withValue("oldValue2"),
-				Filter.create().withKey("key2").withValue("oldValue3")))
-			.withId(delegateId)
-			.withPrincipal(ContactSettingEntity.create().withId(randomUUID().toString()));
-
-		final var delegateUpdateRequest = DelegateUpdateRequest.create()
-			.withFilter(Map.of(
-				"key1", List.of("value1", "value2", "value3"),
-				"key2", List.of("value4", "value5"),
-				"key3", List.of("value6")));
-
-		when(delegateRepositoryMock.findById(any())).thenReturn(Optional.of(delgateEntity));
-		when(delegateRepositoryMock.save(any())).thenReturn(DelegateEntity.create());
-
-		// Act
-		final var result = service.update(delegateId, delegateUpdateRequest);
-
-		// Assert.
-		assertThat(result).isNotNull();
-		verify(delegateRepositoryMock).findById(delegateId);
-		verify(delegateRepositoryMock).save(delegateEntityCaptor.capture());
-
-		final var capturedDelegateEntity = delegateEntityCaptor.getValue();
-		assertThat(capturedDelegateEntity).isEqualTo(delgateEntity);
-	}
-
-	@Test
-	void updateDelegateNotFOund() {
-
-		// Arrange
-		final var delegateId = randomUUID().toString();
-
-		final var delegateUpdateRequest = DelegateUpdateRequest.create()
-			.withFilter(Map.of(
-				"key1", List.of("value1", "value2", "value3"),
-				"key2", List.of("value4", "value5"),
-				"key3", List.of("value6")));
-
-		when(delegateRepositoryMock.findById(any())).thenReturn(Optional.empty());
-
-		// Act
-		final var exception = assertThrows(ThrowableProblem.class, () -> service.update(delegateId, delegateUpdateRequest));
-
-		// Assert.
-		assertThat(exception).isNotNull();
-		assertThat(exception.getStatus()).isEqualTo(NOT_FOUND);
-		assertThat(exception.getDetail()).isEqualTo("No delegate with id: '" + delegateId + "' exists!");
-		assertThat(exception.getMessage()).isEqualTo("Not Found: No delegate with id: '" + delegateId + "' exists!");
-
-		verify(delegateRepositoryMock).findById(delegateId);
-		verify(delegateRepositoryMock, never()).save(any());
 	}
 
 	@Test
@@ -311,10 +273,6 @@ class DelegateServiceTest {
 		final var principalId = randomUUID().toString();
 		final var delgateEntity = DelegateEntity.create()
 			.withAgent(ContactSettingEntity.create().withId(agentId))
-			.withFilters(List.of(
-				Filter.create().withKey("key1").withValue("value1"),
-				Filter.create().withKey("key1").withValue("value2"),
-				Filter.create().withKey("key2").withValue("value3")))
 			.withId(delegateId)
 			.withPrincipal(ContactSettingEntity.create().withId(principalId));
 
@@ -342,8 +300,8 @@ class DelegateServiceTest {
 		// Assert.
 		assertThat(exception).isNotNull();
 		assertThat(exception.getStatus()).isEqualTo(NOT_FOUND);
-		assertThat(exception.getDetail()).isEqualTo("No delegate with id: '" + delegateId + "' exists!");
-		assertThat(exception.getMessage()).isEqualTo("Not Found: No delegate with id: '" + delegateId + "' exists!");
+		assertThat(exception.getDetail()).isEqualTo("No delegate with id: '" + delegateId + "' could be found!");
+		assertThat(exception.getMessage()).isEqualTo("Not Found: No delegate with id: '" + delegateId + "' could be found!");
 
 		// Assert.
 		verify(delegateRepositoryMock).findById(delegateId);
@@ -359,9 +317,18 @@ class DelegateServiceTest {
 		final var delgateEntity = DelegateEntity.create()
 			.withAgent(ContactSettingEntity.create().withId(agentId))
 			.withFilters(List.of(
-				Filter.create().withKey("key1").withValue("value1"),
-				Filter.create().withKey("key1").withValue("value2"),
-				Filter.create().withKey("key2").withValue("value3")))
+				DelegateFilterEntity.create()
+					.withAlias("Filter1")
+					.withFilterRules(List.of(DelegateFilterRule.create()
+						.withAttributeName("key1")
+						.withOperator(Operator.EQUALS.toString())
+						.withAttributeValue("value1"))),
+				DelegateFilterEntity.create()
+					.withAlias("Filter2")
+					.withFilterRules(List.of(DelegateFilterRule.create()
+						.withAttributeName("key2")
+						.withOperator(Operator.NOT_EQUALS.toString())
+						.withAttributeValue("value2")))))
 			.withId(id);
 		final var parameters = FindDelegatesParameters.create().withAgentId(agentId);
 
@@ -372,10 +339,20 @@ class DelegateServiceTest {
 
 		// Assert.
 		assertThat(result)
-			.extracting(Delegate::getId, Delegate::getAgentId, Delegate::getFilter)
-			.containsExactly(tuple(id, agentId, Map.of(
-				"key1", List.of("value1", "value2"),
-				"key2", List.of("value3"))));
+			.extracting(Delegate::getId, Delegate::getAgentId, Delegate::getFilters)
+			.containsExactly(tuple(id, agentId, List.of(
+				Filter.create()
+					.withAlias("Filter1")
+					.withRules(List.of(Rule.create()
+						.withAttributeName("key1")
+						.withOperator(Operator.EQUALS)
+						.withAttributeValue("value1"))),
+				Filter.create()
+					.withAlias("Filter2")
+					.withRules(List.of(Rule.create()
+						.withAttributeName("key2")
+						.withOperator(Operator.NOT_EQUALS)
+						.withAttributeValue("value2"))))));
 
 		verify(delegateRepositoryMock).findByAgentId(agentId);
 		verify(delegateRepositoryMock, never()).findByPrincipalId(any());
@@ -411,9 +388,18 @@ class DelegateServiceTest {
 		final var delgateEntity = DelegateEntity.create()
 			.withPrincipal(ContactSettingEntity.create().withId(principalId))
 			.withFilters(List.of(
-				Filter.create().withKey("key1").withValue("value1"),
-				Filter.create().withKey("key1").withValue("value2"),
-				Filter.create().withKey("key2").withValue("value3")))
+				DelegateFilterEntity.create()
+					.withAlias("Filter1")
+					.withFilterRules(List.of(DelegateFilterRule.create()
+						.withAttributeName("key1")
+						.withOperator(Operator.EQUALS.toString())
+						.withAttributeValue("value1"))),
+				DelegateFilterEntity.create()
+					.withAlias("Filter2")
+					.withFilterRules(List.of(DelegateFilterRule.create()
+						.withAttributeName("key2")
+						.withOperator(Operator.NOT_EQUALS.toString())
+						.withAttributeValue("value2")))))
 			.withId(id);
 		final var parameters = FindDelegatesParameters.create().withPrincipalId(principalId);
 
@@ -424,10 +410,20 @@ class DelegateServiceTest {
 
 		// Assert.
 		assertThat(result)
-			.extracting(Delegate::getId, Delegate::getPrincipalId, Delegate::getFilter)
-			.containsExactly(tuple(id, principalId, Map.of(
-				"key1", List.of("value1", "value2"),
-				"key2", List.of("value3"))));
+			.extracting(Delegate::getId, Delegate::getPrincipalId, Delegate::getFilters)
+			.containsExactly(tuple(id, principalId, List.of(
+				Filter.create()
+					.withAlias("Filter1")
+					.withRules(List.of(Rule.create()
+						.withAttributeName("key1")
+						.withOperator(Operator.EQUALS)
+						.withAttributeValue("value1"))),
+				Filter.create()
+					.withAlias("Filter2")
+					.withRules(List.of(Rule.create()
+						.withAttributeName("key2")
+						.withOperator(Operator.NOT_EQUALS)
+						.withAttributeValue("value2"))))));
 
 		verify(delegateRepositoryMock).findByPrincipalId(principalId);
 		verify(delegateRepositoryMock, never()).findByAgentId(any());
@@ -467,9 +463,18 @@ class DelegateServiceTest {
 			.withAgent(ContactSettingEntity.create().withId(agentId))
 			.withPrincipal(ContactSettingEntity.create().withId(principalId))
 			.withFilters(List.of(
-				Filter.create().withKey("key1").withValue("value1"),
-				Filter.create().withKey("key1").withValue("value2"),
-				Filter.create().withKey("key2").withValue("value3")))
+				DelegateFilterEntity.create()
+					.withAlias("Filter1")
+					.withFilterRules(List.of(DelegateFilterRule.create()
+						.withAttributeName("key1")
+						.withOperator(Operator.EQUALS.toString())
+						.withAttributeValue("value1"))),
+				DelegateFilterEntity.create()
+					.withAlias("Filter2")
+					.withFilterRules(List.of(DelegateFilterRule.create()
+						.withAttributeName("key2")
+						.withOperator(Operator.NOT_EQUALS.toString())
+						.withAttributeValue("value2")))))
 			.withId(id);
 		final var parameters = FindDelegatesParameters.create().withAgentId(agentId).withPrincipalId(principalId);
 
@@ -481,10 +486,20 @@ class DelegateServiceTest {
 		// Assert.
 		assertThat(result)
 			.hasSize(1)
-			.extracting(Delegate::getId, Delegate::getAgentId, Delegate::getPrincipalId, Delegate::getFilter)
-			.containsExactly(tuple(id, agentId, principalId, Map.of(
-				"key1", List.of("value1", "value2"),
-				"key2", List.of("value3"))));
+			.extracting(Delegate::getId, Delegate::getAgentId, Delegate::getPrincipalId, Delegate::getFilters)
+			.containsExactly(tuple(id, agentId, principalId, List.of(
+				Filter.create()
+					.withAlias("Filter1")
+					.withRules(List.of(Rule.create()
+						.withAttributeName("key1")
+						.withOperator(Operator.EQUALS)
+						.withAttributeValue("value1"))),
+				Filter.create()
+					.withAlias("Filter2")
+					.withRules(List.of(Rule.create()
+						.withAttributeName("key2")
+						.withOperator(Operator.NOT_EQUALS)
+						.withAttributeValue("value2"))))));
 
 		verify(delegateRepositoryMock).findByPrincipalIdAndAgentId(principalId, agentId);
 		verify(delegateRepositoryMock, never()).findByAgentId(any());

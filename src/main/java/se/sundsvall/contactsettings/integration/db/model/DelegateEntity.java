@@ -1,17 +1,18 @@
 package se.sundsvall.contactsettings.integration.db.model;
 
+import static java.util.Objects.isNull;
 import static org.hibernate.annotations.TimeZoneStorageType.NORMALIZE;
 
 import java.time.OffsetDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
 import org.hibernate.annotations.TimeZoneStorage;
 import org.hibernate.annotations.UuidGenerator;
 
-import jakarta.persistence.CollectionTable;
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
-import jakarta.persistence.ElementCollection;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EntityListeners;
 import jakarta.persistence.FetchType;
@@ -19,6 +20,7 @@ import jakarta.persistence.ForeignKey;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import se.sundsvall.contactsettings.integration.db.model.listener.DelegateEntityListener;
 
@@ -40,13 +42,9 @@ public class DelegateEntity {
 	@JoinColumn(name = "agent_id", nullable = false, updatable = false, foreignKey = @ForeignKey(name = "fk_delegate_agent_id_contact_setting_id"))
 	private ContactSettingEntity agent;
 
-	@ElementCollection(fetch = FetchType.EAGER)
-	@CollectionTable(name = "delegate_filter",
-		joinColumns = @JoinColumn(
-			name = "delegate_id",
-			referencedColumnName = "id",
-			foreignKey = @ForeignKey(name = "fk_delegate_delegate_filter")))
-	private List<Filter> filters;
+	@OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
+	@JoinColumn(name = "delegate_id", foreignKey = @ForeignKey(name = "fk_delegate_id_delegate_filter_delegate_id"))
+	private List<DelegateFilterEntity> filters;
 
 	@Column(name = "created")
 	@TimeZoneStorage(NORMALIZE)
@@ -99,16 +97,25 @@ public class DelegateEntity {
 		return this;
 	}
 
-	public List<Filter> getFilters() {
+	public List<DelegateFilterEntity> getFilters() {
 		return filters;
 	}
 
-	public void setFilters(final List<Filter> filters) {
-		this.filters = filters;
+	public void setFilters(final List<DelegateFilterEntity> filters) {
+
+		if (isNull(this.filters)) {
+			this.filters = new ArrayList<>();
+		}
+
+		this.filters.clear();
+
+		if (filters != null) {
+			this.filters.addAll(filters);
+		}
 	}
 
-	public DelegateEntity withFilters(final List<Filter> filters) {
-		this.filters = filters;
+	public DelegateEntity withFilters(final List<DelegateFilterEntity> filters) {
+		this.setFilters(filters);
 		return this;
 	}
 

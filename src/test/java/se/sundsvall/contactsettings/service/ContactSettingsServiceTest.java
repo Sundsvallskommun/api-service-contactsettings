@@ -14,16 +14,21 @@ import static org.mockito.Mockito.when;
 import static org.zalando.problem.Status.CONFLICT;
 import static org.zalando.problem.Status.NOT_FOUND;
 import static se.sundsvall.contactsettings.api.model.enums.ContactMethod.SMS;
-import static se.sundsvall.contactsettings.service.ContactSettingsService.ENTITY_BY_PARTY_ID_NOT_FOUND;
-import static se.sundsvall.contactsettings.service.ContactSettingsService.ENTITY_NOT_FOUND;
-import static se.sundsvall.contactsettings.service.ContactSettingsService.PARTY_ID_ALREADY_EXISTS;
+import static se.sundsvall.contactsettings.service.Constants.ERROR_MESSAGE_CONTACT_SETTING_BY_PARTY_ALREADY_EXISTS;
+import static se.sundsvall.contactsettings.service.Constants.ERROR_MESSAGE_CONTACT_SETTING_BY_PARTY_ID_NOT_FOUND;
+import static se.sundsvall.contactsettings.service.Constants.ERROR_MESSAGE_CONTACT_SETTING_NOT_FOUND;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.stream.Stream;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -40,7 +45,8 @@ import se.sundsvall.contactsettings.integration.db.DelegateRepository;
 import se.sundsvall.contactsettings.integration.db.model.Channel;
 import se.sundsvall.contactsettings.integration.db.model.ContactSettingEntity;
 import se.sundsvall.contactsettings.integration.db.model.DelegateEntity;
-import se.sundsvall.contactsettings.integration.db.model.Filter;
+import se.sundsvall.contactsettings.integration.db.model.DelegateFilterEntity;
+import se.sundsvall.contactsettings.integration.db.model.DelegateFilterRule;
 
 @ExtendWith(MockitoExtension.class)
 class ContactSettingsServiceTest {
@@ -87,7 +93,7 @@ class ContactSettingsServiceTest {
 		// Assert
 		assertThat(exception.getStatus()).isEqualTo(CONFLICT);
 		assertThat(exception.getTitle()).isEqualTo(CONFLICT.getReasonPhrase());
-		assertThat(exception.getDetail()).isEqualTo(String.format(PARTY_ID_ALREADY_EXISTS, contactSettingCreateRequest.getPartyId()));
+		assertThat(exception.getDetail()).isEqualTo(String.format(ERROR_MESSAGE_CONTACT_SETTING_BY_PARTY_ALREADY_EXISTS, contactSettingCreateRequest.getPartyId()));
 	}
 
 	@Test
@@ -118,7 +124,7 @@ class ContactSettingsServiceTest {
 		// Assert
 		assertThat(exception.getStatus()).isEqualTo(NOT_FOUND);
 		assertThat(exception.getTitle()).isEqualTo(NOT_FOUND.getReasonPhrase());
-		assertThat(exception.getDetail()).isEqualTo(String.format(ENTITY_NOT_FOUND, ID));
+		assertThat(exception.getDetail()).isEqualTo(String.format(ERROR_MESSAGE_CONTACT_SETTING_NOT_FOUND, ID));
 		verify(contactSettingRepositoryMock).findById(ID);
 		verifyNoMoreInteractions(contactSettingRepositoryMock);
 	}
@@ -156,7 +162,7 @@ class ContactSettingsServiceTest {
 		// Assert
 		assertThat(exception.getStatus()).isEqualTo(NOT_FOUND);
 		assertThat(exception.getTitle()).isEqualTo(NOT_FOUND.getReasonPhrase());
-		assertThat(exception.getDetail()).isEqualTo(String.format(ENTITY_NOT_FOUND, ID));
+		assertThat(exception.getDetail()).isEqualTo(String.format(ERROR_MESSAGE_CONTACT_SETTING_NOT_FOUND, ID));
 		verify(contactSettingRepositoryMock).existsById(ID);
 		verifyNoMoreInteractions(contactSettingRepositoryMock);
 	}
@@ -215,7 +221,7 @@ class ContactSettingsServiceTest {
 	}
 
 	@Test
-	void findByPartyIdAndFilter_noFilterProvided() {
+	void findByPartyIdAndFilter_noQueryProvided() {
 
 		// Arrange
 		final var principalPartyId = randomUUID().toString();
@@ -258,12 +264,12 @@ class ContactSettingsServiceTest {
 	}
 
 	@Test
-	void findByPartyIdAndFilter_filterWithMatch() {
+	void findByPartyIdAndFilter_queryWithWithFilterEqualsOperatorMatch() {
 
 		// Arrange
 		final var inputFilter = new LinkedMultiValueMap<String, String>();
 		inputFilter.put("key1", List.of("value1", "value2"));
-		inputFilter.put("key2", List.of("value3"));
+		inputFilter.put("key2", List.of("value3", "value4", "value5"));
 
 		final var principalPartyId = randomUUID().toString();
 		final var agentPartyId = randomUUID().toString();
@@ -284,9 +290,9 @@ class ContactSettingsServiceTest {
 			.withAgent(agent)
 			.withPrincipal(principal)
 			.withFilters(List.of(
-				Filter.create().withKey("key1").withValue("value1"),
-				Filter.create().withKey("key1").withValue("value2"),
-				Filter.create().withKey("key2").withValue("value3")));
+				DelegateFilterEntity.create().withFilterRules(List.of(
+					DelegateFilterRule.create().withAttributeName("key1").withOperator("EQUALS").withAttributeValue("value2"),
+					DelegateFilterRule.create().withAttributeName("key2").withOperator("EQUALS").withAttributeValue("value4")))));
 
 		when(contactSettingRepositoryMock.findByPartyId(principal.getPartyId())).thenReturn(Optional.of(principal));
 		when(delegateRepositoryMock.findByPrincipalId(principal.getId())).thenReturn(List.of(delegate));
@@ -309,7 +315,57 @@ class ContactSettingsServiceTest {
 	}
 
 	@Test
-	void findByPartyIdAndFilter_filterWithNoMatch() {
+	void findByPartyIdAndFilter_queryWithWithFilterNotEqualsOperatorMatch() {
+
+		// Arrange
+		final var inputFilter = new LinkedMultiValueMap<String, String>();
+		inputFilter.put("key1", List.of("value1", "value2"));
+		inputFilter.put("key2", List.of("value3", "value4", "value5"));
+
+		final var principalPartyId = randomUUID().toString();
+		final var agentPartyId = randomUUID().toString();
+
+		final var principal = ContactSettingEntity.create()
+			.withAlias("Principal")
+			.withChannels(List.of(Channel.create().withContactMethod(SMS.toString()).withDestination("070111111111")))
+			.withPartyId(principalPartyId)
+			.withId(randomUUID().toString());
+
+		final var agent = ContactSettingEntity.create()
+			.withAlias("Agent")
+			.withChannels(List.of(Channel.create().withContactMethod(SMS.toString()).withDestination("070222222222")))
+			.withPartyId(agentPartyId)
+			.withId(randomUUID().toString());
+
+		final var delegate = DelegateEntity.create()
+			.withAgent(agent)
+			.withPrincipal(principal)
+			.withFilters(List.of(
+				DelegateFilterEntity.create().withFilterRules(List.of(
+					DelegateFilterRule.create().withAttributeName("key1").withOperator("NOT_EQUALS").withAttributeValue("theForbiddenValue")))));
+
+		when(contactSettingRepositoryMock.findByPartyId(principal.getPartyId())).thenReturn(Optional.of(principal));
+		when(delegateRepositoryMock.findByPrincipalId(principal.getId())).thenReturn(List.of(delegate));
+
+		// Act
+		final var result = service.findByPartyIdAndFilter(principalPartyId, inputFilter);
+
+		// Assert
+		assertThat(result)
+			.extracting(ContactSetting::getId, ContactSetting::getPartyId, ContactSetting::getAlias, ContactSetting::getContactChannels)
+			.containsExactlyInAnyOrder(
+				tuple(principal.getId(), principalPartyId, "Principal", List.of(ContactChannel.create().withContactMethod(SMS).withDestination("070111111111"))),
+				tuple(agent.getId(), agentPartyId, "Agent", List.of(ContactChannel.create().withContactMethod(SMS).withDestination("070222222222"))));
+
+		verify(contactSettingRepositoryMock).findByPartyId(principalPartyId);
+		verify(delegateRepositoryMock).findByPrincipalId(principal.getId());
+		verify(delegateRepositoryMock).findByPrincipalId(agent.getId());
+		verifyNoMoreInteractions(delegateRepositoryMock);
+		verifyNoMoreInteractions(contactSettingRepositoryMock);
+	}
+
+	@Test
+	void findByPartyIdAndFilter_queryWithNoFilterMatch() {
 
 		// Arrange
 		final var inputFilter = new LinkedMultiValueMap<String, String>();
@@ -334,9 +390,9 @@ class ContactSettingsServiceTest {
 			.withAgent(agent)
 			.withPrincipal(principal)
 			.withFilters(List.of(
-				Filter.create().withKey("key1").withValue("value1"),
-				Filter.create().withKey("key1").withValue("value2"),
-				Filter.create().withKey("key2").withValue("value3")));
+				DelegateFilterEntity.create().withFilterRules(List.of(
+					DelegateFilterRule.create().withAttributeName("key1").withOperator("EQUALS").withAttributeValue("value1"),
+					DelegateFilterRule.create().withAttributeName("key2").withOperator("EQUALS").withAttributeValue("value2")))));
 
 		when(contactSettingRepositoryMock.findByPartyId(principal.getPartyId())).thenReturn(Optional.of(principal));
 		when(delegateRepositoryMock.findByPrincipalId(principal.getId())).thenReturn(List.of(delegate));
@@ -417,7 +473,7 @@ class ContactSettingsServiceTest {
 		// Assert
 		assertThat(exception.getStatus()).isEqualTo(NOT_FOUND);
 		assertThat(exception.getTitle()).isEqualTo(NOT_FOUND.getReasonPhrase());
-		assertThat(exception.getDetail()).isEqualTo(String.format(ENTITY_BY_PARTY_ID_NOT_FOUND, partyId));
+		assertThat(exception.getDetail()).isEqualTo(String.format(ERROR_MESSAGE_CONTACT_SETTING_BY_PARTY_ID_NOT_FOUND, partyId));
 		verify(contactSettingRepositoryMock).findByPartyId(partyId);
 		verifyNoMoreInteractions(contactSettingRepositoryMock);
 	}
@@ -454,7 +510,7 @@ class ContactSettingsServiceTest {
 		// Assert
 		assertThat(exception.getStatus()).isEqualTo(NOT_FOUND);
 		assertThat(exception.getTitle()).isEqualTo(NOT_FOUND.getReasonPhrase());
-		assertThat(exception.getDetail()).isEqualTo(String.format(ENTITY_NOT_FOUND, ID));
+		assertThat(exception.getDetail()).isEqualTo(String.format(ERROR_MESSAGE_CONTACT_SETTING_NOT_FOUND, ID));
 		verify(contactSettingRepositoryMock).existsById(ID);
 		verifyNoMoreInteractions(contactSettingRepositoryMock);
 	}
@@ -513,10 +569,187 @@ class ContactSettingsServiceTest {
 		// Assert
 		assertThat(exception.getStatus()).isEqualTo(NOT_FOUND);
 		assertThat(exception.getTitle()).isEqualTo(NOT_FOUND.getReasonPhrase());
-		assertThat(exception.getDetail()).isEqualTo(String.format(ENTITY_NOT_FOUND, ID));
+		assertThat(exception.getDetail()).isEqualTo(String.format(ERROR_MESSAGE_CONTACT_SETTING_NOT_FOUND, ID));
 		verify(contactSettingRepositoryMock).findById(ID);
 		verifyNoMoreInteractions(contactSettingRepositoryMock);
 		verifyNoInteractions(delegateRepositoryMock);
+	}
+
+	@ParameterizedTest
+	@MethodSource("filterMatchesArgumentsProvider")
+	void filterMatches(String description, Map<String, List<String>> inputFilter, List<DelegateFilterEntity> delegateFilters, boolean expectedMatch) {
+
+		// Act
+		final var result = service.filtersMatches(inputFilter, delegateFilters);
+
+		// Assert
+		assertThat(result).as(description).isEqualTo(expectedMatch);
+	}
+
+	private static Stream<Arguments> filterMatchesArgumentsProvider() {
+		return Stream.of(
+
+			Arguments.of(
+				"Match with a single EQUALS-rule",
+				Map.of(
+					"key1", List.of("value1", "value2"),
+					"key2", List.of("value3", "value4", "value5")),
+				List.of(
+					DelegateFilterEntity.create().withFilterRules(List.of(
+						DelegateFilterRule.create().withAttributeName("key1").withOperator("EQUALS").withAttributeValue("value2")))), true),
+
+			Arguments.of(
+				"Match with multiple EQUALS-rules in one filter",
+				Map.of(
+					"key1", List.of("value1", "value2"),
+					"key2", List.of("value3", "value4", "value5")),
+				List.of(
+					DelegateFilterEntity.create().withFilterRules(List.of(
+						DelegateFilterRule.create().withAttributeName("key1").withOperator("EQUALS").withAttributeValue("value2"),
+						DelegateFilterRule.create().withAttributeName("key2").withOperator("EQUALS").withAttributeValue("value4"),
+						DelegateFilterRule.create().withAttributeName("key2").withOperator("EQUALS").withAttributeValue("value5")))), true),
+
+			Arguments.of(
+				"Match with multiple EQUALS-rules in multiple filters",
+				Map.of(
+					"key1", List.of("value1", "value2"),
+					"key2", List.of("value3", "value4", "value5")),
+				List.of(
+					DelegateFilterEntity.create().withFilterRules(List.of(
+						DelegateFilterRule.create().withAttributeName("key1").withOperator("EQUALS").withAttributeValue("value1"),
+						DelegateFilterRule.create().withAttributeName("key2").withOperator("EQUALS").withAttributeValue("value3"))),
+					DelegateFilterEntity.create().withFilterRules(List.of(
+						DelegateFilterRule.create().withAttributeName("key1").withOperator("EQUALS").withAttributeValue("value2"),
+						DelegateFilterRule.create().withAttributeName("key2").withOperator("EQUALS").withAttributeValue("value4"),
+						DelegateFilterRule.create().withAttributeName("key2").withOperator("EQUALS").withAttributeValue("value5")))), true),
+
+			Arguments.of(
+				"No-match with a single EQUALS-rule",
+				Map.of(
+					"key1", List.of("value1", "value2"),
+					"key2", List.of("value3", "value4", "value5")),
+				List.of(
+					DelegateFilterEntity.create().withFilterRules(List.of(
+						DelegateFilterRule.create().withAttributeName("key1").withOperator("EQUALS").withAttributeValue("value666")))), false),
+
+			Arguments.of(
+				"No-match with multiple EQUALS-rules in one filter, where one rule-condition is not fulfilled",
+				Map.of(
+					"key1", List.of("value1", "value2"),
+					"key2", List.of("value3", "value4", "value5")),
+				List.of(
+					DelegateFilterEntity.create().withFilterRules(List.of(
+						DelegateFilterRule.create().withAttributeName("key1").withOperator("EQUALS").withAttributeValue("value2"),
+						DelegateFilterRule.create().withAttributeName("key2").withOperator("EQUALS").withAttributeValue("value4"),
+						DelegateFilterRule.create().withAttributeName("key2").withOperator("EQUALS").withAttributeValue("value-no-match")))), false),
+
+			Arguments.of(
+				"No-match with multiple EQUALS-rules in multiple filters, where one rule-condition in one filter is not fulfilled",
+				Map.of(
+					"key1", List.of("value1", "value2"),
+					"key2", List.of("value3", "value4", "value5")),
+				List.of(
+					DelegateFilterEntity.create().withFilterRules(List.of(
+						DelegateFilterRule.create().withAttributeName("key1").withOperator("EQUALS").withAttributeValue("value1"),
+						DelegateFilterRule.create().withAttributeName("key2").withOperator("EQUALS").withAttributeValue("value3"))),
+					DelegateFilterEntity.create().withFilterRules(List.of(
+						DelegateFilterRule.create().withAttributeName("key1").withOperator("EQUALS").withAttributeValue("value2"),
+						DelegateFilterRule.create().withAttributeName("key2").withOperator("EQUALS").withAttributeValue("value4"),
+						DelegateFilterRule.create().withAttributeName("key2").withOperator("EQUALS").withAttributeValue("value-no-match")))), false),
+
+			Arguments.of(
+				"Match with a single NOT_EQUALS-rule",
+				Map.of(
+					"key1", List.of("value1", "value2"),
+					"key2", List.of("value3", "value4", "value5")),
+				List.of(
+					DelegateFilterEntity.create().withFilterRules(List.of(
+						DelegateFilterRule.create().withAttributeName("key1").withOperator("NOT_EQUALS").withAttributeValue("value-no-match")))), true),
+
+			Arguments.of(
+				"Match with multiple NOT_EQUALS-rules in one filter",
+				Map.of(
+					"key1", List.of("value1", "value2"),
+					"key2", List.of("value3", "value4", "value5")),
+				List.of(
+					DelegateFilterEntity.create().withFilterRules(List.of(
+						DelegateFilterRule.create().withAttributeName("key1").withOperator("NOT_EQUALS").withAttributeValue("value-no-match1"),
+						DelegateFilterRule.create().withAttributeName("key2").withOperator("NOT_EQUALS").withAttributeValue("value-no-match2"),
+						DelegateFilterRule.create().withAttributeName("key2").withOperator("NOT_EQUALS").withAttributeValue("value-no-match3")))), true),
+
+			Arguments.of(
+				"Match with multiple NOT_EQUALS-rules in multiple filters",
+				Map.of(
+					"key1", List.of("value1", "value2"),
+					"key2", List.of("value3", "value4", "value5")),
+				List.of(
+					DelegateFilterEntity.create().withFilterRules(List.of(
+						DelegateFilterRule.create().withAttributeName("key1").withOperator("NOT_EQUALS").withAttributeValue("value-no-match1"),
+						DelegateFilterRule.create().withAttributeName("key2").withOperator("NOT_EQUALS").withAttributeValue("value-no-match2"))),
+					DelegateFilterEntity.create().withFilterRules(List.of(
+						DelegateFilterRule.create().withAttributeName("key1").withOperator("NOT_EQUALS").withAttributeValue("value-no-match3"),
+						DelegateFilterRule.create().withAttributeName("key2").withOperator("NOT_EQUALS").withAttributeValue("value-no-match4"),
+						DelegateFilterRule.create().withAttributeName("key2").withOperator("NOT_EQUALS").withAttributeValue("value-no-match5")))), true),
+
+			Arguments.of(
+				"No-match with a single NOT_EQUALS-rule",
+				Map.of(
+					"key1", List.of("value1", "value2"),
+					"key2", List.of("value3", "value4", "value5")),
+				List.of(
+					DelegateFilterEntity.create().withFilterRules(List.of(
+						DelegateFilterRule.create().withAttributeName("key1").withOperator("NOT_EQUALS").withAttributeValue("value1")))), false),
+
+			Arguments.of(
+				"No-match with multiple NOT_EQUALS-rules in one filter, where one rule-condition is not fulfilled",
+				Map.of(
+					"key1", List.of("value1", "value2"),
+					"key2", List.of("value3", "value4", "value5")),
+				List.of(
+					DelegateFilterEntity.create().withFilterRules(List.of(
+						DelegateFilterRule.create().withAttributeName("key1").withOperator("NOT_EQUALS").withAttributeValue("value2"),
+						DelegateFilterRule.create().withAttributeName("key2").withOperator("NOT_EQUALS").withAttributeValue("value-no-match1"),
+						DelegateFilterRule.create().withAttributeName("key2").withOperator("NOT_EQUALS").withAttributeValue("value-no-match2")))), false),
+
+			Arguments.of(
+				"No-match with multiple NOT_EQUALS-rules in multiple filters, where one rule-condition in one filter is not fulfilled",
+				Map.of(
+					"key1", List.of("value1", "value2"),
+					"key2", List.of("value3", "value4", "value5")),
+				List.of(
+					DelegateFilterEntity.create().withFilterRules(List.of(
+						DelegateFilterRule.create().withAttributeName("key1").withOperator("NOT_EQUALS").withAttributeValue("value-no-match"),
+						DelegateFilterRule.create().withAttributeName("key2").withOperator("NOT_EQUALS").withAttributeValue("value-no-match"))),
+					DelegateFilterEntity.create().withFilterRules(List.of(
+						DelegateFilterRule.create().withAttributeName("key1").withOperator("NOT_EQUALS").withAttributeValue("value-no-match"),
+						DelegateFilterRule.create().withAttributeName("key2").withOperator("NOT_EQUALS").withAttributeValue("value4"),
+						DelegateFilterRule.create().withAttributeName("key2").withOperator("NOT_EQUALS").withAttributeValue("value-no-match")))), false),
+
+			Arguments.of(
+				"Match with mixed EQUALS and NOT_EQUALS-rules in multiple filters",
+				Map.of(
+					"key1", List.of("value1", "value2"),
+					"key2", List.of("value3", "value4", "value5")),
+				List.of(
+					DelegateFilterEntity.create().withFilterRules(List.of(
+						DelegateFilterRule.create().withAttributeName("key1").withOperator("EQUALS").withAttributeValue("value2"),
+						DelegateFilterRule.create().withAttributeName("key2").withOperator("NOT_EQUALS").withAttributeValue("value-no-match"))),
+					DelegateFilterEntity.create().withFilterRules(List.of(
+						DelegateFilterRule.create().withAttributeName("key1").withOperator("NOT_EQUALS").withAttributeValue("value-no-match"),
+						DelegateFilterRule.create().withAttributeName("key2").withOperator("EQUALS").withAttributeValue("value4")))), true),
+
+			Arguments.of(
+				"No Match with mixed EQUALS and NOT_EQUALS-rules in multiple filters, where one rule-condition in one filter is not fulfilled",
+				Map.of(
+					"key1", List.of("value1", "value2"),
+					"key2", List.of("value3", "value4", "value5")),
+				List.of(
+					DelegateFilterEntity.create().withFilterRules(List.of(
+						DelegateFilterRule.create().withAttributeName("key1").withOperator("EQUALS").withAttributeValue("value2"),
+						DelegateFilterRule.create().withAttributeName("key2").withOperator("NOT_EQUALS").withAttributeValue("value-no-match"))),
+					DelegateFilterEntity.create().withFilterRules(List.of(
+						DelegateFilterRule.create().withAttributeName("key1").withOperator("NOT_EQUALS").withAttributeValue("value-no-match"),
+						DelegateFilterRule.create().withAttributeName("key2").withOperator("EQUALS").withAttributeValue("value-no-match")))), false));
 	}
 
 	private ContactSettingCreateRequest buildContactSettingCreateRequest() {
