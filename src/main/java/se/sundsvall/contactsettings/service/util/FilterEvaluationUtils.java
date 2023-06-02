@@ -3,6 +3,7 @@ package se.sundsvall.contactsettings.service.util;
 import static java.util.Collections.emptyList;
 import static org.apache.commons.collections4.CollectionUtils.isEmpty;
 import static org.apache.commons.collections4.MapUtils.isEmpty;
+import static org.apache.commons.lang3.StringUtils.equalsIgnoreCase;
 import static se.sundsvall.contactsettings.api.model.enums.Operator.toEnum;
 
 import java.util.List;
@@ -52,7 +53,8 @@ public class FilterEvaluationUtils {
 	}
 
 	private static boolean equalsEvaluation(DelegateFilterRule rule, Map<String, List<String>> inputQuery) {
-		return Optional.ofNullable(inputQuery.get(rule.getAttributeName())).orElse(emptyList()).contains(rule.getAttributeValue());
+		return Optional.ofNullable(inputQuery.get(rule.getAttributeName())).orElse(emptyList()).stream()
+			.anyMatch(queryStringValue -> equalsIgnoreCase(queryStringValue, rule.getAttributeValue()));
 	}
 
 	private static boolean notEqualsEvaluation(DelegateFilterRule rule, Map<String, List<String>> inputQuery) {

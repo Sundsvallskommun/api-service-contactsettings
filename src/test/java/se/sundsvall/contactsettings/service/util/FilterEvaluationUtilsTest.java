@@ -39,6 +39,19 @@ class FilterEvaluationUtilsTest {
 						DelegateFilterRule.create().withAttributeName("key1").withOperator("EQUALS").withAttributeValue("value2")))), true),
 
 			Arguments.of(
+				"Match with a single EQUALS-rule. Case insensitive",
+				Map.of(
+					"key1", List.of("VaLuE1", "VALUE2"),
+					"key2", List.of("value3", "Value4", "vaLue5")),
+				List.of(
+					DelegateFilterEntity.create().withFilterRules(List.of(
+						DelegateFilterRule.create().withAttributeName("key1").withOperator("EQUALS").withAttributeValue("value1"),
+						DelegateFilterRule.create().withAttributeName("key1").withOperator("EQUALS").withAttributeValue("value2"),
+						DelegateFilterRule.create().withAttributeName("key2").withOperator("EQUALS").withAttributeValue("value3"),
+						DelegateFilterRule.create().withAttributeName("key2").withOperator("EQUALS").withAttributeValue("value4"),
+						DelegateFilterRule.create().withAttributeName("key2").withOperator("EQUALS").withAttributeValue("VALUE5")))), true),
+
+			Arguments.of(
 				"Match with multiple EQUALS-rules in one filter",
 				Map.of(
 					"key1", List.of("value1", "value2"),
