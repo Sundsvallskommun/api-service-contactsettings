@@ -1,7 +1,6 @@
 package se.sundsvall.contactsettings.service;
 
 import static java.lang.String.format;
-import static java.util.Collections.emptyMap;
 import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
 import static org.zalando.problem.Status.NOT_FOUND;
@@ -70,12 +69,12 @@ public class ContactSettingsService {
 			.toList();
 	}
 
-	public List<ContactSetting> findByPartyIdAndFilter(final String partyId, final Map<String, List<String>> queryFilter) {
+	public List<ContactSetting> findByPartyIdAndFilter(final String partyId, final Map<String, List<String>> inputQuery) {
 		final var parent = contactSettingRepository.findByPartyId(partyId)
 			.orElseThrow(() -> Problem.valueOf(NOT_FOUND, String.format(ERROR_MESSAGE_CONTACT_SETTING_BY_PARTY_ID_NOT_FOUND, partyId)));
 
 		// Call the actual search-and-collect logic.
-		return searchAndCollectFromDelegateChain(parent, Optional.ofNullable(queryFilter).orElse(emptyMap()), new HashSet<>()).stream()
+		return searchAndCollectFromDelegateChain(parent, inputQuery, new HashSet<>()).stream()
 			.map(ContactSettingMapper::toContactSetting)
 			.toList();
 	}

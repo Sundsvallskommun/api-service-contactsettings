@@ -48,16 +48,12 @@ public class FilterEvaluationUtils {
 			.allMatch(rule -> switch (toEnum(rule.getOperator()))
 			{
 				case EQUALS -> equalsEvaluation(rule, inputQuery);
-				case NOT_EQUALS -> notEqualsEvaluation(rule, inputQuery);
+				case NOT_EQUALS -> !equalsEvaluation(rule, inputQuery);
 			});
 	}
 
 	private static boolean equalsEvaluation(DelegateFilterRule rule, Map<String, List<String>> inputQuery) {
 		return Optional.ofNullable(inputQuery.get(rule.getAttributeName())).orElse(emptyList()).stream()
 			.anyMatch(queryStringValue -> equalsIgnoreCase(queryStringValue, rule.getAttributeValue()));
-	}
-
-	private static boolean notEqualsEvaluation(DelegateFilterRule rule, Map<String, List<String>> inputQuery) {
-		return !equalsEvaluation(rule, inputQuery);
 	}
 }
