@@ -229,7 +229,7 @@ class DelegateResourceFailuresTest {
 		assertThat(response.getStatus()).isEqualTo(BAD_REQUEST);
 		assertThat(response.getViolations())
 			.extracting(Violation::getField, Violation::getMessage)
-			.containsExactlyInAnyOrder(tuple("findDelegatesParameters", "One of agentId or principalId must be provided!"));
+			.containsExactlyInAnyOrder(tuple("findDelegatesParameters", "At least one of agentId or principalId must be provided!"));
 
 		verifyNoInteractions(delegateServiceMock);
 	}

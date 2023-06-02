@@ -12,7 +12,7 @@ import se.sundsvall.contactsettings.api.model.enums.Operator;
 @Schema(description = "Filter rule model")
 public class Rule {
 
-	@Schema(description = "The attribute name, to apply the filter rule on", example = "facilityId", requiredMode = REQUIRED)
+	@Schema(description = "The attribute name to apply the filter rule on", example = "facilityId", requiredMode = REQUIRED)
 	@NotBlank
 	private String attributeName;
 
@@ -20,7 +20,7 @@ public class Rule {
 	@NotNull
 	private Operator operator;
 
-	@Schema(description = "The attribute value, to apply the filter rule on", example = "12345678", requiredMode = REQUIRED)
+	@Schema(description = "The attribute value to apply the filter rule on", example = "12345678", requiredMode = REQUIRED)
 	@NotBlank
 	private String attributeValue;
 

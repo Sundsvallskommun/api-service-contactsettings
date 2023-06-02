@@ -216,7 +216,7 @@ class ContactSettingsServiceTest {
 	}
 
 	@Test
-	void findByPartyIdAndFilter_noQueryProvided() {
+	void findByPartyIdAndQueryFilter_noQueryProvided() {
 
 		// Arrange
 		final var principalPartyId = randomUUID().toString();
@@ -242,7 +242,7 @@ class ContactSettingsServiceTest {
 		when(delegateRepositoryMock.findByPrincipalId(principal.getId())).thenReturn(List.of(delegate));
 
 		// Act
-		final var result = service.findByPartyIdAndFilter(principalPartyId, null);
+		final var result = service.findByPartyIdAndQueryFilter(principalPartyId, null);
 
 		// Assert
 		assertThat(result)
@@ -259,12 +259,12 @@ class ContactSettingsServiceTest {
 	}
 
 	@Test
-	void findByPartyIdAndFilter_queryWithWithFilterEqualsOperatorMatch() {
+	void findByPartyIdAndQueryFilter_queryWithWithFilterEqualsOperatorMatch() {
 
 		// Arrange
-		final var inputFilter = new LinkedMultiValueMap<String, String>();
-		inputFilter.put("key1", List.of("value1", "value2"));
-		inputFilter.put("key2", List.of("value3", "value4", "value5"));
+		final var inputQuery = new LinkedMultiValueMap<String, String>();
+		inputQuery.put("key1", List.of("value1", "value2"));
+		inputQuery.put("key2", List.of("value3", "value4", "value5"));
 
 		final var principalPartyId = randomUUID().toString();
 		final var agentPartyId = randomUUID().toString();
@@ -293,7 +293,7 @@ class ContactSettingsServiceTest {
 		when(delegateRepositoryMock.findByPrincipalId(principal.getId())).thenReturn(List.of(delegate));
 
 		// Act
-		final var result = service.findByPartyIdAndFilter(principalPartyId, inputFilter);
+		final var result = service.findByPartyIdAndQueryFilter(principalPartyId, inputQuery);
 
 		// Assert
 		assertThat(result)
@@ -310,12 +310,12 @@ class ContactSettingsServiceTest {
 	}
 
 	@Test
-	void findByPartyIdAndFilter_queryWithWithFilterNotEqualsOperatorMatch() {
+	void findByPartyIdAndQueryFilter_queryWithWithFilterNotEqualsOperatorMatch() {
 
 		// Arrange
-		final var inputFilter = new LinkedMultiValueMap<String, String>();
-		inputFilter.put("key1", List.of("value1", "value2"));
-		inputFilter.put("key2", List.of("value3", "value4", "value5"));
+		final var inputQuery = new LinkedMultiValueMap<String, String>();
+		inputQuery.put("key1", List.of("value1", "value2"));
+		inputQuery.put("key2", List.of("value3", "value4", "value5"));
 
 		final var principalPartyId = randomUUID().toString();
 		final var agentPartyId = randomUUID().toString();
@@ -343,7 +343,7 @@ class ContactSettingsServiceTest {
 		when(delegateRepositoryMock.findByPrincipalId(principal.getId())).thenReturn(List.of(delegate));
 
 		// Act
-		final var result = service.findByPartyIdAndFilter(principalPartyId, inputFilter);
+		final var result = service.findByPartyIdAndQueryFilter(principalPartyId, inputQuery);
 
 		// Assert
 		assertThat(result)
@@ -360,11 +360,11 @@ class ContactSettingsServiceTest {
 	}
 
 	@Test
-	void findByPartyIdAndFilter_queryWithNoFilterMatch() {
+	void findByPartyIdAndQueryFilter_queryWithNoFilterMatch() {
 
 		// Arrange
-		final var inputFilter = new LinkedMultiValueMap<String, String>();
-		inputFilter.put("unknown-key", List.of("unknown-value"));
+		final var inputQuery = new LinkedMultiValueMap<String, String>();
+		inputQuery.put("unknown-key", List.of("unknown-value"));
 
 		final var principalPartyId = randomUUID().toString();
 		final var agentPartyId = randomUUID().toString();
@@ -393,7 +393,7 @@ class ContactSettingsServiceTest {
 		when(delegateRepositoryMock.findByPrincipalId(principal.getId())).thenReturn(List.of(delegate));
 
 		// Act
-		final var result = service.findByPartyIdAndFilter(principalPartyId, inputFilter);
+		final var result = service.findByPartyIdAndQueryFilter(principalPartyId, inputQuery);
 
 		// Assert
 		assertThat(result)
@@ -408,7 +408,7 @@ class ContactSettingsServiceTest {
 	}
 
 	@Test
-	void findByPartyIdAndFilter_circularReferences() {
+	void findByPartyIdAndQueryFilter_circularReferences() {
 
 		// Arrange
 		final var principalPartyId = randomUUID().toString();
@@ -439,7 +439,7 @@ class ContactSettingsServiceTest {
 		when(delegateRepositoryMock.findByPrincipalId(agent.getId())).thenReturn(List.of(delegate2));
 
 		// Act
-		final var result = service.findByPartyIdAndFilter(principalPartyId, null);
+		final var result = service.findByPartyIdAndQueryFilter(principalPartyId, null);
 
 		// Assert
 		assertThat(result)
@@ -456,14 +456,14 @@ class ContactSettingsServiceTest {
 	}
 
 	@Test
-	void findByPartyIdAndFilterNotFound() {
+	void findByPartyIdAndQueryFilterNotFound() {
 
 		// Arrange
 		final var partyId = randomUUID().toString();
 		when(contactSettingRepositoryMock.findByPartyId(any())).thenReturn(empty());
 
 		// Act
-		final var exception = assertThrows(ThrowableProblem.class, () -> service.findByPartyIdAndFilter(partyId, null));
+		final var exception = assertThrows(ThrowableProblem.class, () -> service.findByPartyIdAndQueryFilter(partyId, null));
 
 		// Assert
 		assertThat(exception.getStatus()).isEqualTo(NOT_FOUND);

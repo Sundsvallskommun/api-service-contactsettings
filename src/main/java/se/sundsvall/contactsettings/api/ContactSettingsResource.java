@@ -80,7 +80,7 @@ public class ContactSettingsResource {
 
 	@DeleteMapping(path = "/{id}", produces = APPLICATION_PROBLEM_JSON_VALUE)
 	@Operation(summary = "Delete contact setting")
-	@ApiResponse(responseCode = "204", description = "Successful operation")
+	@ApiResponse(responseCode = "204", description = "Successful operation", useReturnTypeSchema = true)
 	@ApiResponse(responseCode = "400", description = "Bad request", content = @Content(schema = @Schema(oneOf = { Problem.class, ConstraintViolationProblem.class })))
 	@ApiResponse(responseCode = "404", description = "Not found", content = @Content(schema = @Schema(implementation = Problem.class)))
 	@ApiResponse(responseCode = "500", description = "Internal Server error", content = @Content(schema = @Schema(implementation = Problem.class)))
@@ -92,7 +92,7 @@ public class ContactSettingsResource {
 	}
 
 	@GetMapping(path = "/{id}", produces = { APPLICATION_JSON_VALUE, APPLICATION_PROBLEM_JSON_VALUE })
-	@Operation(summary = "Get contact setting")
+	@Operation(summary = "Read contact setting")
 	@ApiResponse(responseCode = "200", description = "Successful operation", useReturnTypeSchema = true)
 	@ApiResponse(responseCode = "400", description = "Bad request", content = @Content(mediaType = APPLICATION_PROBLEM_JSON_VALUE, schema = @Schema(oneOf = { Problem.class, ConstraintViolationProblem.class })))
 	@ApiResponse(responseCode = "404", description = "Not found", content = @Content(mediaType = APPLICATION_PROBLEM_JSON_VALUE, schema = @Schema(implementation = Problem.class)))
@@ -104,7 +104,7 @@ public class ContactSettingsResource {
 	}
 
 	@GetMapping(path = "/{id}/children", produces = { APPLICATION_JSON_VALUE, APPLICATION_PROBLEM_JSON_VALUE })
-	@Operation(summary = "Get virtual contact settings created by the instance idenitifed with the provided ID.")
+	@Operation(summary = "Read virtual contact settings created by the instance idenitifed with the provided ID.")
 	@ApiResponse(responseCode = "200", description = "Successful operation", useReturnTypeSchema = true)
 	@ApiResponse(responseCode = "400", description = "Bad request", content = @Content(mediaType = APPLICATION_PROBLEM_JSON_VALUE, schema = @Schema(oneOf = { Problem.class, ConstraintViolationProblem.class })))
 	@ApiResponse(responseCode = "404", description = "Not found", content = @Content(mediaType = APPLICATION_PROBLEM_JSON_VALUE, schema = @Schema(implementation = Problem.class)))
@@ -116,19 +116,19 @@ public class ContactSettingsResource {
 	}
 
 	@GetMapping(produces = { APPLICATION_JSON_VALUE, APPLICATION_PROBLEM_JSON_VALUE })
-	@Operation(summary = "Find contact setting chain (including all delegates). Filter chain by the filter-parameter.")
+	@Operation(summary = "Find contact setting chain (including all delegates). Filter chain by the query-parameter.")
 	@ApiResponse(responseCode = "200", description = "Successful operation", useReturnTypeSchema = true)
 	@ApiResponse(responseCode = "400", description = "Bad request", content = @Content(mediaType = APPLICATION_PROBLEM_JSON_VALUE, schema = @Schema(oneOf = { Problem.class, ConstraintViolationProblem.class })))
 	@ApiResponse(responseCode = "404", description = "Not found", content = @Content(mediaType = APPLICATION_PROBLEM_JSON_VALUE, schema = @Schema(implementation = Problem.class)))
 	@ApiResponse(responseCode = "500", description = "Internal Server error", content = @Content(mediaType = APPLICATION_PROBLEM_JSON_VALUE, schema = @Schema(implementation = Problem.class)))
-	public ResponseEntity<List<ContactSetting>> findByPartyIdAndFilter(
+	public ResponseEntity<List<ContactSetting>> findByPartyIdAndQueryFilter(
 		@Parameter(name = "partyId", description = "Party-ID", example = "81471222-5798-11e9-ae24-57fa13b361e1") @ValidUuid @RequestParam("partyId") String partyId,
-		@Parameter(name = "filter", description = "Delegate filter. Only delegates that matches the specified filter will be included in the result.") @RequestParam final MultiValueMap<String, String> filter) {
+		@Parameter(name = "query", description = "Filter query parameters. Only delegates that matches (i.e. has matching delegate filters) the specified query will be included in the result.") @RequestParam final MultiValueMap<String, String> query) {
 
-		// "filter" contains ALL queryParams, Since "partyId" is also a queryParam it will end up in the filter as well. Remove!
-		Optional.ofNullable(filter).ifPresent(map -> map.remove("partyId"));
+		// "query" contains ALL queryParams, Since "partyId" is also a queryParam it will end up in the filter as well. Remove!
+		Optional.ofNullable(query).ifPresent(map -> map.remove("partyId"));
 
-		return ok(contactSettingsService.findByPartyIdAndFilter(partyId, filter));
+		return ok(contactSettingsService.findByPartyIdAndQueryFilter(partyId, query));
 	}
 
 	@GetMapping(path = "/contact-channels", produces = { APPLICATION_JSON_VALUE, APPLICATION_PROBLEM_JSON_VALUE })

@@ -69,7 +69,7 @@ public class ContactSettingsService {
 			.toList();
 	}
 
-	public List<ContactSetting> findByPartyIdAndFilter(final String partyId, final Map<String, List<String>> inputQuery) {
+	public List<ContactSetting> findByPartyIdAndQueryFilter(final String partyId, final Map<String, List<String>> inputQuery) {
 		final var parent = contactSettingRepository.findByPartyId(partyId)
 			.orElseThrow(() -> Problem.valueOf(NOT_FOUND, String.format(ERROR_MESSAGE_CONTACT_SETTING_BY_PARTY_ID_NOT_FOUND, partyId)));
 

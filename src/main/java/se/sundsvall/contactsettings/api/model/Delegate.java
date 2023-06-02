@@ -14,13 +14,13 @@ import io.swagger.v3.oas.annotations.media.Schema;
 @Schema(description = "Delegate model", accessMode = READ_ONLY)
 public class Delegate {
 
-	@Schema(description = "Unique id for the delegate", example = "0d64c132-3aea-11ec-8d3d-0242ac130003", accessMode = READ_ONLY)
+	@Schema(description = "ID of the delegate", example = "0d64c132-3aea-11ec-8d3d-0242ac130003", accessMode = READ_ONLY)
 	private String id;
 
-	@Schema(description = "Unique id for the delegate principal (owner)", example = "0d64c132-3aea-11ec-8d3d-0242ac130003", accessMode = READ_ONLY)
+	@Schema(description = "Contact setting ID of the delegate principal (owner)", example = "0d64c132-3aea-11ec-8d3d-0242ac130003", accessMode = READ_ONLY)
 	private String principalId;
 
-	@Schema(description = "Unique id for the delegate agent", example = "0d64c132-3aea-11ec-8d3d-0242ac130003", accessMode = READ_ONLY)
+	@Schema(description = "Contact setting ID of the delegate agent", example = "0d64c132-3aea-11ec-8d3d-0242ac130003", accessMode = READ_ONLY)
 	private String agentId;
 
 	@Schema(description = "Timestamp when delegate was created", example = "2000-10-31T01:30:00.000+02:00", accessMode = READ_ONLY)
@@ -31,7 +31,11 @@ public class Delegate {
 	@DateTimeFormat(iso = ISO.DATE_TIME)
 	private OffsetDateTime modified;
 
-	@Schema(description = "Filters used by this delegate")
+	@Schema(description = """
+		The delegate filters.
+		If more than one filter exists, there will be an implicit OR-condition between the filters.
+		I.e. at least one filter must evaluate to true in order to delegate anything.
+		If the filter list is empty, everything will be delegated.""")
 	private List<Filter> filters;
 
 	public static Delegate create() {

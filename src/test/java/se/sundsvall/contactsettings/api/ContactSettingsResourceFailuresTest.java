@@ -356,7 +356,7 @@ class ContactSettingsResourceFailuresTest {
 	}
 
 	@Test
-	void findByPartyIdAndFilterWithInvalidPartyId() {
+	void findByPartyIdAndQueryFilterWithInvalidPartyId() {
 
 		// Act
 		final var response = webTestClient.get()
@@ -376,13 +376,13 @@ class ContactSettingsResourceFailuresTest {
 		assertThat(response.getStatus()).isEqualTo(BAD_REQUEST);
 		assertThat(response.getViolations())
 			.extracting(Violation::getField, Violation::getMessage)
-			.containsExactlyInAnyOrder(tuple("findByPartyIdAndFilter.partyId", "not a valid UUID"));
+			.containsExactlyInAnyOrder(tuple("findByPartyIdAndQueryFilter.partyId", "not a valid UUID"));
 
 		verifyNoInteractions(contactSettingsServiceMock);
 	}
 
 	@Test
-	void findByPartyIdAndFilterWithMissingPartyId() {
+	void findByPartyIdAndQueryFilterWithMissingPartyId() {
 
 		// Act
 		final var response = webTestClient.get()

@@ -12,11 +12,11 @@ import se.sundsvall.dept44.common.validators.annotation.ValidUuid;
 @Schema(description = "Delegate create request model")
 public class DelegateCreateRequest {
 
-	@Schema(description = "Contact settings ID of the delegate principal (owner)", example = "0d64c132-3aea-11ec-8d3d-0242ac130003", requiredMode = REQUIRED)
+	@Schema(description = "Contact setting ID of the delegate principal (owner)", example = "0d64c132-3aea-11ec-8d3d-0242ac130003", requiredMode = REQUIRED)
 	@ValidUuid
 	private String principalId;
 
-	@Schema(description = "Contact settings ID of the delegate agent", example = "4a758ca4-6df5-43f4-a7ce-612f51f9da09", requiredMode = REQUIRED)
+	@Schema(description = "Contact setting ID of the delegate agent", example = "4a758ca4-6df5-43f4-a7ce-612f51f9da09", requiredMode = REQUIRED)
 	@ValidUuid
 	private String agentId;
 

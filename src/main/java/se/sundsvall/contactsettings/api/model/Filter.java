@@ -17,7 +17,7 @@ import jakarta.validation.constraints.NotEmpty;
 @Schema(description = "Filter model")
 public class Filter {
 
-	@Schema(description = "The filter id", example = "5d8403b1-1bf0-4cb1-b39e-c7c504d501a1", accessMode = READ_ONLY)
+	@Schema(description = "ID of the filter", example = "5d8403b1-1bf0-4cb1-b39e-c7c504d501a1", accessMode = READ_ONLY)
 	private String id;
 
 	@Schema(description = "The filter alias", example = "My filter for delegating messages to my friend", requiredMode = REQUIRED)
@@ -31,7 +31,10 @@ public class Filter {
 	@DateTimeFormat(iso = ISO.DATE_TIME)
 	private OffsetDateTime modified;
 
-	@Schema(description = "The filter rules. If more than one rule exists there will be an implicit AND-condition between the rules. I.e. all rules must evaluate to true in order to pass the filter.")
+	@Schema(description = """
+		The filter rules.
+		If more than one rule exists, there will be an implicit AND-condition between the rules.
+		I.e. all rules must evaluate to true in order to pass the filter.""")
 	@NotEmpty
 	private List<@Valid Rule> rules;
 

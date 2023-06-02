@@ -14,10 +14,10 @@ import io.swagger.v3.oas.annotations.media.Schema;
 @Schema(description = "Contact setting model", accessMode = READ_ONLY)
 public class ContactSetting {
 
-	@Schema(description = "ID for the contact setting", example = "0d64c132-3aea-11ec-8d3d-0242ac130003", accessMode = READ_ONLY)
+	@Schema(description = "ID of the contact setting", example = "0d64c132-3aea-11ec-8d3d-0242ac130003", accessMode = READ_ONLY)
 	private String id;
 
-	@Schema(description = "ID for the person or organization to whom the contact setting applies", example = "15aee472-46ab-4f03-9605-68bd64ebc73f", accessMode = READ_ONLY)
+	@Schema(description = "ID of the person or organization to whom the contact setting applies", example = "15aee472-46ab-4f03-9605-68bd64ebc73f", accessMode = READ_ONLY)
 	private String partyId;
 
 	@Schema(description = "ID of the contact setting that created this instance. Applicable for virtual contact settings.", example = "9ca9425e-42cf-4145-a9e7-d77e1ea9e5b0", accessMode = READ_ONLY)
@@ -29,7 +29,7 @@ public class ContactSetting {
 	@Schema(description = "Shows if the contact setting is virtual or not. A virtual instance doesn't have a partyId (i.e. doesn't have a direct relation to a real person/organization)", example = "false", accessMode = READ_ONLY)
 	private boolean virtual;
 
-	@Schema(description = "List of contact channels which are connected to the contact setting", accessMode = READ_ONLY)
+	@Schema(description = "List of contact channels connected to the contact setting", accessMode = READ_ONLY)
 	private List<ContactChannel> contactChannels;
 
 	@Schema(description = "Timestamp when delegate was created", example = "2000-10-31T01:30:00.000+02:00", accessMode = READ_ONLY)
