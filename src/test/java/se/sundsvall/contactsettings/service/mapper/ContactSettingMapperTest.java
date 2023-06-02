@@ -1,18 +1,19 @@
 package se.sundsvall.contactsettings.service.mapper;
 
+import static java.time.temporal.ChronoUnit.SECONDS;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.within;
+
+import java.time.OffsetDateTime;
+import java.util.List;
+
 import org.junit.jupiter.api.Test;
+
 import se.sundsvall.contactsettings.api.model.ContactSettingCreateRequest;
 import se.sundsvall.contactsettings.api.model.ContactSettingUpdateRequest;
 import se.sundsvall.contactsettings.api.model.enums.ContactMethod;
 import se.sundsvall.contactsettings.integration.db.model.Channel;
 import se.sundsvall.contactsettings.integration.db.model.ContactSettingEntity;
-
-import java.time.OffsetDateTime;
-import java.util.List;
-
-import static java.time.temporal.ChronoUnit.SECONDS;
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.within;
 
 class ContactSettingMapperTest {
 
@@ -98,7 +99,7 @@ class ContactSettingMapperTest {
 				.withContactMethod(ContactMethod.valueOf(contactMethod))));
 
 		// Call
-		final var result = ContactSettingMapper.toContactSettingEntityFromCreateRequest(contactSettingCreateRequest);
+		final var result = ContactSettingMapper.toContactSettingEntity(contactSettingCreateRequest);
 
 		// Assert
 		assertThat(result).isNotNull();
@@ -114,7 +115,7 @@ class ContactSettingMapperTest {
 	@Test
 	void toContactSettingEntityFromContactSettingCreateRequestWhenNull() {
 		// Call
-		final var result = ContactSettingMapper.toContactSettingEntityFromCreateRequest(null);
+		final var result = ContactSettingMapper.toContactSettingEntity((ContactSettingCreateRequest) null);
 
 		// Assert
 		assertThat(result).isNull();
@@ -123,7 +124,7 @@ class ContactSettingMapperTest {
 	@Test
 	void toContactSettingEntityFromContactSettingCreateRequestWhenEmpty() {
 		// Call
-		final var result = ContactSettingMapper.toContactSettingEntityFromCreateRequest(ContactSettingCreateRequest.create());
+		final var result = ContactSettingMapper.toContactSettingEntity(ContactSettingCreateRequest.create());
 
 		// Assert
 		assertThat(result).isNotNull();
@@ -150,7 +151,7 @@ class ContactSettingMapperTest {
 				.withContactMethod(ContactMethod.valueOf(contactMethod))));
 
 		// Call
-		final var result = ContactSettingMapper.toContactSettingEntityFromUpdateRequest(contactSettingCreateRequest);
+		final var result = ContactSettingMapper.toContactSettingEntity(contactSettingCreateRequest);
 
 		// Assert
 		assertThat(result).isNotNull();
@@ -164,7 +165,7 @@ class ContactSettingMapperTest {
 	@Test
 	void toContactSettingEntityFromContactSettingUpdateRequestWhenNull() {
 		// Call
-		final var result = ContactSettingMapper.toContactSettingEntityFromUpdateRequest(null);
+		final var result = ContactSettingMapper.toContactSettingEntity((ContactSettingUpdateRequest) null);
 
 		// Assert
 		assertThat(result).isNull();
@@ -173,7 +174,7 @@ class ContactSettingMapperTest {
 	@Test
 	void toContactSettingEntityFromContactSettingUpdateRequestWhenEmpty() {
 		// Call
-		final var result = ContactSettingMapper.toContactSettingEntityFromUpdateRequest(ContactSettingUpdateRequest.create());
+		final var result = ContactSettingMapper.toContactSettingEntity(ContactSettingUpdateRequest.create());
 
 		// Assert
 		assertThat(result).isNotNull();

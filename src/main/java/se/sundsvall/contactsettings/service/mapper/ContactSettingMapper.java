@@ -18,7 +18,7 @@ public class ContactSettingMapper {
 
 	private ContactSettingMapper() {}
 
-	public static ContactSettingEntity toContactSettingEntityFromCreateRequest(final ContactSettingCreateRequest contactSettingCreateRequest) {
+	public static ContactSettingEntity toContactSettingEntity(final ContactSettingCreateRequest contactSettingCreateRequest) {
 		return Optional.ofNullable(contactSettingCreateRequest)
 			.map(request -> ContactSettingEntity.create()
 				.withPartyId(request.getPartyId())
@@ -28,7 +28,8 @@ public class ContactSettingMapper {
 			.orElse(null);
 	}
 
-	public static ContactSettingEntity toContactSettingEntityFromUpdateRequest(final ContactSettingUpdateRequest contactSettingUpdateRequest) {
+	// TODO: Gör en merge-metod istället
+	public static ContactSettingEntity toContactSettingEntity(final ContactSettingUpdateRequest contactSettingUpdateRequest) {
 		return Optional.ofNullable(contactSettingUpdateRequest)
 			.map(request -> ContactSettingEntity.create()
 				.withChannels(toChannels(request.getContactChannels()))

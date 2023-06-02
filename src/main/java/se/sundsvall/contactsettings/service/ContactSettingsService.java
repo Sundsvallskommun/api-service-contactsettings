@@ -8,8 +8,7 @@ import static se.sundsvall.contactsettings.service.Constants.ERROR_MESSAGE_CONTA
 import static se.sundsvall.contactsettings.service.Constants.ERROR_MESSAGE_CONTACT_SETTING_BY_PARTY_ID_NOT_FOUND;
 import static se.sundsvall.contactsettings.service.Constants.ERROR_MESSAGE_CONTACT_SETTING_NOT_FOUND;
 import static se.sundsvall.contactsettings.service.mapper.ContactSettingMapper.toContactSetting;
-import static se.sundsvall.contactsettings.service.mapper.ContactSettingMapper.toContactSettingEntityFromCreateRequest;
-import static se.sundsvall.contactsettings.service.mapper.ContactSettingMapper.toContactSettingEntityFromUpdateRequest;
+import static se.sundsvall.contactsettings.service.mapper.ContactSettingMapper.toContactSettingEntity;
 import static se.sundsvall.contactsettings.service.util.FilterEvaluationUtils.evaluate;
 
 import java.util.HashSet;
@@ -48,7 +47,7 @@ public class ContactSettingsService {
 			}
 		});
 
-		return contactSettingRepository.save(toContactSettingEntityFromCreateRequest(contactSettingCreateRequest)).getId();
+		return contactSettingRepository.save(toContactSettingEntity(contactSettingCreateRequest)).getId();
 	}
 
 	public ContactSetting readContactSetting(final String id) {
@@ -94,7 +93,7 @@ public class ContactSettingsService {
 	public ContactSetting updateContactSetting(final String id, final ContactSettingUpdateRequest contactSettingUpdateRequest) {
 		verifyThatContactSettingExists(id);
 
-		return toContactSetting(contactSettingRepository.save(toContactSettingEntityFromUpdateRequest(contactSettingUpdateRequest)));
+		return toContactSetting(contactSettingRepository.save(toContactSettingEntity(contactSettingUpdateRequest)));
 	}
 
 	public void deleteContactSetting(final String id) {
