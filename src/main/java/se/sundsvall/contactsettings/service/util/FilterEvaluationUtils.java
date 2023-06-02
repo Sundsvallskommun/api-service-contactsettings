@@ -19,31 +19,31 @@ public class FilterEvaluationUtils {
 
 	/**
 	 * Evaluates the inputQuery against a list of DelegateFilter:s.
-	 * At least one of the filters must evaluate to true, for the entire filter list-evaluation to be true (OR-condition).
+	 * At least one filter in the filter list must evaluate to true, for the entire evaluation to be true (OR-condition).
 	 *
-	 * If any of the input arguments is empty, then this method will evaluate as true.
+	 * If any of the input arguments are empty, this method will evaluate to true.
 	 *
 	 * @param inputQuery      the input query.
 	 * @param delegateFilters the list of the defined filters.
 	 * @return whether the filter matches the query or not.
 	 */
-	public static boolean evaluateFilters(final Map<String, List<String>> inputQuery, List<DelegateFilterEntity> delegateFilters) {
+	public static boolean evaluate(final Map<String, List<String>> inputQuery, List<DelegateFilterEntity> delegateFilters) {
 		if (isEmpty(delegateFilters) || isEmpty(inputQuery)) {
 			return true;
 		}
-		return delegateFilters.stream().anyMatch(delegateFilter -> evaluateFilter(inputQuery, delegateFilter));
+		return delegateFilters.stream().anyMatch(delegateFilter -> evaluate(inputQuery, delegateFilter));
 	}
 
 	/**
 	 * Evaluates the inputQuery against the rules in a single DelegateFilter.
 	 *
-	 * All rules in the filter must evaluate to true, for the entire filter evaluation to be true (AND-condition).
+	 * All rules in the filter must evaluate to true, for the entire evaluation to be true (AND-condition).
 	 *
 	 * @param inputQuery     the input query.
 	 * @param delegateFilter the defined filter.
 	 * @return whether the filter matches the query or not.
 	 */
-	private static boolean evaluateFilter(final Map<String, List<String>> inputQuery, DelegateFilterEntity delegateFilter) {
+	private static boolean evaluate(final Map<String, List<String>> inputQuery, DelegateFilterEntity delegateFilter) {
 		return Optional.ofNullable(delegateFilter.getFilterRules()).orElse(emptyList()).stream()
 			.allMatch(rule -> switch (toEnum(rule.getOperator()))
 			{

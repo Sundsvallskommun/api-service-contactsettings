@@ -10,7 +10,7 @@ import static se.sundsvall.contactsettings.service.Constants.ERROR_MESSAGE_CONTA
 import static se.sundsvall.contactsettings.service.mapper.ContactSettingMapper.toContactSetting;
 import static se.sundsvall.contactsettings.service.mapper.ContactSettingMapper.toContactSettingEntityFromCreateRequest;
 import static se.sundsvall.contactsettings.service.mapper.ContactSettingMapper.toContactSettingEntityFromUpdateRequest;
-import static se.sundsvall.contactsettings.service.util.FilterEvaluationUtils.evaluateFilters;
+import static se.sundsvall.contactsettings.service.util.FilterEvaluationUtils.evaluate;
 
 import java.util.HashSet;
 import java.util.List;
@@ -84,7 +84,7 @@ public class ContactSettingsService {
 		return Stream.concat(
 			Stream.of(contactSetting), // This will ensure that returned list always contains the provided contactSetting.
 			delegateRepository.findByPrincipalId(contactSetting.getId()).stream() // Find all agents for this contactSetting.
-				.filter(delegate -> evaluateFilters(inputQuery, delegate.getFilters())) // Evaluate inputQuery against delegate filters.
+				.filter(delegate -> evaluate(inputQuery, delegate.getFilters())) // Evaluate inputQuery against delegate filters.
 				.map(DelegateEntity::getAgent) // Extract agent from delegate.
 				.filter(agent -> !lookupRegistry.contains(agent.getId())) // The lookupRegistry must not already contain the ID of this agent (prevent circular references).
 				.flatMap(agent -> searchAndCollectFromDelegateChain(agent, inputQuery, lookupRegistry).stream())) // Recurse.

@@ -22,28 +22,24 @@ public class DelegateMapper {
 	private DelegateMapper() {}
 
 	public static Delegate toDelegate(final DelegateEntity delegateEntity) {
-		if (isNull(delegateEntity)) {
-			return null;
-		}
-
-		return Delegate.create()
-			.withAgentId(Optional.ofNullable(delegateEntity.getAgent()).orElse(ContactSettingEntity.create()).getId())
-			.withCreated(delegateEntity.getCreated())
-			.withFilters(toFilterList(delegateEntity.getFilters()))
-			.withId(delegateEntity.getId())
-			.withModified(delegateEntity.getModified())
-			.withPrincipalId(Optional.ofNullable(delegateEntity.getPrincipal()).orElse(ContactSettingEntity.create()).getId());
+		return Optional.ofNullable(delegateEntity)
+			.map(entity -> Delegate.create()
+				.withAgentId(Optional.ofNullable(entity.getAgent()).orElse(ContactSettingEntity.create()).getId())
+				.withCreated(entity.getCreated())
+				.withFilters(toFilterList(entity.getFilters()))
+				.withId(entity.getId())
+				.withModified(entity.getModified())
+				.withPrincipalId(Optional.ofNullable(entity.getPrincipal()).orElse(ContactSettingEntity.create()).getId()))
+			.orElse(null);
 	}
 
 	public static DelegateEntity toDelegateEntity(final DelegateCreateRequest delegateCreateRequest) {
-		if (isNull(delegateCreateRequest)) {
-			return null;
-		}
-
-		return DelegateEntity.create()
-			.withAgent(ContactSettingEntity.create().withId(delegateCreateRequest.getAgentId()))
-			.withFilters(toDelegateFilterEntityList(delegateCreateRequest.getFilters()))
-			.withPrincipal(ContactSettingEntity.create().withId(delegateCreateRequest.getPrincipalId()));
+		return Optional.ofNullable(delegateCreateRequest)
+			.map(request -> DelegateEntity.create()
+				.withAgent(ContactSettingEntity.create().withId(request.getAgentId()))
+				.withFilters(toDelegateFilterEntityList(request.getFilters()))
+				.withPrincipal(ContactSettingEntity.create().withId(request.getPrincipalId())))
+			.orElse(null);
 	}
 
 	public static DelegateFilterEntity mergeIntoDelegateFilterEntity(final DelegateFilterEntity existingDelegateFilterEntity, final Filter filter) {

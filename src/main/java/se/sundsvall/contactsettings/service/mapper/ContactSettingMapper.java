@@ -19,41 +19,35 @@ public class ContactSettingMapper {
 	private ContactSettingMapper() {}
 
 	public static ContactSettingEntity toContactSettingEntityFromCreateRequest(final ContactSettingCreateRequest contactSettingCreateRequest) {
-		if (isNull(contactSettingCreateRequest)) {
-			return null;
-		}
-
-		return ContactSettingEntity.create()
-			.withPartyId(contactSettingCreateRequest.getPartyId())
-			.withChannels(toChannels(contactSettingCreateRequest.getContactChannels()))
-			.withAlias(contactSettingCreateRequest.getAlias())
-			.withCreatedById(contactSettingCreateRequest.getCreatedById());
+		return Optional.ofNullable(contactSettingCreateRequest)
+			.map(request -> ContactSettingEntity.create()
+				.withPartyId(request.getPartyId())
+				.withChannels(toChannels(request.getContactChannels()))
+				.withAlias(request.getAlias())
+				.withCreatedById(request.getCreatedById()))
+			.orElse(null);
 	}
 
 	public static ContactSettingEntity toContactSettingEntityFromUpdateRequest(final ContactSettingUpdateRequest contactSettingUpdateRequest) {
-		if (isNull(contactSettingUpdateRequest)) {
-			return null;
-		}
-
-		return ContactSettingEntity.create()
-			.withChannels(toChannels(contactSettingUpdateRequest.getContactChannels()))
-			.withAlias(contactSettingUpdateRequest.getAlias());
+		return Optional.ofNullable(contactSettingUpdateRequest)
+			.map(request -> ContactSettingEntity.create()
+				.withChannels(toChannels(request.getContactChannels()))
+				.withAlias(request.getAlias()))
+			.orElse(null);
 	}
 
 	public static ContactSetting toContactSetting(final ContactSettingEntity contactSettingEntity) {
-		if (isNull(contactSettingEntity)) {
-			return null;
-		}
-
-		return ContactSetting.create()
-			.withId(contactSettingEntity.getId())
-			.withPartyId(contactSettingEntity.getPartyId())
-			.withContactChannels(toContactChannels(contactSettingEntity.getChannels()))
-			.withVirtual(isNull(contactSettingEntity.getPartyId()))
-			.withAlias(contactSettingEntity.getAlias())
-			.withCreated(contactSettingEntity.getCreated())
-			.withModified(contactSettingEntity.getModified())
-			.withCreatedById(contactSettingEntity.getCreatedById());
+		return Optional.ofNullable(contactSettingEntity)
+			.map(entity -> ContactSetting.create()
+				.withId(entity.getId())
+				.withPartyId(entity.getPartyId())
+				.withContactChannels(toContactChannels(entity.getChannels()))
+				.withVirtual(isNull(entity.getPartyId()))
+				.withAlias(entity.getAlias())
+				.withCreated(entity.getCreated())
+				.withModified(entity.getModified())
+				.withCreatedById(entity.getCreatedById()))
+			.orElse(null);
 	}
 
 	private static List<ContactChannel> toContactChannels(final List<Channel> channels) {

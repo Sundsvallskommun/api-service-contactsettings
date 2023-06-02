@@ -17,13 +17,13 @@ class FilterEvaluationUtilsTest {
 
 	@ParameterizedTest
 	@MethodSource("filterMatchesArgumentsProvider")
-	void filterMatches(String description, Map<String, List<String>> inputFilter, List<DelegateFilterEntity> delegateFilters, boolean expectedMatch) {
+	void filterMatches(String description, Map<String, List<String>> inputFilter, List<DelegateFilterEntity> delegateFilters, boolean expectedEvaluationResult) {
 
 		// Act
-		final var result = FilterEvaluationUtils.evaluateFilters(inputFilter, delegateFilters);
+		final var result = FilterEvaluationUtils.evaluate(inputFilter, delegateFilters);
 
 		// Assert
-		assertThat(result).as(description).isEqualTo(expectedMatch);
+		assertThat(result).as(description).isEqualTo(expectedEvaluationResult);
 	}
 
 	private static Stream<Arguments> filterMatchesArgumentsProvider() {
