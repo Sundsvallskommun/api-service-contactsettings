@@ -1,18 +1,17 @@
 package se.sundsvall.contactsettings.service;
 
 import static java.lang.String.format;
-import static java.util.Collections.emptyList;
 import static java.util.Collections.emptyMap;
 import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
 import static org.zalando.problem.Status.NOT_FOUND;
-import static se.sundsvall.contactsettings.api.model.enums.Operator.toEnum;
 import static se.sundsvall.contactsettings.service.Constants.ERROR_MESSAGE_CONTACT_SETTING_BY_PARTY_ALREADY_EXISTS;
 import static se.sundsvall.contactsettings.service.Constants.ERROR_MESSAGE_CONTACT_SETTING_BY_PARTY_ID_NOT_FOUND;
 import static se.sundsvall.contactsettings.service.Constants.ERROR_MESSAGE_CONTACT_SETTING_NOT_FOUND;
 import static se.sundsvall.contactsettings.service.mapper.ContactSettingMapper.toContactSetting;
 import static se.sundsvall.contactsettings.service.mapper.ContactSettingMapper.toContactSettingEntityFromCreateRequest;
 import static se.sundsvall.contactsettings.service.mapper.ContactSettingMapper.toContactSettingEntityFromUpdateRequest;
+import static se.sundsvall.contactsettings.service.util.FilterEvaluationUtils.evaluateFilters;
 
 import java.util.HashSet;
 import java.util.List;
@@ -32,7 +31,6 @@ import se.sundsvall.contactsettings.integration.db.ContactSettingRepository;
 import se.sundsvall.contactsettings.integration.db.DelegateRepository;
 import se.sundsvall.contactsettings.integration.db.model.ContactSettingEntity;
 import se.sundsvall.contactsettings.integration.db.model.DelegateEntity;
-import se.sundsvall.contactsettings.integration.db.model.DelegateFilterEntity;
 import se.sundsvall.contactsettings.service.mapper.ContactSettingMapper;
 
 @Service
@@ -82,27 +80,16 @@ public class ContactSettingsService {
 			.toList();
 	}
 
-	private List<ContactSettingEntity> searchAndCollectFromDelegateChain(ContactSettingEntity contactSetting, final Map<String, List<String>> queryFilter, HashSet<String> lookupRegistry) {
+	private List<ContactSettingEntity> searchAndCollectFromDelegateChain(ContactSettingEntity contactSetting, final Map<String, List<String>> inputQuery, HashSet<String> lookupRegistry) {
 		lookupRegistry.add(contactSetting.getId()); // Add contactSetting to lookupRegistry.
 		return Stream.concat(
 			Stream.of(contactSetting), // This will ensure that returned list always contains the provided contactSetting.
 			delegateRepository.findByPrincipalId(contactSetting.getId()).stream() // Find all agents for this contactSetting.
-				.filter(delegate -> filtersMatches(queryFilter, Optional.ofNullable(delegate.getFilters()).orElse(emptyList()))) // Filter must match provided filter.
+				.filter(delegate -> evaluateFilters(inputQuery, delegate.getFilters())) // Evaluate inputQuery against delegate filters.
 				.map(DelegateEntity::getAgent) // Extract agent from delegate.
 				.filter(agent -> !lookupRegistry.contains(agent.getId())) // The lookupRegistry must not already contain the ID of this agent (prevent circular references).
-				.flatMap(agent -> searchAndCollectFromDelegateChain(agent, queryFilter, lookupRegistry).stream())) // Recurse.
+				.flatMap(agent -> searchAndCollectFromDelegateChain(agent, inputQuery, lookupRegistry).stream())) // Recurse.
 			.toList();
-	}
-
-	public boolean filtersMatches(final Map<String, List<String>> queryFilter, List<DelegateFilterEntity> delegateFilters) {
-		return delegateFilters.stream().allMatch(delegateFilter -> filterMatches(queryFilter, delegateFilter));
-	}
-
-	private boolean filterMatches(final Map<String, List<String>> queryFilter, DelegateFilterEntity delegateFilter) {
-		return delegateFilter.getFilterRules().stream().allMatch(rule -> switch (toEnum(rule.getOperator())) {
-			case EQUALS -> Optional.ofNullable(queryFilter.get(rule.getAttributeName())).orElse(emptyList()).contains(rule.getAttributeValue());
-			case NOT_EQUALS -> !Optional.ofNullable(queryFilter.get(rule.getAttributeName())).orElse(emptyList()).contains(rule.getAttributeValue());
-		});
 	}
 
 	public ContactSetting updateContactSetting(final String id, final ContactSettingUpdateRequest contactSettingUpdateRequest) {
