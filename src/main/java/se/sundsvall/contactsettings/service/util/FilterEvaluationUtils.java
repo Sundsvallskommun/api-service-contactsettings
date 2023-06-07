@@ -1,8 +1,8 @@
 package se.sundsvall.contactsettings.service.util;
 
 import static java.util.Collections.emptyList;
+import static java.util.Collections.emptyMap;
 import static org.apache.commons.collections4.CollectionUtils.isEmpty;
-import static org.apache.commons.collections4.MapUtils.isEmpty;
 import static org.apache.commons.lang3.StringUtils.equalsIgnoreCase;
 import static se.sundsvall.contactsettings.api.model.enums.Operator.toEnum;
 
@@ -21,19 +21,19 @@ public class FilterEvaluationUtils {
 	 * Evaluates the inputQuery against a list of DelegateFilter:s.
 	 * At least one filter in the filter list must evaluate to true, for the entire evaluation to be true (OR-condition).
 	 *
-	 * If any of the input arguments are empty, this method will evaluate to true.
+	 * If delegateFilterEntityList is null or empty, this method will evaluate to true.
 	 *
 	 * @param  inputQuery               the input query.
 	 * @param  delegateFilterEntityList the list of the defined filters.
 	 * @return                          whether the filter matches the query or not.
 	 */
 	public static boolean evaluate(final Map<String, List<String>> inputQuery, List<DelegateFilterEntity> delegateFilterEntityList) {
-		if (isEmpty(delegateFilterEntityList) || isEmpty(inputQuery)) {
+		if (isEmpty(delegateFilterEntityList)) {
 			return true;
 		}
 
 		return delegateFilterEntityList.stream()
-			.anyMatch(delegateFilterEntity -> evaluate(inputQuery, delegateFilterEntity));
+			.anyMatch(delegateFilterEntity -> evaluate(Optional.ofNullable(inputQuery).orElse(emptyMap()), delegateFilterEntity));
 	}
 
 	/**

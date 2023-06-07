@@ -218,7 +218,7 @@ class FilterEvaluationUtilsTest {
 						DelegateFilterRule.create().withAttributeName("key2").withOperator("EQUALS").withAttributeValue("value-no-match")))), false),
 
 			Arguments.of(
-				"Match if input query is empty",
+				"No match if input query is empty",
 				Map.of(),
 				List.of(
 					DelegateFilterEntity.create().withFilterRules(List.of(
@@ -226,7 +226,18 @@ class FilterEvaluationUtilsTest {
 						DelegateFilterRule.create().withAttributeName("key2").withOperator("NOT_EQUALS").withAttributeValue("value-no-match"))),
 					DelegateFilterEntity.create().withFilterRules(List.of(
 						DelegateFilterRule.create().withAttributeName("key1").withOperator("NOT_EQUALS").withAttributeValue("value-no-match"),
-						DelegateFilterRule.create().withAttributeName("key2").withOperator("EQUALS").withAttributeValue("value-no-match")))), true),
+						DelegateFilterRule.create().withAttributeName("key2").withOperator("EQUALS").withAttributeValue("value-no-match")))), false),
+
+			Arguments.of(
+				"No match if input query is null",
+				null,
+				List.of(
+					DelegateFilterEntity.create().withFilterRules(List.of(
+						DelegateFilterRule.create().withAttributeName("key1").withOperator("EQUALS").withAttributeValue("value-no-match"),
+						DelegateFilterRule.create().withAttributeName("key2").withOperator("NOT_EQUALS").withAttributeValue("value-no-match"))),
+					DelegateFilterEntity.create().withFilterRules(List.of(
+						DelegateFilterRule.create().withAttributeName("key1").withOperator("NOT_EQUALS").withAttributeValue("value-no-match"),
+						DelegateFilterRule.create().withAttributeName("key2").withOperator("EQUALS").withAttributeValue("value-no-match")))), false),
 
 			Arguments.of(
 				"Match if delegateFilters is empty",
