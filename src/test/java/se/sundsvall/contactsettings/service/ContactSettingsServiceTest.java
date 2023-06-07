@@ -477,7 +477,9 @@ class ContactSettingsServiceTest {
 	void updateContactSetting() {
 
 		// Arrange
-		when(contactSettingRepositoryMock.existsById(ID)).thenReturn(true);
+		final var contactSettingEntity = ContactSettingEntity.create().withId(ID);
+
+		when(contactSettingRepositoryMock.findById(ID)).thenReturn(Optional.of(contactSettingEntity));
 		when(contactSettingRepositoryMock.save(any(ContactSettingEntity.class))).thenReturn(buildContactSettingEntity());
 
 		// Act
@@ -486,8 +488,8 @@ class ContactSettingsServiceTest {
 		// Assert
 		assertThat(result).isEqualTo(buildContactSetting());
 
-		verify(contactSettingRepositoryMock).existsById(ID);
-		verify(contactSettingRepositoryMock).save(any(ContactSettingEntity.class));
+		verify(contactSettingRepositoryMock).findById(ID);
+		verify(contactSettingRepositoryMock).save(contactSettingEntity);
 		verifyNoMoreInteractions(contactSettingRepositoryMock);
 	}
 
@@ -497,7 +499,7 @@ class ContactSettingsServiceTest {
 		// Arrange
 		final var contactSettingUpdateRequest = buildContactSettingUpdateRequest();
 
-		when(contactSettingRepositoryMock.existsById(ID)).thenReturn(false);
+		when(contactSettingRepositoryMock.findById(ID)).thenReturn(Optional.empty());
 
 		// Act
 		final var exception = assertThrows(ThrowableProblem.class, () -> service.updateContactSetting(ID, contactSettingUpdateRequest));
@@ -506,7 +508,7 @@ class ContactSettingsServiceTest {
 		assertThat(exception.getStatus()).isEqualTo(NOT_FOUND);
 		assertThat(exception.getTitle()).isEqualTo(NOT_FOUND.getReasonPhrase());
 		assertThat(exception.getDetail()).isEqualTo(String.format(ERROR_MESSAGE_CONTACT_SETTING_NOT_FOUND, ID));
-		verify(contactSettingRepositoryMock).existsById(ID);
+		verify(contactSettingRepositoryMock).findById(ID);
 		verifyNoMoreInteractions(contactSettingRepositoryMock);
 	}
 

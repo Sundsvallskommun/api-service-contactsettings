@@ -19,6 +19,8 @@ class ContactSettingMapperTest {
 
 	@Test
 	void toContactSetting() {
+
+		// Arrange
 		final var id = "id";
 		final var alias = "alias";
 		final var partyId = "partyId";
@@ -39,7 +41,7 @@ class ContactSettingMapperTest {
 				.withDestination(destination)
 				.withContactMethod(contactMethod)));
 
-		// Call
+		// Act
 		final var result = ContactSettingMapper.toContactSetting(entity);
 
 		// Assert
@@ -58,7 +60,8 @@ class ContactSettingMapperTest {
 
 	@Test
 	void toContactSettingWhenNull() {
-		// Call
+
+		// Act
 		final var result = ContactSettingMapper.toContactSetting(null);
 
 		// Assert
@@ -67,7 +70,8 @@ class ContactSettingMapperTest {
 
 	@Test
 	void toContactSettingWhenEmpty() {
-		// Call
+
+		// Act
 		final var result = ContactSettingMapper.toContactSetting(ContactSettingEntity.create());
 
 		// Assert
@@ -83,6 +87,8 @@ class ContactSettingMapperTest {
 
 	@Test
 	void toContactSettingEntityFromContactSettingCreateRequest() {
+
+		// Arrange
 		final var alias = "alias";
 		final var partyId = "partyId";
 		final var createdById = "createdById";
@@ -98,7 +104,7 @@ class ContactSettingMapperTest {
 				.withDestination(destination)
 				.withContactMethod(ContactMethod.valueOf(contactMethod))));
 
-		// Call
+		// Act
 		final var result = ContactSettingMapper.toContactSettingEntity(contactSettingCreateRequest);
 
 		// Assert
@@ -114,7 +120,8 @@ class ContactSettingMapperTest {
 
 	@Test
 	void toContactSettingEntityFromContactSettingCreateRequestWhenNull() {
-		// Call
+
+		// Act
 		final var result = ContactSettingMapper.toContactSettingEntity((ContactSettingCreateRequest) null);
 
 		// Assert
@@ -123,7 +130,8 @@ class ContactSettingMapperTest {
 
 	@Test
 	void toContactSettingEntityFromContactSettingCreateRequestWhenEmpty() {
-		// Call
+
+		// Act
 		final var result = ContactSettingMapper.toContactSettingEntity(ContactSettingCreateRequest.create());
 
 		// Assert
@@ -138,11 +146,20 @@ class ContactSettingMapperTest {
 	}
 
 	@Test
-	void toContactSettingEntityFromContactSettingUpdateRequest() {
+	void mergeIntoContactSettingEntity() {
+
+		// Arrange
 		final var alias = "alias";
 		final var channelAlias = "channelAlias";
 		final var destination = "destination";
 		final var contactMethod = "EMAIL";
+
+		final var existingContactSettingEntity = ContactSettingEntity.create()
+			.withAlias("oldAlias")
+			.withChannels(List.of(Channel.create()
+				.withAlias("oldChannelAlias")
+				.withContactMethod("SMS")
+				.withDestination("oldDestination")));
 
 		final var contactSettingCreateRequest = ContactSettingUpdateRequest.create()
 			.withAlias(alias)
@@ -150,8 +167,8 @@ class ContactSettingMapperTest {
 				.withDestination(destination)
 				.withContactMethod(ContactMethod.valueOf(contactMethod))));
 
-		// Call
-		final var result = ContactSettingMapper.toContactSettingEntity(contactSettingCreateRequest);
+		// Act
+		final var result = ContactSettingMapper.mergeIntoContactSettingEntity(existingContactSettingEntity, contactSettingCreateRequest);
 
 		// Assert
 		assertThat(result).isNotNull();
@@ -163,27 +180,42 @@ class ContactSettingMapperTest {
 	}
 
 	@Test
-	void toContactSettingEntityFromContactSettingUpdateRequestWhenNull() {
-		// Call
-		final var result = ContactSettingMapper.toContactSettingEntity((ContactSettingUpdateRequest) null);
+	void mergeIntoContactSettingEntityWhenExistingEntityIsNull() {
+
+		// Act
+		final var result = ContactSettingMapper.mergeIntoContactSettingEntity(null, ContactSettingUpdateRequest.create());
 
 		// Assert
 		assertThat(result).isNull();
 	}
 
 	@Test
-	void toContactSettingEntityFromContactSettingUpdateRequestWhenEmpty() {
-		// Call
-		final var result = ContactSettingMapper.toContactSettingEntity(ContactSettingUpdateRequest.create());
+	void mergeIntoContactSettingEntityWhenRequestIsNull() {
+
+		// Arrange
+		final var existingContactSettingEntity = ContactSettingEntity.create();
+
+		// Act
+		final var result = ContactSettingMapper.mergeIntoContactSettingEntity(ContactSettingEntity.create(), (ContactSettingUpdateRequest) null);
 
 		// Assert
-		assertThat(result).isNotNull();
-		assertThat(result.getId()).isNull();
-		assertThat(result.getAlias()).isNull();
-		assertThat(result.getPartyId()).isNull();
-		assertThat(result.getCreated()).isNull();
-		assertThat(result.getModified()).isNull();
-		assertThat(result.getCreatedById()).isNull();
-		assertThat(result.getChannels()).isEmpty();
+		assertThat(result)
+			.isEqualTo(existingContactSettingEntity)
+			.hasAllNullFieldsOrProperties();
+	}
+
+	@Test
+	void mergeIntoContactSettingEntityWhenRequestIsEmpty() {
+
+		// Arrange
+		final var existingContactSettingEntity = ContactSettingEntity.create();
+
+		// Act
+		final var result = ContactSettingMapper.mergeIntoContactSettingEntity(ContactSettingEntity.create(), ContactSettingUpdateRequest.create());
+
+		// Assert
+		assertThat(result)
+			.isEqualTo(existingContactSettingEntity)
+			.hasAllNullFieldsOrProperties();
 	}
 }

@@ -7,6 +7,7 @@ import static org.zalando.problem.Status.NOT_FOUND;
 import static se.sundsvall.contactsettings.service.Constants.ERROR_MESSAGE_CONTACT_SETTING_BY_PARTY_ALREADY_EXISTS;
 import static se.sundsvall.contactsettings.service.Constants.ERROR_MESSAGE_CONTACT_SETTING_BY_PARTY_ID_NOT_FOUND;
 import static se.sundsvall.contactsettings.service.Constants.ERROR_MESSAGE_CONTACT_SETTING_NOT_FOUND;
+import static se.sundsvall.contactsettings.service.mapper.ContactSettingMapper.mergeIntoContactSettingEntity;
 import static se.sundsvall.contactsettings.service.mapper.ContactSettingMapper.toContactSetting;
 import static se.sundsvall.contactsettings.service.mapper.ContactSettingMapper.toContactSettingEntity;
 import static se.sundsvall.contactsettings.service.util.FilterEvaluationUtils.evaluate;
@@ -91,9 +92,10 @@ public class ContactSettingsService {
 	}
 
 	public ContactSetting updateContactSetting(final String id, final ContactSettingUpdateRequest contactSettingUpdateRequest) {
-		verifyThatContactSettingExists(id);
+		final var contactSettingEntity = contactSettingRepository.findById(id)
+			.orElseThrow(() -> Problem.valueOf(NOT_FOUND, format(ERROR_MESSAGE_CONTACT_SETTING_NOT_FOUND, id)));
 
-		return toContactSetting(contactSettingRepository.save(toContactSettingEntity(contactSettingUpdateRequest)));
+		return toContactSetting(contactSettingRepository.save(mergeIntoContactSettingEntity(contactSettingEntity, contactSettingUpdateRequest)));
 	}
 
 	public void deleteContactSetting(final String id) {

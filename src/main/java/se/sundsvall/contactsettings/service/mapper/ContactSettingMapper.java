@@ -28,13 +28,17 @@ public class ContactSettingMapper {
 			.orElse(null);
 	}
 
-	// TODO: Gör en merge-metod istället
-	public static ContactSettingEntity toContactSettingEntity(final ContactSettingUpdateRequest contactSettingUpdateRequest) {
-		return Optional.ofNullable(contactSettingUpdateRequest)
-			.map(request -> ContactSettingEntity.create()
-				.withChannels(toChannels(request.getContactChannels()))
-				.withAlias(request.getAlias()))
-			.orElse(null);
+	public static ContactSettingEntity mergeIntoContactSettingEntity(ContactSettingEntity existingContactSettingEntity, ContactSettingUpdateRequest contactSettingUpdateRequest) {
+		if (isNull(existingContactSettingEntity)) {
+			return null;
+		}
+
+		Optional.ofNullable(contactSettingUpdateRequest).ifPresent(contactSetting -> {
+			Optional.ofNullable(contactSetting.getContactChannels()).map(ContactSettingMapper::toChannels).ifPresent(existingContactSettingEntity::setChannels);
+			Optional.ofNullable(contactSetting.getAlias()).ifPresent(existingContactSettingEntity::setAlias);
+		});
+
+		return existingContactSettingEntity;
 	}
 
 	public static ContactSetting toContactSetting(final ContactSettingEntity contactSettingEntity) {
