@@ -23,7 +23,7 @@ public class ContactSetting {
 	@Schema(description = "ID of the contact setting that created this instance. Applicable for virtual contact settings.", example = "9ca9425e-42cf-4145-a9e7-d77e1ea9e5b0", accessMode = READ_ONLY)
 	private String createdById;
 
-	@Schema(description = "Alias for the person or organization to whom the contact setting applies", example = "Brorsan", accessMode = READ_ONLY)
+	@Schema(description = "Alias for the person or organization to whom the contact setting applies", example = "My contact-settings", accessMode = READ_ONLY)
 	private String alias;
 
 	@Schema(description = "Shows if the contact setting is virtual or not. A virtual instance doesn't have a partyId (i.e. doesn't have a direct relation to a real person/organization)", example = "false", accessMode = READ_ONLY)
@@ -32,11 +32,11 @@ public class ContactSetting {
 	@Schema(description = "List of contact channels connected to the contact setting", accessMode = READ_ONLY)
 	private List<ContactChannel> contactChannels;
 
-	@Schema(description = "Timestamp when delegate was created", example = "2000-10-31T01:30:00.000+02:00", accessMode = READ_ONLY)
+	@Schema(description = "Timestamp when delegate was created", example = "2020-08-31T01:30:00.000+02:00", accessMode = READ_ONLY)
 	@DateTimeFormat(iso = ISO.DATE_TIME)
 	private OffsetDateTime created;
 
-	@Schema(description = "Timestamp when delegate was last modified", example = "2000-10-31T01:30:00.000+02:00", accessMode = READ_ONLY)
+	@Schema(description = "Timestamp when delegate was last modified", example = "2020-08-31T01:30:00.000+02:00", accessMode = READ_ONLY)
 	@DateTimeFormat(iso = ISO.DATE_TIME)
 	private OffsetDateTime modified;
 

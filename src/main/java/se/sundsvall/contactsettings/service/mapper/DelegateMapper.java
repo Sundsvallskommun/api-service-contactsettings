@@ -21,26 +21,9 @@ public class DelegateMapper {
 
 	private DelegateMapper() {}
 
-	public static Delegate toDelegate(final DelegateEntity delegateEntity) {
-		return Optional.ofNullable(delegateEntity)
-			.map(entity -> Delegate.create()
-				.withAgentId(Optional.ofNullable(entity.getAgent()).orElse(ContactSettingEntity.create()).getId())
-				.withCreated(entity.getCreated())
-				.withFilters(toFilterList(entity.getFilters()))
-				.withId(entity.getId())
-				.withModified(entity.getModified())
-				.withPrincipalId(Optional.ofNullable(entity.getPrincipal()).orElse(ContactSettingEntity.create()).getId()))
-			.orElse(null);
-	}
-
-	public static DelegateEntity toDelegateEntity(final DelegateCreateRequest delegateCreateRequest) {
-		return Optional.ofNullable(delegateCreateRequest)
-			.map(request -> DelegateEntity.create()
-				.withAgent(ContactSettingEntity.create().withId(request.getAgentId()))
-				.withFilters(toDelegateFilterEntityList(request.getFilters()))
-				.withPrincipal(ContactSettingEntity.create().withId(request.getPrincipalId())))
-			.orElse(null);
-	}
+	/*
+	 * From API-model to DB-model.
+	 */
 
 	public static DelegateFilterEntity mergeIntoDelegateFilterEntity(final DelegateFilterEntity existingDelegateFilterEntity, final Filter filter) {
 		if (isNull(existingDelegateFilterEntity)) {
@@ -55,9 +38,14 @@ public class DelegateMapper {
 		return existingDelegateFilterEntity;
 	}
 
-	/*
-	 * From API to DB
-	 */
+	public static DelegateEntity toDelegateEntity(final DelegateCreateRequest delegateCreateRequest) {
+		return Optional.ofNullable(delegateCreateRequest)
+			.map(request -> DelegateEntity.create()
+				.withAgent(ContactSettingEntity.create().withId(request.getAgentId()))
+				.withFilters(toDelegateFilterEntityList(request.getFilters()))
+				.withPrincipal(ContactSettingEntity.create().withId(request.getPrincipalId())))
+			.orElse(null);
+	}
 
 	public static List<DelegateFilterEntity> toDelegateFilterEntityList(final List<Filter> filterList) {
 		return Optional.ofNullable(filterList).orElse(emptyList()).stream()
@@ -84,8 +72,20 @@ public class DelegateMapper {
 	}
 
 	/*
-	 * From DB to API
+	 * From DB-model to API-model.
 	 */
+
+	public static Delegate toDelegate(final DelegateEntity delegateEntity) {
+		return Optional.ofNullable(delegateEntity)
+			.map(entity -> Delegate.create()
+				.withAgentId(Optional.ofNullable(entity.getAgent()).orElse(ContactSettingEntity.create()).getId())
+				.withCreated(entity.getCreated())
+				.withFilters(toFilterList(entity.getFilters()))
+				.withId(entity.getId())
+				.withModified(entity.getModified())
+				.withPrincipalId(Optional.ofNullable(entity.getPrincipal()).orElse(ContactSettingEntity.create()).getId()))
+			.orElse(null);
+	}
 
 	public static List<Filter> toFilterList(final List<DelegateFilterEntity> filterEntityList) {
 		return Optional.ofNullable(filterEntityList).orElse(emptyList()).stream()

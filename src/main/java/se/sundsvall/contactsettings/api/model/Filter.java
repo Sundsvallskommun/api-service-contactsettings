@@ -23,11 +23,11 @@ public class Filter {
 	@Schema(description = "The filter alias", example = "My filter for delegating messages to my friend", requiredMode = REQUIRED)
 	private String alias;
 
-	@Schema(description = "Timestamp when filter was created", example = "2020-10-31T01:30:00.000+02:00", accessMode = READ_ONLY)
+	@Schema(description = "Timestamp when filter was created", example = "2020-08-31T01:30:00.000+02:00", accessMode = READ_ONLY)
 	@DateTimeFormat(iso = ISO.DATE_TIME)
 	private OffsetDateTime created;
 
-	@Schema(description = "Timestamp when filter was last modified", example = "2020-10-31T01:30:00.000+02:00", accessMode = READ_ONLY)
+	@Schema(description = "Timestamp when filter was last modified", example = "2020-08-31T01:30:00.000+02:00", accessMode = READ_ONLY)
 	@DateTimeFormat(iso = ISO.DATE_TIME)
 	private OffsetDateTime modified;
 

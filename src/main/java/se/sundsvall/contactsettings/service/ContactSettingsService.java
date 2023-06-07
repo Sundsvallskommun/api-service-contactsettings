@@ -3,6 +3,7 @@ package se.sundsvall.contactsettings.service;
 import static java.lang.String.format;
 import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
+import static org.zalando.problem.Status.CONFLICT;
 import static org.zalando.problem.Status.NOT_FOUND;
 import static se.sundsvall.contactsettings.service.Constants.ERROR_MESSAGE_CONTACT_SETTING_BY_PARTY_ALREADY_EXISTS;
 import static se.sundsvall.contactsettings.service.Constants.ERROR_MESSAGE_CONTACT_SETTING_BY_PARTY_ID_NOT_FOUND;
@@ -21,7 +22,6 @@ import java.util.stream.Stream;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.zalando.problem.Problem;
-import org.zalando.problem.Status;
 
 import se.sundsvall.contactsettings.api.model.ContactSetting;
 import se.sundsvall.contactsettings.api.model.ContactSettingCreateRequest;
@@ -44,7 +44,7 @@ public class ContactSettingsService {
 	public String createContactSetting(final ContactSettingCreateRequest contactSettingCreateRequest) {
 		Optional.ofNullable(contactSettingCreateRequest.getPartyId()).ifPresent(partyId -> {
 			if (contactSettingRepository.findByPartyId(partyId).isPresent()) {
-				throw Problem.valueOf(Status.CONFLICT, String.format(ERROR_MESSAGE_CONTACT_SETTING_BY_PARTY_ALREADY_EXISTS, contactSettingCreateRequest.getPartyId()));
+				throw Problem.valueOf(CONFLICT, String.format(ERROR_MESSAGE_CONTACT_SETTING_BY_PARTY_ALREADY_EXISTS, contactSettingCreateRequest.getPartyId()));
 			}
 		});
 
@@ -70,6 +70,8 @@ public class ContactSettingsService {
 	}
 
 	public List<ContactSetting> findByPartyIdAndQueryFilter(final String partyId, final Map<String, List<String>> inputQuery) {
+
+		// Fetch root entity, or throw a 404.
 		final var parent = contactSettingRepository.findByPartyId(partyId)
 			.orElseThrow(() -> Problem.valueOf(NOT_FOUND, String.format(ERROR_MESSAGE_CONTACT_SETTING_BY_PARTY_ID_NOT_FOUND, partyId)));
 
@@ -84,7 +86,7 @@ public class ContactSettingsService {
 		return Stream.concat(
 			Stream.of(contactSetting), // This will ensure that returned list always contains the provided contactSetting.
 			delegateRepository.findByPrincipalId(contactSetting.getId()).stream() // Find all agents for this contactSetting.
-				.filter(delegate -> evaluate(inputQuery, delegate.getFilters())) // Evaluate inputQuery against delegate filters.
+				.filter(delegate -> evaluate(inputQuery, delegate.getFilters())) // Evaluate inputQuery against delegate filters (stored in DB).
 				.map(DelegateEntity::getAgent) // Extract agent from delegate.
 				.filter(agent -> !lookupRegistry.contains(agent.getId())) // The lookupRegistry must not already contain the ID of this agent (prevent circular references).
 				.flatMap(agent -> searchAndCollectFromDelegateChain(agent, inputQuery, lookupRegistry).stream())) // Recurse.
@@ -92,6 +94,8 @@ public class ContactSettingsService {
 	}
 
 	public ContactSetting updateContactSetting(final String id, final ContactSettingUpdateRequest contactSettingUpdateRequest) {
+
+		// Fetch entity, or throw a 404.
 		final var contactSettingEntity = contactSettingRepository.findById(id)
 			.orElseThrow(() -> Problem.valueOf(NOT_FOUND, format(ERROR_MESSAGE_CONTACT_SETTING_NOT_FOUND, id)));
 

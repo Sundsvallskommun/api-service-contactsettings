@@ -32,7 +32,8 @@ public class DelegateFilterService {
 	public Filter create(String delegateId, Filter filter) {
 
 		// Fetch/Validate.
-		final var delegateEntity = delegateRepository.findById(delegateId).orElseThrow(() -> Problem.valueOf(NOT_FOUND, format(ERROR_MESSAGE_DELEGATE_NOT_FOUND, delegateId)));
+		final var delegateEntity = delegateRepository.findById(delegateId)
+			.orElseThrow(() -> Problem.valueOf(NOT_FOUND, format(ERROR_MESSAGE_DELEGATE_NOT_FOUND, delegateId)));
 
 		// Save delegateFilter.
 		final var delegateFilterEntity = delegateFilterRepository.save(toDelegateFilterEntity(filter));
@@ -49,7 +50,8 @@ public class DelegateFilterService {
 
 		// Fetch/validate
 		verifyThatDelegateExists(delegateId);
-		final var delegateFilterEntity = delegateFilterRepository.findById(delegateFilterId).orElseThrow(() -> Problem.valueOf(NOT_FOUND, format(ERROR_MESSAGE_FILTER_NOT_FOUND, delegateFilterId)));
+		final var delegateFilterEntity = delegateFilterRepository.findById(delegateFilterId)
+			.orElseThrow(() -> Problem.valueOf(NOT_FOUND, format(ERROR_MESSAGE_FILTER_NOT_FOUND, delegateFilterId)));
 
 		// All good: proceed
 		return toFilter(delegateFilterEntity);
@@ -59,7 +61,8 @@ public class DelegateFilterService {
 
 		// Fetch/validate
 		verifyThatDelegateExists(delegateId);
-		final var delegateFilterEntity = delegateFilterRepository.findById(delegateFilterId).orElseThrow(() -> Problem.valueOf(NOT_FOUND, format(ERROR_MESSAGE_FILTER_NOT_FOUND, delegateFilterId)));
+		final var delegateFilterEntity = delegateFilterRepository.findById(delegateFilterId)
+			.orElseThrow(() -> Problem.valueOf(NOT_FOUND, format(ERROR_MESSAGE_FILTER_NOT_FOUND, delegateFilterId)));
 
 		// All good: proceed
 		return toFilter(delegateFilterRepository.save(mergeIntoDelegateFilterEntity(delegateFilterEntity, filter)));
@@ -69,7 +72,8 @@ public class DelegateFilterService {
 
 		// Fetch/validate
 		verifyThatDelegateExists(delegateId);
-		final var entity = delegateFilterRepository.findById(delegateFilterId).orElseThrow(() -> Problem.valueOf(NOT_FOUND, format(ERROR_MESSAGE_FILTER_NOT_FOUND, delegateFilterId)));
+		final var entity = delegateFilterRepository.findById(delegateFilterId)
+			.orElseThrow(() -> Problem.valueOf(NOT_FOUND, format(ERROR_MESSAGE_FILTER_NOT_FOUND, delegateFilterId)));
 
 		// All good: proceed
 		delegateFilterRepository.delete(entity);

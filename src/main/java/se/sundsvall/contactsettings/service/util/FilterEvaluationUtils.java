@@ -23,15 +23,17 @@ public class FilterEvaluationUtils {
 	 *
 	 * If any of the input arguments are empty, this method will evaluate to true.
 	 *
-	 * @param inputQuery      the input query.
-	 * @param delegateFilters the list of the defined filters.
-	 * @return whether the filter matches the query or not.
+	 * @param  inputQuery               the input query.
+	 * @param  delegateFilterEntityList the list of the defined filters.
+	 * @return                          whether the filter matches the query or not.
 	 */
-	public static boolean evaluate(final Map<String, List<String>> inputQuery, List<DelegateFilterEntity> delegateFilters) {
-		if (isEmpty(delegateFilters) || isEmpty(inputQuery)) {
+	public static boolean evaluate(final Map<String, List<String>> inputQuery, List<DelegateFilterEntity> delegateFilterEntityList) {
+		if (isEmpty(delegateFilterEntityList) || isEmpty(inputQuery)) {
 			return true;
 		}
-		return delegateFilters.stream().anyMatch(delegateFilter -> evaluate(inputQuery, delegateFilter));
+
+		return delegateFilterEntityList.stream()
+			.anyMatch(delegateFilterEntity -> evaluate(inputQuery, delegateFilterEntity));
 	}
 
 	/**
@@ -39,12 +41,12 @@ public class FilterEvaluationUtils {
 	 *
 	 * All rules in the filter must evaluate to true, for the entire evaluation to be true (AND-condition).
 	 *
-	 * @param inputQuery     the input query.
-	 * @param delegateFilter the defined filter.
-	 * @return whether the filter matches the query or not.
+	 * @param  inputQuery           the input query.
+	 * @param  delegateFilterEntity the defined filter entity.
+	 * @return                      whether the filter matches the query or not.
 	 */
-	private static boolean evaluate(final Map<String, List<String>> inputQuery, DelegateFilterEntity delegateFilter) {
-		return Optional.ofNullable(delegateFilter.getFilterRules()).orElse(emptyList()).stream()
+	private static boolean evaluate(final Map<String, List<String>> inputQuery, DelegateFilterEntity delegateFilterEntity) {
+		return Optional.ofNullable(delegateFilterEntity.getFilterRules()).orElse(emptyList()).stream()
 			.allMatch(rule -> switch (toEnum(rule.getOperator()))
 			{
 				case EQUALS -> equalsEvaluation(inputQuery, rule);

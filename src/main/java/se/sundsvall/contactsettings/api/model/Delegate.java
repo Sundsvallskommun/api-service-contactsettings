@@ -23,11 +23,11 @@ public class Delegate {
 	@Schema(description = "Contact setting ID of the delegate agent", example = "0d64c132-3aea-11ec-8d3d-0242ac130003", accessMode = READ_ONLY)
 	private String agentId;
 
-	@Schema(description = "Timestamp when delegate was created", example = "2000-10-31T01:30:00.000+02:00", accessMode = READ_ONLY)
+	@Schema(description = "Timestamp when delegate was created", example = "2020-08-31T01:30:00.000+02:00", accessMode = READ_ONLY)
 	@DateTimeFormat(iso = ISO.DATE_TIME)
 	private OffsetDateTime created;
 
-	@Schema(description = "Timestamp when delegate was last modified", example = "2000-10-31T01:30:00.000+02:00", accessMode = READ_ONLY)
+	@Schema(description = "Timestamp when delegate was last modified", example = "2020-08-31T01:30:00.000+02:00", accessMode = READ_ONLY)
 	@DateTimeFormat(iso = ISO.DATE_TIME)
 	private OffsetDateTime modified;
 

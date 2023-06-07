@@ -13,7 +13,7 @@ public class ContactChannel {
 	@Schema(description = "Method of contact", example = "SMS", requiredMode = REQUIRED)
 	private ContactMethod contactMethod;
 
-	@Schema(description = "Alias for the destination", example = "Privat mobil", requiredMode = REQUIRED)
+	@Schema(description = "Alias for the destination", example = "Private phone", requiredMode = REQUIRED)
 	private String alias;
 
 	@Schema(description = "Point of destination", example = "+46701234567", requiredMode = REQUIRED)
