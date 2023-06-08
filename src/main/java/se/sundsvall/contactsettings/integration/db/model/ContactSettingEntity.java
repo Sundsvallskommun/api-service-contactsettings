@@ -1,8 +1,10 @@
 package se.sundsvall.contactsettings.integration.db.model;
 
+import static java.util.Objects.isNull;
 import static org.hibernate.annotations.TimeZoneStorageType.NORMALIZE;
 
 import java.time.OffsetDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
@@ -148,11 +150,20 @@ public class ContactSettingEntity {
 	}
 
 	public void setChannels(final List<Channel> channels) {
-		this.channels = channels;
+
+		if (isNull(this.channels)) {
+			this.channels = new ArrayList<>();
+		}
+
+		this.channels.clear();
+
+		if (channels != null) {
+			this.channels.addAll(channels);
+		}
 	}
 
 	public ContactSettingEntity withChannels(final List<Channel> channels) {
-		this.channels = channels;
+		this.setChannels(channels);
 		return this;
 	}
 

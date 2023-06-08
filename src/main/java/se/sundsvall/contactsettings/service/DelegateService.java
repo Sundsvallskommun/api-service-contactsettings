@@ -1,30 +1,28 @@
 package se.sundsvall.contactsettings.service;
 
 import static java.lang.String.format;
-import static java.time.OffsetDateTime.now;
-import static java.time.temporal.ChronoUnit.MILLIS;
 import static java.util.Collections.emptyList;
 import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
 import static org.apache.commons.lang3.ObjectUtils.allNotNull;
 import static org.zalando.problem.Status.CONFLICT;
 import static org.zalando.problem.Status.NOT_FOUND;
-import static se.sundsvall.contactsettings.service.mapper.DelegateMapper.mergeIntoDelegateEntity;
+import static se.sundsvall.contactsettings.service.Constants.ERROR_MESSAGE_AGENT_NOT_FOUND;
+import static se.sundsvall.contactsettings.service.Constants.ERROR_MESSAGE_DELEGATE_ALREADY_EXIST;
+import static se.sundsvall.contactsettings.service.Constants.ERROR_MESSAGE_DELEGATE_NOT_FOUND;
+import static se.sundsvall.contactsettings.service.Constants.ERROR_MESSAGE_PRINCIPAL_NOT_FOUND;
 import static se.sundsvall.contactsettings.service.mapper.DelegateMapper.toDelegate;
 import static se.sundsvall.contactsettings.service.mapper.DelegateMapper.toDelegateEntity;
 
-import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 import org.zalando.problem.Problem;
 
 import se.sundsvall.contactsettings.api.model.Delegate;
 import se.sundsvall.contactsettings.api.model.DelegateCreateRequest;
-import se.sundsvall.contactsettings.api.model.DelegateUpdateRequest;
 import se.sundsvall.contactsettings.api.model.FindDelegatesParameters;
 import se.sundsvall.contactsettings.integration.db.ContactSettingRepository;
 import se.sundsvall.contactsettings.integration.db.DelegateRepository;
@@ -32,13 +30,7 @@ import se.sundsvall.contactsettings.integration.db.model.DelegateEntity;
 import se.sundsvall.contactsettings.service.mapper.DelegateMapper;
 
 @Service
-@Transactional
 public class DelegateService {
-
-	private static final String ERROR_MESSAGE_DELEGATE_NOT_FOUND = "No delegate with id: '%s' exists!";
-	private static final String ERROR_MESSAGE_PRINCIPAL_NOT_FOUND = "No principal with contactSettingsId: '%s' exists!";
-	private static final String ERROR_MESSAGE_AGENT_NOT_FOUND = "No agent with contactSettingsId: '%s' exists!";
-	private static final String ERROR_MESSAGE_DELEGATE_ALREADY_EXIST = "A delegate with this this principal and agent already exists!";
 
 	@Autowired
 	private DelegateRepository delegateRepository;
@@ -64,16 +56,6 @@ public class DelegateService {
 
 		// All good: proceed
 		return toDelegate(delegateEntity);
-	}
-
-	public Delegate update(final String id, final DelegateUpdateRequest delegateUpdateRequest) {
-
-		// Fetch/validate
-		final var delegateEntity = delegateRepository.findById(id).orElseThrow(() -> Problem.valueOf(NOT_FOUND, format(ERROR_MESSAGE_DELEGATE_NOT_FOUND, id)));
-
-		// All good: proceed
-		return toDelegate(delegateRepository.save(mergeIntoDelegateEntity(delegateEntity, delegateUpdateRequest)
-			.withModified(now(ZoneId.systemDefault()).truncatedTo(MILLIS))));
 	}
 
 	public void delete(final String id) {

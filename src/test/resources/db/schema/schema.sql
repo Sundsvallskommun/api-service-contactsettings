@@ -27,9 +27,19 @@
     ) engine=InnoDB;
 
     create table delegate_filter (
-        delegate_id varchar(255) not null,
-        `key` varchar(255),
-        value varchar(255)
+        created datetime(6),
+        modified datetime(6),
+        alias varchar(255),
+        delegate_id varchar(255),
+        id varchar(255) not null,
+        primary key (id)
+    ) engine=InnoDB;
+
+    create table delegate_filter_rule (
+        attribute_name varchar(255),
+        attribute_value varchar(255),
+        delegate_filter_id varchar(255) not null,
+        operator varchar(255)
     ) engine=InnoDB;
 
     create index contact_setting_party_id_index 
@@ -54,6 +64,11 @@
        references contact_setting (id);
 
     alter table if exists delegate_filter 
-       add constraint fk_delegate_delegate_filter 
+       add constraint fk_delegate_id_delegate_filter_delegate_id 
        foreign key (delegate_id) 
        references delegate (id);
+
+    alter table if exists delegate_filter_rule 
+       add constraint fk_delegate_filter_delegate_filter_rule 
+       foreign key (delegate_filter_id) 
+       references delegate_filter (id);

@@ -172,14 +172,14 @@ class ContactSettingsResourceTest {
 	}
 
 	@Test
-	void findByPartyIdAndFilter() {
+	void findByPartyIdAndQueryFilter() {
 
 		// Arrange
-		final var filterParameter = new LinkedMultiValueMap<String, String>();
-		filterParameter.put("key1", List.of("value1", "value2"));
-		filterParameter.put("key2", List.of("value3", "value4"));
+		final var inputQuery = new LinkedMultiValueMap<String, String>();
+		inputQuery.put("key1", List.of("value1", "value2"));
+		inputQuery.put("key2", List.of("value3", "value4"));
 
-		when(contactSettingsServiceMock.findByPartyIdAndFilter(PARTY_ID, filterParameter)).thenReturn(List.of(
+		when(contactSettingsServiceMock.findByPartyIdAndQueryFilter(PARTY_ID, inputQuery)).thenReturn(List.of(
 			ContactSetting.create(),
 			ContactSetting.create()));
 
@@ -187,7 +187,7 @@ class ContactSettingsResourceTest {
 		final var response = webTestClient.get()
 			.uri(builder -> builder.path(PATH)
 				.queryParam("partyId", PARTY_ID)
-				.queryParams(filterParameter)
+				.queryParams(inputQuery)
 				.build())
 			.exchange()
 			.expectStatus().isOk()
@@ -198,7 +198,7 @@ class ContactSettingsResourceTest {
 
 		// Assert
 		assertThat(response).isNotNull().hasSize(2);
-		verify(contactSettingsServiceMock).findByPartyIdAndFilter(PARTY_ID, filterParameter);
+		verify(contactSettingsServiceMock).findByPartyIdAndQueryFilter(PARTY_ID, inputQuery);
 	}
 
 	@Test

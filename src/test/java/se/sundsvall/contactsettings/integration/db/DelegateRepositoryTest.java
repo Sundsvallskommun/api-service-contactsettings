@@ -4,10 +4,10 @@ import static java.time.OffsetDateTime.now;
 import static java.time.temporal.ChronoUnit.SECONDS;
 import static java.util.UUID.randomUUID;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.tuple;
 import static org.assertj.core.api.Assertions.within;
 import static org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase.Replace.NONE;
 import static org.springframework.transaction.annotation.Propagation.NOT_SUPPORTED;
+import static se.sundsvall.contactsettings.api.model.enums.Operator.EQUALS;
 
 import java.util.List;
 import java.util.UUID;
@@ -23,7 +23,8 @@ import org.springframework.transaction.annotation.Transactional;
 import se.sundsvall.contactsettings.integration.db.model.Channel;
 import se.sundsvall.contactsettings.integration.db.model.ContactSettingEntity;
 import se.sundsvall.contactsettings.integration.db.model.DelegateEntity;
-import se.sundsvall.contactsettings.integration.db.model.Filter;
+import se.sundsvall.contactsettings.integration.db.model.DelegateFilterEntity;
+import se.sundsvall.contactsettings.integration.db.model.DelegateFilterRule;
 
 /**
  * DelegateRepository tests
@@ -45,6 +46,7 @@ class DelegateRepositoryTest {
 	private static final String DELEGATE_ENTITY_PRINCIPAL_PARTY_ID = "62fd9c95-99c0-4874-b0ef-e990aaab03c6";
 	private static final String DELEGATE_ENTITY_AGENT_ID = "07025549-3fbd-4db2-ab40-e1b93034b254";
 	private static final String DELEGATE_ENTITY_AGENT_PARTY_ID = "7af1869c-a8c2-4690-8d89-112ef15b4ffd";
+	private static final String DELEGATE_FILTER_ENTITY_ID = "4327dae1-a00b-462d-885a-417628ea3114";
 
 	@Autowired
 	private ContactSettingRepository contactSettingRepository;
@@ -52,13 +54,24 @@ class DelegateRepositoryTest {
 	@Autowired
 	private DelegateRepository delegateRepository;
 
+	@Autowired
+	private DelegateFilterRepository delegateFilterRepository;
+
 	@Test
 	void create() {
 
 		// Arrange
 		final var principal = contactSettingRepository.save(createContactSettingEntity());
 		final var agent = contactSettingRepository.save(createContactSettingEntity());
-		final var entity = DelegateEntity.create().withAgent(agent).withPrincipal(principal);
+		final var entity = DelegateEntity.create()
+			.withAgent(agent)
+			.withPrincipal(principal)
+			.withFilters(List.of(DelegateFilterEntity.create()
+				.withAlias("My filter")
+				.withFilterRules(List.of(DelegateFilterRule.create()
+					.withAttributeName("key")
+					.withOperator(EQUALS.toString())
+					.withAttributeValue("value")))));
 
 		// Act
 		final var result = delegateRepository.save(entity);
@@ -70,34 +83,13 @@ class DelegateRepositoryTest {
 		assertThat(result.getModified()).isNull();
 		assertThat(result.getAgent()).isEqualTo(agent);
 		assertThat(result.getPrincipal()).isEqualTo(principal);
-	}
-
-	@Test
-	void update() {
-
-		// Arrange
-		final var entity = delegateRepository.findById(DELEGATE_ENTITY_ID).orElseThrow();
-		assertThat(entity).isNotNull();
-		assertThat(entity.getPrincipal().getAlias()).isEqualTo("Joe Doe");
-		assertThat(entity.getAgent().getAlias()).isEqualTo("Jane Doe");
-		assertThat(entity.getFilters())
-			.extracting(Filter::getKey, Filter::getValue)
-			.containsExactly(tuple("facility-id", "123456789"));
-
-		// Act
-		final var result = delegateRepository.save(entity.withFilters(List.of(
-			Filter.create().withKey("filter1").withValue("value1"),
-			Filter.create().withKey("filter1").withValue("value2"),
-			Filter.create().withKey("filter2").withValue("value3"))));
-
-		// Assert
-		assertThat(result).isNotNull();
 		assertThat(result.getFilters())
-			.extracting(Filter::getKey, Filter::getValue)
-			.containsExactly(
-				tuple("filter1", "value1"),
-				tuple("filter1", "value2"),
-				tuple("filter2", "value3"));
+			.isNotEmpty()
+			.first()
+			.matches(delegateFilter -> isValidUUID(delegateFilter.getId()))
+			.matches(delegateFilter -> "My filter".equals(delegateFilter.getAlias()))
+			.matches(delegateFilter -> delegateFilter.getFilterRules().stream()
+				.allMatch(rule -> "key".equals(rule.getAttributeName()) && "value".equals(rule.getAttributeValue()) && rule.getOperator().equals(EQUALS.toString())));
 	}
 
 	@Test
@@ -180,6 +172,7 @@ class DelegateRepositoryTest {
 
 		// Arrange
 		assertThat(delegateRepository.findById(DELEGATE_ENTITY_ID)).isPresent();
+		assertThat(delegateFilterRepository.findById(DELEGATE_FILTER_ENTITY_ID)).isPresent();
 		assertThat(contactSettingRepository.findById(DELEGATE_ENTITY_PRINCIPAL_ID)).isPresent();
 		assertThat(contactSettingRepository.findById(DELEGATE_ENTITY_AGENT_ID)).isPresent();
 
@@ -187,9 +180,10 @@ class DelegateRepositoryTest {
 		delegateRepository.deleteById(DELEGATE_ENTITY_ID);
 
 		// Assert
-		assertThat(delegateRepository.findById(DELEGATE_ENTITY_ID)).isNotPresent();
-		assertThat(contactSettingRepository.findById(DELEGATE_ENTITY_PRINCIPAL_ID)).isPresent();
-		assertThat(contactSettingRepository.findById(DELEGATE_ENTITY_AGENT_ID)).isPresent();
+		assertThat(delegateRepository.findById(DELEGATE_ENTITY_ID)).isNotPresent(); // Should be removed.
+		assertThat(delegateFilterRepository.findById(DELEGATE_FILTER_ENTITY_ID)).isNotPresent(); // Should be removed.
+		assertThat(contactSettingRepository.findById(DELEGATE_ENTITY_PRINCIPAL_ID)).isPresent(); // Should still be present.
+		assertThat(contactSettingRepository.findById(DELEGATE_ENTITY_AGENT_ID)).isPresent(); // Should still be present.
 	}
 
 	private static ContactSettingEntity createContactSettingEntity() {

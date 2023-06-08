@@ -14,7 +14,7 @@ import se.sundsvall.dept44.common.validators.annotation.ValidUuid;
 @ValidContactSettingCreateRequest
 public class ContactSettingCreateRequest {
 
-	@Schema(description = "ID for the person or organization to whom the contact setting applies. Set to null when creating a 'virtual' contact setting.", example = "15aee472-46ab-4f03-9605-68bd64ebc73f", requiredMode = REQUIRED)
+	@Schema(description = "ID of the person or organization to whom the contact setting applies. Set to null when creating a 'virtual' contact setting.", example = "15aee472-46ab-4f03-9605-68bd64ebc73f", requiredMode = REQUIRED)
 	@ValidUuid(nullable = true)
 	private String partyId;
 
@@ -22,7 +22,7 @@ public class ContactSettingCreateRequest {
 	@ValidUuid(nullable = true)
 	private String createdById;
 
-	@Schema(description = "Alias for the person or organization to whom the contact setting applies", example = "Brorsan")
+	@Schema(description = "Alias for this contact setting", example = "My contact-settings")
 	private String alias;
 
 	@Schema(description = "List of contact channels which are connected to the contact setting")

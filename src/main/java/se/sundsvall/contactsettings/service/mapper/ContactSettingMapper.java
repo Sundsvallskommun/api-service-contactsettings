@@ -18,56 +18,31 @@ public class ContactSettingMapper {
 
 	private ContactSettingMapper() {}
 
-	public static ContactSettingEntity toContactSettingEntityFromCreateRequest(final ContactSettingCreateRequest contactSettingCreateRequest) {
-		if (isNull(contactSettingCreateRequest)) {
+	/*
+	 * From API-model to DB-model.
+	 */
+
+	public static ContactSettingEntity toContactSettingEntity(final ContactSettingCreateRequest contactSettingCreateRequest) {
+		return Optional.ofNullable(contactSettingCreateRequest)
+			.map(request -> ContactSettingEntity.create()
+				.withPartyId(request.getPartyId())
+				.withChannels(toChannels(request.getContactChannels()))
+				.withAlias(request.getAlias())
+				.withCreatedById(request.getCreatedById()))
+			.orElse(null);
+	}
+
+	public static ContactSettingEntity mergeIntoContactSettingEntity(ContactSettingEntity existingContactSettingEntity, ContactSettingUpdateRequest contactSettingUpdateRequest) {
+		if (isNull(existingContactSettingEntity)) {
 			return null;
 		}
 
-		return ContactSettingEntity.create()
-			.withPartyId(contactSettingCreateRequest.getPartyId())
-			.withChannels(toChannels(contactSettingCreateRequest.getContactChannels()))
-			.withAlias(contactSettingCreateRequest.getAlias())
-			.withCreatedById(contactSettingCreateRequest.getCreatedById());
-	}
+		Optional.ofNullable(contactSettingUpdateRequest).ifPresent(contactSetting -> {
+			Optional.ofNullable(contactSetting.getContactChannels()).map(ContactSettingMapper::toChannels).ifPresent(existingContactSettingEntity::setChannels);
+			Optional.ofNullable(contactSetting.getAlias()).ifPresent(existingContactSettingEntity::setAlias);
+		});
 
-	public static ContactSettingEntity toContactSettingEntityFromUpdateRequest(final ContactSettingUpdateRequest contactSettingUpdateRequest) {
-		if (isNull(contactSettingUpdateRequest)) {
-			return null;
-		}
-
-		return ContactSettingEntity.create()
-			.withChannels(toChannels(contactSettingUpdateRequest.getContactChannels()))
-			.withAlias(contactSettingUpdateRequest.getAlias());
-	}
-
-	public static ContactSetting toContactSetting(final ContactSettingEntity contactSettingEntity) {
-		if (isNull(contactSettingEntity)) {
-			return null;
-		}
-
-		return ContactSetting.create()
-			.withId(contactSettingEntity.getId())
-			.withPartyId(contactSettingEntity.getPartyId())
-			.withContactChannels(toContactChannels(contactSettingEntity.getChannels()))
-			.withVirtual(isNull(contactSettingEntity.getPartyId()))
-			.withAlias(contactSettingEntity.getAlias())
-			.withCreated(contactSettingEntity.getCreated())
-			.withModified(contactSettingEntity.getModified())
-			.withCreatedById(contactSettingEntity.getCreatedById());
-	}
-
-	private static List<ContactChannel> toContactChannels(final List<Channel> channels) {
-		return Optional.ofNullable(channels).orElse(emptyList()).stream()
-			.map(ContactSettingMapper::toContactChannel)
-			.toList();
-	}
-
-	private static ContactChannel toContactChannel(final Channel channel) {
-		return ContactChannel.create()
-			.withDisabled(channel.isDisabled())
-			.withAlias(channel.getAlias())
-			.withContactMethod(ContactMethod.valueOf(channel.getContactMethod()))
-			.withDestination(channel.getDestination());
+		return existingContactSettingEntity;
 	}
 
 	private static List<Channel> toChannels(final List<ContactChannel> contactChannels) {
@@ -82,5 +57,37 @@ public class ContactSettingMapper {
 			.withAlias(contactChannel.getAlias())
 			.withContactMethod(contactChannel.getContactMethod().name())
 			.withDestination(contactChannel.getDestination());
+	}
+
+	/*
+	 * From DB-model to API-model.
+	 */
+
+	public static ContactSetting toContactSetting(final ContactSettingEntity contactSettingEntity) {
+		return Optional.ofNullable(contactSettingEntity)
+			.map(entity -> ContactSetting.create()
+				.withId(entity.getId())
+				.withPartyId(entity.getPartyId())
+				.withContactChannels(toContactChannels(entity.getChannels()))
+				.withVirtual(isNull(entity.getPartyId()))
+				.withAlias(entity.getAlias())
+				.withCreated(entity.getCreated())
+				.withModified(entity.getModified())
+				.withCreatedById(entity.getCreatedById()))
+			.orElse(null);
+	}
+
+	private static List<ContactChannel> toContactChannels(final List<Channel> channels) {
+		return Optional.ofNullable(channels).orElse(emptyList()).stream()
+			.map(ContactSettingMapper::toContactChannel)
+			.toList();
+	}
+
+	private static ContactChannel toContactChannel(final Channel channel) {
+		return ContactChannel.create()
+			.withDisabled(channel.isDisabled())
+			.withAlias(channel.getAlias())
+			.withContactMethod(ContactMethod.valueOf(channel.getContactMethod()))
+			.withDestination(channel.getDestination());
 	}
 }
