@@ -229,6 +229,19 @@ class FilterEvaluationUtilsTest {
 						DelegateFilterRule.create().withAttributeName("key2").withOperator("EQUALS").withAttributeValue("value-no-match")))), false),
 
 			Arguments.of(
+				"No match if input query does not contains the keys defined in filter",
+				Map.of(
+					"key1", List.of("value1", "value2"),
+					"key2", List.of("value3", "value4", "value5")),
+				List.of(
+					DelegateFilterEntity.create().withFilterRules(List.of(
+						DelegateFilterRule.create().withAttributeName("key-xxx").withOperator("EQUALS").withAttributeValue("value1"),
+						DelegateFilterRule.create().withAttributeName("key-yyy").withOperator("EQUALS").withAttributeValue("value2"))),
+					DelegateFilterEntity.create().withFilterRules(List.of(
+						DelegateFilterRule.create().withAttributeName("key-xxx").withOperator("NOT_EQUALS").withAttributeValue("value-no-match"),
+						DelegateFilterRule.create().withAttributeName("key-yyy").withOperator("EQUALS").withAttributeValue("value2")))), false),
+
+			Arguments.of(
 				"No match if input query is null",
 				null,
 				List.of(
