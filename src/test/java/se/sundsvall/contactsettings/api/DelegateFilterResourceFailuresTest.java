@@ -1,6 +1,7 @@
 package se.sundsvall.contactsettings.api;
 
 import static java.util.Collections.emptyList;
+import static java.util.UUID.randomUUID;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.tuple;
 import static org.mockito.Mockito.verifyNoInteractions;
@@ -12,7 +13,6 @@ import static se.sundsvall.contactsettings.api.model.enums.Operator.EQUALS;
 
 import java.util.List;
 import java.util.Map;
-import java.util.UUID;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,8 +33,8 @@ import se.sundsvall.contactsettings.service.DelegateFilterService;
 @ActiveProfiles("junit")
 class DelegateFilterResourceFailuresTest {
 
-	private final static String DELEGATE_ID = UUID.randomUUID().toString();
-	private final static String DELEGATE_FILTER_ID = UUID.randomUUID().toString();
+	private final static String DELEGATE_ID = randomUUID().toString();
+	private final static String DELEGATE_FILTER_ID = randomUUID().toString();
 
 	@MockBean
 	private DelegateFilterService delegateFilterServiceMock;
@@ -61,7 +61,7 @@ class DelegateFilterResourceFailuresTest {
 		assertThat(response.getTitle()).isEqualTo("Bad Request");
 		assertThat(response.getStatus()).isEqualTo(BAD_REQUEST);
 		assertThat(response.getDetail()).isEqualTo(
-			"Required request body is missing: public org.springframework.http.ResponseEntity<java.lang.Void> se.sundsvall.contactsettings.api.DelegateFilterResource.createFilter(org.springframework.web.util.UriComponentsBuilder,java.lang.String,se.sundsvall.contactsettings.api.model.Filter)");
+			"Required request body is missing: public org.springframework.http.ResponseEntity<java.lang.Void> se.sundsvall.contactsettings.api.DelegateFilterResource.create(org.springframework.web.util.UriComponentsBuilder,java.lang.String,se.sundsvall.contactsettings.api.model.Filter)");
 
 		verifyNoInteractions(delegateFilterServiceMock);
 	}
@@ -72,7 +72,10 @@ class DelegateFilterResourceFailuresTest {
 		// Arrange
 		final var body = Filter.create()
 			.withAlias("alias")
-			.withRules(List.of(Rule.create().withAttributeName("key").withAttributeValue("value").withOperator(EQUALS)));
+			.withRules(List.of(Rule.create()
+				.withAttributeName("key")
+				.withAttributeValue("value")
+				.withOperator(EQUALS)));
 
 		// Act
 		final var response = webTestClient.post()
@@ -92,7 +95,7 @@ class DelegateFilterResourceFailuresTest {
 		assertThat(response.getStatus()).isEqualTo(BAD_REQUEST);
 		assertThat(response.getViolations())
 			.extracting(Violation::getField, Violation::getMessage)
-			.containsExactlyInAnyOrder(tuple("createFilter.id", "not a valid UUID"));
+			.containsExactlyInAnyOrder(tuple("create.id", "not a valid UUID"));
 
 		verifyNoInteractions(delegateFilterServiceMock);
 	}
@@ -212,7 +215,7 @@ class DelegateFilterResourceFailuresTest {
 		assertThat(response.getStatus()).isEqualTo(BAD_REQUEST);
 		assertThat(response.getViolations())
 			.extracting(Violation::getField, Violation::getMessage)
-			.containsExactlyInAnyOrder(tuple("readFilter.id", "not a valid UUID"));
+			.containsExactlyInAnyOrder(tuple("read.id", "not a valid UUID"));
 
 		verifyNoInteractions(delegateFilterServiceMock);
 	}
@@ -236,7 +239,7 @@ class DelegateFilterResourceFailuresTest {
 		assertThat(response.getStatus()).isEqualTo(BAD_REQUEST);
 		assertThat(response.getViolations())
 			.extracting(Violation::getField, Violation::getMessage)
-			.containsExactlyInAnyOrder(tuple("readFilter.filterId", "not a valid UUID"));
+			.containsExactlyInAnyOrder(tuple("read.filterId", "not a valid UUID"));
 
 		verifyNoInteractions(delegateFilterServiceMock);
 	}
@@ -247,7 +250,10 @@ class DelegateFilterResourceFailuresTest {
 		// Arrange
 		final var body = Filter.create()
 			.withAlias("alias")
-			.withRules(List.of(Rule.create().withAttributeName("key").withAttributeValue("value").withOperator(EQUALS)));
+			.withRules(List.of(Rule.create()
+				.withAttributeName("key")
+				.withAttributeValue("value")
+				.withOperator(EQUALS)));
 
 		// Act
 		final var response = webTestClient.patch()
@@ -267,7 +273,7 @@ class DelegateFilterResourceFailuresTest {
 		assertThat(response.getStatus()).isEqualTo(BAD_REQUEST);
 		assertThat(response.getViolations())
 			.extracting(Violation::getField, Violation::getMessage)
-			.containsExactlyInAnyOrder(tuple("updateFilter.id", "not a valid UUID"));
+			.containsExactlyInAnyOrder(tuple("update.id", "not a valid UUID"));
 
 		verifyNoInteractions(delegateFilterServiceMock);
 	}
@@ -278,7 +284,10 @@ class DelegateFilterResourceFailuresTest {
 		// Arrange
 		final var body = Filter.create()
 			.withAlias("alias")
-			.withRules(List.of(Rule.create().withAttributeName("key").withAttributeValue("value").withOperator(EQUALS)));
+			.withRules(List.of(Rule.create()
+				.withAttributeName("key")
+				.withAttributeValue("value")
+				.withOperator(EQUALS)));
 
 		// Act
 		final var response = webTestClient.patch()
@@ -298,7 +307,7 @@ class DelegateFilterResourceFailuresTest {
 		assertThat(response.getStatus()).isEqualTo(BAD_REQUEST);
 		assertThat(response.getViolations())
 			.extracting(Violation::getField, Violation::getMessage)
-			.containsExactlyInAnyOrder(tuple("updateFilter.filterId", "not a valid UUID"));
+			.containsExactlyInAnyOrder(tuple("update.filterId", "not a valid UUID"));
 
 		verifyNoInteractions(delegateFilterServiceMock);
 	}
@@ -322,7 +331,7 @@ class DelegateFilterResourceFailuresTest {
 		assertThat(response.getTitle()).isEqualTo("Bad Request");
 		assertThat(response.getStatus()).isEqualTo(BAD_REQUEST);
 		assertThat(response.getDetail()).isEqualTo(
-			"Required request body is missing: public org.springframework.http.ResponseEntity<se.sundsvall.contactsettings.api.model.Filter> se.sundsvall.contactsettings.api.DelegateFilterResource.updateFilter(java.lang.String,java.lang.String,se.sundsvall.contactsettings.api.model.Filter)");
+			"Required request body is missing: public org.springframework.http.ResponseEntity<se.sundsvall.contactsettings.api.model.Filter> se.sundsvall.contactsettings.api.DelegateFilterResource.update(java.lang.String,java.lang.String,se.sundsvall.contactsettings.api.model.Filter)");
 
 		verifyNoInteractions(delegateFilterServiceMock);
 	}
@@ -442,7 +451,7 @@ class DelegateFilterResourceFailuresTest {
 		assertThat(response.getStatus()).isEqualTo(BAD_REQUEST);
 		assertThat(response.getViolations())
 			.extracting(Violation::getField, Violation::getMessage)
-			.containsExactlyInAnyOrder(tuple("deleteFilter.id", "not a valid UUID"));
+			.containsExactlyInAnyOrder(tuple("delete.id", "not a valid UUID"));
 
 		verifyNoInteractions(delegateFilterServiceMock);
 	}
@@ -466,7 +475,7 @@ class DelegateFilterResourceFailuresTest {
 		assertThat(response.getStatus()).isEqualTo(BAD_REQUEST);
 		assertThat(response.getViolations())
 			.extracting(Violation::getField, Violation::getMessage)
-			.containsExactlyInAnyOrder(tuple("deleteFilter.filterId", "not a valid UUID"));
+			.containsExactlyInAnyOrder(tuple("delete.filterId", "not a valid UUID"));
 
 		verifyNoInteractions(delegateFilterServiceMock);
 	}

@@ -1,6 +1,7 @@
 package se.sundsvall.contactsettings.service;
 
 import static java.lang.String.format;
+import static java.util.Collections.emptyMap;
 import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
 import static org.zalando.problem.Status.CONFLICT;
@@ -44,7 +45,7 @@ public class ContactSettingsService {
 	public String createContactSetting(final ContactSettingCreateRequest contactSettingCreateRequest) {
 		Optional.ofNullable(contactSettingCreateRequest.getPartyId()).ifPresent(partyId -> {
 			if (contactSettingRepository.findByPartyId(partyId).isPresent()) {
-				throw Problem.valueOf(CONFLICT, String.format(ERROR_MESSAGE_CONTACT_SETTING_BY_PARTY_ALREADY_EXISTS, contactSettingCreateRequest.getPartyId()));
+				throw Problem.valueOf(CONFLICT, format(ERROR_MESSAGE_CONTACT_SETTING_BY_PARTY_ALREADY_EXISTS, contactSettingCreateRequest.getPartyId()));
 			}
 		});
 
@@ -53,7 +54,7 @@ public class ContactSettingsService {
 
 	public ContactSetting readContactSetting(final String id) {
 		return contactSettingRepository.findById(id).map(ContactSettingMapper::toContactSetting)
-			.orElseThrow(() -> Problem.valueOf(NOT_FOUND, String.format(ERROR_MESSAGE_CONTACT_SETTING_NOT_FOUND, id)));
+			.orElseThrow(() -> Problem.valueOf(NOT_FOUND, format(ERROR_MESSAGE_CONTACT_SETTING_NOT_FOUND, id)));
 	}
 
 	public List<ContactSetting> readContactSettingChildren(final String id) {
@@ -73,10 +74,10 @@ public class ContactSettingsService {
 
 		// Fetch root entity, or throw a 404.
 		final var parent = contactSettingRepository.findByPartyId(partyId)
-			.orElseThrow(() -> Problem.valueOf(NOT_FOUND, String.format(ERROR_MESSAGE_CONTACT_SETTING_BY_PARTY_ID_NOT_FOUND, partyId)));
+			.orElseThrow(() -> Problem.valueOf(NOT_FOUND, format(ERROR_MESSAGE_CONTACT_SETTING_BY_PARTY_ID_NOT_FOUND, partyId)));
 
 		// Call the actual search-and-collect logic.
-		return searchAndCollectFromDelegateChain(parent, inputQuery, new HashSet<>()).stream()
+		return searchAndCollectFromDelegateChain(parent, Optional.ofNullable(inputQuery).orElse(emptyMap()), new HashSet<>()).stream()
 			.map(ContactSettingMapper::toContactSetting)
 			.toList();
 	}

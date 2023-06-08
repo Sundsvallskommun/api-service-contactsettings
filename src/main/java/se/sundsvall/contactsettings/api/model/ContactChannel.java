@@ -1,25 +1,31 @@
 package se.sundsvall.contactsettings.api.model;
 
+import static io.swagger.v3.oas.annotations.media.Schema.RequiredMode.NOT_REQUIRED;
 import static io.swagger.v3.oas.annotations.media.Schema.RequiredMode.REQUIRED;
 
 import java.util.Objects;
 
 import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import se.sundsvall.contactsettings.api.model.enums.ContactMethod;
 
 @Schema(description = "Contact channel model")
 public class ContactChannel {
 
 	@Schema(description = "Method of contact", example = "SMS", requiredMode = REQUIRED)
+	@NotNull
 	private ContactMethod contactMethod;
 
 	@Schema(description = "Alias for the destination", example = "Private phone", requiredMode = REQUIRED)
+	@NotBlank
 	private String alias;
 
 	@Schema(description = "Point of destination", example = "+46701234567", requiredMode = REQUIRED)
+	@NotBlank
 	private String destination;
 
-	@Schema(description = "Signal if channel should be used or not when sending message", example = "true")
+	@Schema(description = "Signal if channel should be used or not when sending message", example = "true", defaultValue = "false", requiredMode = NOT_REQUIRED)
 	private boolean disabled;
 
 	public static ContactChannel create() {

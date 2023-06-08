@@ -1,0 +1,18 @@
+[
+	{
+		"id": "1aa6df8d-6f5f-4e00-91aa-43dee8cfaef7",
+		"partyId": "27c4424a-9b9c-49f4-8635-bcaca8cc202b",
+		"alias": "Mr Pink",
+		"virtual": false,
+		"contactChannels": [
+			{
+				"contactMethod": "EMAIL",
+				"alias": "Email",
+				"destination": "mr.pink@example.com",
+				"disabled": false
+			}
+		],
+		"created": "2023-05-23T12:01:00+02:00",
+		"modified": "2023-05-24T12:00:00+02:00"
+	}
+]

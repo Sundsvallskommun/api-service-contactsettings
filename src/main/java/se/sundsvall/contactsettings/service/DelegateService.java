@@ -89,13 +89,13 @@ public class DelegateService {
 
 	private void verifyThatAgentExists(String agentId) {
 		if (!contactSettingRepository.existsById(agentId)) {
-			throw Problem.valueOf(NOT_FOUND, String.format(ERROR_MESSAGE_AGENT_NOT_FOUND, agentId));
+			throw Problem.valueOf(NOT_FOUND, format(ERROR_MESSAGE_AGENT_NOT_FOUND, agentId));
 		}
 	}
 
 	private void verifyThatPrincipalExists(String principalId) {
 		if (!contactSettingRepository.existsById(principalId)) {
-			throw Problem.valueOf(NOT_FOUND, String.format(ERROR_MESSAGE_PRINCIPAL_NOT_FOUND, principalId));
+			throw Problem.valueOf(NOT_FOUND, format(ERROR_MESSAGE_PRINCIPAL_NOT_FOUND, principalId));
 		}
 	}
 

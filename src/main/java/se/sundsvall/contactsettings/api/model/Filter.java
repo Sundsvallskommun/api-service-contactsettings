@@ -20,7 +20,7 @@ public class Filter {
 	@Schema(description = "ID of the filter", example = "5d8403b1-1bf0-4cb1-b39e-c7c504d501a1", accessMode = READ_ONLY)
 	private String id;
 
-	@Schema(description = "The filter alias", example = "My filter for delegating messages to my friend", requiredMode = REQUIRED)
+	@Schema(description = "The filter alias", example = "My filter for delegating messages to my friend")
 	private String alias;
 
 	@Schema(description = "Timestamp when filter was created", example = "2020-08-31T01:30:00.000+02:00", accessMode = READ_ONLY)
@@ -34,7 +34,7 @@ public class Filter {
 	@Schema(description = """
 		The filter rules.
 		If more than one rule exists, there will be an implicit AND-condition between the rules.
-		I.e. all rules must evaluate to true in order to pass the filter.""")
+		I.e. all rules must evaluate to true in order to pass the filter.""", requiredMode = REQUIRED)
 	@NotEmpty
 	private List<@Valid Rule> rules;
 

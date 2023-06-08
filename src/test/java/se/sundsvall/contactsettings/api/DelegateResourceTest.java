@@ -12,7 +12,6 @@ import static se.sundsvall.contactsettings.api.model.enums.Operator.EQUALS;
 
 import java.util.List;
 import java.util.Map;
-import java.util.UUID;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,7 +32,7 @@ import se.sundsvall.contactsettings.service.DelegateService;
 @ActiveProfiles("junit")
 class DelegateResourceTest {
 
-	private static final String DELEGATE_ID = UUID.randomUUID().toString();
+	private static final String DELEGATE_ID = randomUUID().toString();
 
 	@MockBean
 	private DelegateService delegateServiceMock;
@@ -50,7 +49,10 @@ class DelegateResourceTest {
 			.withPrincipalId(randomUUID().toString())
 			.withFilters(List.of(Filter.create()
 				.withAlias("filter")
-				.withRules(List.of(Rule.create().withAttributeName("attribute").withOperator(EQUALS).withAttributeValue("value")))));
+				.withRules(List.of(Rule.create()
+					.withAttributeName("attribute")
+					.withOperator(EQUALS)
+					.withAttributeValue("value")))));
 
 		when(delegateServiceMock.create(any())).thenReturn(Delegate.create().withId(DELEGATE_ID));
 

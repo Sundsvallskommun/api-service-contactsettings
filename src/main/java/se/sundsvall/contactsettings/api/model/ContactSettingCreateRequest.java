@@ -1,11 +1,13 @@
 package se.sundsvall.contactsettings.api.model;
 
+import static io.swagger.v3.oas.annotations.media.Schema.RequiredMode.NOT_REQUIRED;
 import static io.swagger.v3.oas.annotations.media.Schema.RequiredMode.REQUIRED;
 
 import java.util.List;
 import java.util.Objects;
 
 import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.validation.Valid;
 import se.sundsvall.contactsettings.api.validator.ValidContactChannel;
 import se.sundsvall.contactsettings.api.validator.ValidContactSettingCreateRequest;
 import se.sundsvall.dept44.common.validators.annotation.ValidUuid;
@@ -22,11 +24,11 @@ public class ContactSettingCreateRequest {
 	@ValidUuid(nullable = true)
 	private String createdById;
 
-	@Schema(description = "Alias for this contact setting", example = "My contact-settings")
+	@Schema(description = "Alias for this contact setting", example = "My contact-settings", requiredMode = NOT_REQUIRED)
 	private String alias;
 
 	@Schema(description = "List of contact channels which are connected to the contact setting")
-	private List<@ValidContactChannel ContactChannel> contactChannels;
+	private List<@Valid @ValidContactChannel ContactChannel> contactChannels;
 
 	public static ContactSettingCreateRequest create() {
 		return new ContactSettingCreateRequest();

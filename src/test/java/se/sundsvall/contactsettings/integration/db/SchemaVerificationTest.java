@@ -1,5 +1,6 @@
 package se.sundsvall.contactsettings.integration.db;
 
+import static java.lang.String.format;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase.Replace.NONE;
 
@@ -32,7 +33,7 @@ class SchemaVerificationTest {
 		final var generatedSchema = Files.readString(Path.of(generatedSchemaFile));
 
 		assertThat(storedSchema)
-			.as(String.format("Please reflect modifications to entities in file: %s", STORED_SCHEMA_FILE))
+			.as(format("Please reflect modifications to entities in file: %s", STORED_SCHEMA_FILE))
 			.isEqualToNormalizingWhitespace(generatedSchema);
 	}
 

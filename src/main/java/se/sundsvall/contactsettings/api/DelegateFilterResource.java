@@ -54,7 +54,7 @@ public class DelegateFilterResource {
 	@ApiResponse(responseCode = "400", description = "Bad request", content = @Content(mediaType = APPLICATION_PROBLEM_JSON_VALUE, schema = @Schema(oneOf = { Problem.class, ConstraintViolationProblem.class })))
 	@ApiResponse(responseCode = "409", description = "Conflict", content = @Content(mediaType = APPLICATION_PROBLEM_JSON_VALUE, schema = @Schema(implementation = Problem.class)))
 	@ApiResponse(responseCode = "500", description = "Internal Server error", content = @Content(mediaType = APPLICATION_PROBLEM_JSON_VALUE, schema = @Schema(implementation = Problem.class)))
-	public ResponseEntity<Void> createFilter(
+	public ResponseEntity<Void> create(
 		UriComponentsBuilder uriComponentsBuilder,
 		@Parameter(name = "id", description = "Delegate ID", example = "81471222-5798-11e9-ae24-57fa13b361e1") @ValidUuid @PathVariable(name = "id") String id,
 		@NotNull @Valid @RequestBody Filter body) {
@@ -71,7 +71,7 @@ public class DelegateFilterResource {
 	@ApiResponse(responseCode = "400", description = "Bad request", content = @Content(mediaType = APPLICATION_PROBLEM_JSON_VALUE, schema = @Schema(oneOf = { Problem.class, ConstraintViolationProblem.class })))
 	@ApiResponse(responseCode = "404", description = "Not found", content = @Content(mediaType = APPLICATION_PROBLEM_JSON_VALUE, schema = @Schema(implementation = Problem.class)))
 	@ApiResponse(responseCode = "500", description = "Internal Server error", content = @Content(mediaType = APPLICATION_PROBLEM_JSON_VALUE, schema = @Schema(implementation = Problem.class)))
-	public ResponseEntity<Filter> readFilter(
+	public ResponseEntity<Filter> read(
 		@Parameter(name = "id", description = "Delegate ID", example = "81471222-5798-11e9-ae24-57fa13b361e1") @ValidUuid @PathVariable(name = "id") final String id,
 		@Parameter(name = "filterId", description = "Delegate filter ID", example = "b95eb1ed-0561-49f2-a7dc-5b8bc0411778") @ValidUuid @PathVariable(name = "filterId") String filterId) {
 
@@ -84,7 +84,7 @@ public class DelegateFilterResource {
 	@ApiResponse(responseCode = "400", description = "Bad request", content = @Content(mediaType = APPLICATION_PROBLEM_JSON_VALUE, schema = @Schema(oneOf = { Problem.class, ConstraintViolationProblem.class })))
 	@ApiResponse(responseCode = "404", description = "Not found", content = @Content(mediaType = APPLICATION_PROBLEM_JSON_VALUE, schema = @Schema(implementation = Problem.class)))
 	@ApiResponse(responseCode = "500", description = "Internal Server error", content = @Content(mediaType = APPLICATION_PROBLEM_JSON_VALUE, schema = @Schema(implementation = Problem.class)))
-	public ResponseEntity<Filter> updateFilter(
+	public ResponseEntity<Filter> update(
 		@Parameter(name = "id", description = "Delegate ID", example = "81471222-5798-11e9-ae24-57fa13b361e1") @ValidUuid @PathVariable(name = "id") String id,
 		@Parameter(name = "filterId", description = "Delegate filter ID", example = "b95eb1ed-0561-49f2-a7dc-5b8bc0411778") @ValidUuid @PathVariable(name = "filterId") String filterId,
 		@NotNull @Valid @RequestBody final Filter body) {
@@ -98,7 +98,7 @@ public class DelegateFilterResource {
 	@ApiResponse(responseCode = "400", description = "Bad request", content = @Content(schema = @Schema(oneOf = { Problem.class, ConstraintViolationProblem.class })))
 	@ApiResponse(responseCode = "404", description = "Not found", content = @Content(schema = @Schema(implementation = Problem.class)))
 	@ApiResponse(responseCode = "500", description = "Internal Server error", content = @Content(schema = @Schema(implementation = Problem.class)))
-	public ResponseEntity<Void> deleteFilter(
+	public ResponseEntity<Void> delete(
 		@Parameter(name = "id", description = "Delegate ID", example = "81471222-5798-11e9-ae24-57fa13b361e1") @ValidUuid @PathVariable(name = "id") String id,
 		@Parameter(name = "filterId", description = "Delegate filter ID", example = "b95eb1ed-0561-49f2-a7dc-5b8bc0411778") @ValidUuid @PathVariable(name = "filterId") String filterId) {
 

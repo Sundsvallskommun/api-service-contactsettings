@@ -11,7 +11,6 @@ import static org.zalando.problem.Status.BAD_REQUEST;
 
 import java.util.List;
 import java.util.Map;
-import java.util.UUID;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -133,7 +132,7 @@ class DelegateResourceFailuresTest {
 			.withAgentId(randomUUID().toString())
 			.withPrincipalId(randomUUID().toString())
 			.withFilters(List.of(Filter.create()
-				.withId(UUID.randomUUID().toString())
+				.withId(randomUUID().toString())
 				.withRules(List.of(Rule.create())))); // Missing all Rule-attributes
 
 		// Act

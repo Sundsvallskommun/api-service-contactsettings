@@ -1,5 +1,6 @@
 package se.sundsvall.contactsettings.api.validator.impl;
 
+import static java.lang.String.format;
 import static java.util.Objects.isNull;
 
 import java.util.Optional;
@@ -27,14 +28,14 @@ public class ValidContactChannelConstraintValidator implements ConstraintValidat
 		return switch (value.getContactMethod()) {
 			case EMAIL -> {
 				if (!EMAIL_PATTERN.matcher(Optional.ofNullable(value.getDestination()).orElse("")).matches()) {
-					setValidationMessage(context, String.format(EMAIL_VALIDATION_MESSAGE, value.getDestination()));
+					setValidationMessage(context, format(EMAIL_VALIDATION_MESSAGE, value.getDestination()));
 					yield false;
 				}
 				yield true;
 			}
 			case SMS -> {
 				if (!MSISDN_PATTERN.matcher(Optional.ofNullable(value.getDestination()).orElse("")).matches()) {
-					setValidationMessage(context, String.format(SMS_VALIDATION_MESSAGE, value.getDestination()));
+					setValidationMessage(context, format(SMS_VALIDATION_MESSAGE, value.getDestination()));
 					yield false;
 				}
 				yield true;

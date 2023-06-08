@@ -1,0 +1,12 @@
+{
+	"partyId": "15aee472-46ab-4f03-9605-68bd64ebc73f",
+	"alias": "My contact-settings",
+	"contactChannels": [
+		{
+			"contactMethod": "SMS",
+			"alias": "Private phone",
+			"destination": "+46701234567",
+			"disabled": false
+		}
+	]
+}
