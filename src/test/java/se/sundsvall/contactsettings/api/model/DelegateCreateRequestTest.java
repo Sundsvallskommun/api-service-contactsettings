@@ -8,9 +8,9 @@ import static com.google.code.beanmatchers.BeanMatchers.hasValidGettersAndSetter
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.CoreMatchers.allOf;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static se.sundsvall.contactsettings.api.model.enums.Operator.EQUALS;
 
 import java.util.List;
-import java.util.Map;
 
 import org.junit.jupiter.api.Test;
 
@@ -30,17 +30,19 @@ class DelegateCreateRequestTest {
 	void testBuilderMethods() {
 
 		final var agentId = "agentId";
-		final var filter = Map.of("key", List.of("value"));
+		final var filters = List.of(Filter.create()
+			.withAlias("filter")
+			.withRules(List.of(Rule.create().withAttributeName("attribute").withOperator(EQUALS).withAttributeValue("value"))));
 		final var principalId = "principalId";
 
 		final var bean = DelegateCreateRequest.create()
 			.withAgentId(agentId)
-			.withFilter(filter)
+			.withFilters(filters)
 			.withPrincipalId(principalId);
 
 		assertThat(bean).isNotNull().hasNoNullFieldsOrProperties();
 		assertThat(bean.getAgentId()).isEqualTo(agentId);
-		assertThat(bean.getFilter()).isEqualTo(filter);
+		assertThat(bean.getFilters()).isEqualTo(filters);
 		assertThat(bean.getPrincipalId()).isEqualTo(principalId);
 	}
 

@@ -1,0 +1,10 @@
+{
+	"alias": "My filter for delegating messages to my friend",
+	"rules": [
+		{
+			"attributeName": "facilityId",
+			"operator": "EQUALS",
+			"attributeValue": "12345678"
+		}
+	]
+}

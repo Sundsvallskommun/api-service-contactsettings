@@ -4,16 +4,17 @@ import java.util.List;
 import java.util.Objects;
 
 import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.validation.Valid;
 import se.sundsvall.contactsettings.api.validator.ValidContactChannel;
 
 @Schema(description = "Contact setting update request model")
 public class ContactSettingUpdateRequest {
 
-	@Schema(description = "Alias for the person or organization to whom the contact setting applies", example = "Brorsan")
+	@Schema(description = "Alias for this contact setting", example = "My contact-settings")
 	private String alias;
 
 	@Schema(description = "List of contact channels which are connected to the contact setting")
-	private List<@ValidContactChannel ContactChannel> contactChannels;
+	private List<@Valid @ValidContactChannel ContactChannel> contactChannels;
 
 	public static ContactSettingUpdateRequest create() {
 		return new ContactSettingUpdateRequest();
@@ -55,7 +56,7 @@ public class ContactSettingUpdateRequest {
 		if (this == obj) {
 			return true;
 		}
-		if (!(obj instanceof ContactSettingUpdateRequest other)) {
+		if (!(obj instanceof final ContactSettingUpdateRequest other)) {
 			return false;
 		}
 		return Objects.equals(alias, other.alias) && Objects.equals(contactChannels, other.contactChannels);

@@ -2,20 +2,21 @@ package se.sundsvall.contactsettings.service.mapper;
 
 import static java.time.OffsetDateTime.now;
 import static java.time.ZoneId.systemDefault;
-import static java.util.UUID.randomUUID;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.time.ZoneId;
 import java.util.List;
-import java.util.Map;
 
 import org.junit.jupiter.api.Test;
 
 import se.sundsvall.contactsettings.api.model.DelegateCreateRequest;
-import se.sundsvall.contactsettings.api.model.DelegateUpdateRequest;
+import se.sundsvall.contactsettings.api.model.Filter;
+import se.sundsvall.contactsettings.api.model.Rule;
+import se.sundsvall.contactsettings.api.model.enums.Operator;
 import se.sundsvall.contactsettings.integration.db.model.ContactSettingEntity;
 import se.sundsvall.contactsettings.integration.db.model.DelegateEntity;
-import se.sundsvall.contactsettings.integration.db.model.Filter;
+import se.sundsvall.contactsettings.integration.db.model.DelegateFilterEntity;
+import se.sundsvall.contactsettings.integration.db.model.DelegateFilterRule;
 
 class DelegateMapperTest {
 
@@ -27,17 +28,23 @@ class DelegateMapperTest {
 		final var principalId = "principalId";
 		final var id = "id";
 		final var created = now(ZoneId.systemDefault());
-		final var modified = now(ZoneId.systemDefault());
+		final var modified = now(ZoneId.systemDefault()).plusDays(1);
 
 		final var delegateEntity = DelegateEntity.create()
 			.withAgent(ContactSettingEntity.create().withId(agentId))
 			.withFilters(List.of(
-				Filter.create().withKey("key1").withValue("value1"),
-				Filter.create().withKey("key1").withValue("value2"),
-				Filter.create().withKey("key1").withValue("value3"),
-				Filter.create().withKey("key2").withValue("value4"),
-				Filter.create().withKey("key2").withValue("value5"),
-				Filter.create().withKey("key3").withValue("value6")))
+				DelegateFilterEntity.create()
+					.withAlias("alias1")
+					.withCreated(created)
+					.withFilterRules(List.of(DelegateFilterRule.create().withAttributeName("attribute1").withOperator("EQUALS").withAttributeValue("value1")))
+					.withId("id1")
+					.withModified(modified),
+				DelegateFilterEntity.create()
+					.withAlias("alias2")
+					.withCreated(created)
+					.withFilterRules(List.of(DelegateFilterRule.create().withAttributeName("attribute2").withOperator("NOT_EQUALS").withAttributeValue("value2")))
+					.withId("id2")
+					.withModified(modified)))
 			.withId(id)
 			.withPrincipal(ContactSettingEntity.create().withId(principalId))
 			.withCreated(created)
@@ -50,10 +57,21 @@ class DelegateMapperTest {
 		assertThat(result).isNotNull();
 		assertThat(result.getAgentId()).isEqualTo(agentId);
 		assertThat(result.getCreated()).isEqualTo(created);
-		assertThat(result.getFilter()).containsExactlyInAnyOrderEntriesOf(Map.of(
-			"key1", List.of("value1", "value2", "value3"),
-			"key2", List.of("value4", "value5"),
-			"key3", List.of("value6")));
+		assertThat(result.getFilters()).containsExactly(
+			Filter.create()
+				.withAlias("alias1")
+				.withCreated(created)
+				.withId("id1")
+				.withModified(modified)
+				.withRules(List.of(
+					Rule.create().withAttributeName("attribute1").withAttributeValue("value1").withOperator(Operator.EQUALS))),
+			Filter.create()
+				.withAlias("alias2")
+				.withCreated(created)
+				.withId("id2")
+				.withModified(modified)
+				.withRules(List.of(
+					Rule.create().withAttributeName("attribute2").withAttributeValue("value2").withOperator(Operator.NOT_EQUALS))));
 		assertThat(result.getId()).isEqualTo(id);
 		assertThat(result.getModified()).isEqualTo(modified);
 		assertThat(result.getPrincipalId()).isEqualTo(principalId);
@@ -75,13 +93,26 @@ class DelegateMapperTest {
 		// Arrange
 		final var agentId = "agentId";
 		final var principalId = "principalId";
+		final var created = now(ZoneId.systemDefault());
+		final var modified = now(ZoneId.systemDefault()).plusDays(1);
 
 		final var delegate = DelegateCreateRequest.create()
 			.withAgentId(agentId)
-			.withFilter(Map.of(
-				"key1", List.of("value1", "value2", "value3"),
-				"key2", List.of("value4", "value5"),
-				"key3", List.of("value6")))
+			.withFilters(List.of(
+				Filter.create()
+					.withAlias("alias1")
+					.withCreated(created)
+					.withId("id1")
+					.withModified(modified)
+					.withRules(List.of(
+						Rule.create().withAttributeName("attribute1").withAttributeValue("value1").withOperator(Operator.EQUALS))),
+				Filter.create()
+					.withAlias("alias2")
+					.withCreated(created)
+					.withId("id2")
+					.withModified(modified)
+					.withRules(List.of(
+						Rule.create().withAttributeName("attribute2").withAttributeValue("value2").withOperator(Operator.EQUALS)))))
 			.withPrincipalId(principalId);
 
 		// Act
@@ -91,13 +122,15 @@ class DelegateMapperTest {
 		assertThat(result).isNotNull();
 		assertThat(result.getAgent()).isEqualTo(ContactSettingEntity.create().withId(agentId));
 		assertThat(result.getCreated()).isNull();
-		assertThat(result.getFilters()).containsExactlyInAnyOrder(
-			Filter.create().withKey("key1").withValue("value1"),
-			Filter.create().withKey("key1").withValue("value2"),
-			Filter.create().withKey("key1").withValue("value3"),
-			Filter.create().withKey("key2").withValue("value4"),
-			Filter.create().withKey("key2").withValue("value5"),
-			Filter.create().withKey("key3").withValue("value6"));
+		assertThat(result.getFilters()).containsExactly(
+			DelegateFilterEntity.create()
+				.withAlias("alias1")
+				.withFilterRules(List.of(DelegateFilterRule.create().withAttributeName("attribute1").withOperator("EQUALS").withAttributeValue("value1")))
+				.withId("id1"),
+			DelegateFilterEntity.create()
+				.withAlias("alias2")
+				.withFilterRules(List.of(DelegateFilterRule.create().withAttributeName("attribute2").withOperator("EQUALS").withAttributeValue("value2")))
+				.withId("id2"));
 		assertThat(result.getId()).isNull();
 		assertThat(result.getModified()).isNull();
 		assertThat(result.getPrincipal()).isEqualTo(ContactSettingEntity.create().withId(principalId));
@@ -114,43 +147,52 @@ class DelegateMapperTest {
 	}
 
 	@Test
-	void mergeIntoDelegateEntity() {
+	void mergeIntoDelegateFilterEntity() {
 
 		// Arrange
-		final var delegateEntity = DelegateEntity.create()
-			.withAgent(ContactSettingEntity.create().withId(randomUUID().toString()))
-			.withPrincipal(ContactSettingEntity.create().withId(randomUUID().toString()))
-			.withId("id")
-			.withFilters(List.of(Filter.create().withKey("key1").withValue("value1")))
+		final var delegateFilterEntity = DelegateFilterEntity.create()
+			.withAlias("alias1")
+			.withFilterRules(List.of(DelegateFilterRule.create().withAttributeName("attribute1").withOperator("EQUALS").withAttributeValue("value1")))
+			.withId("id1")
 			.withModified(now(systemDefault()))
 			.withCreated(now(systemDefault()));
 
-		final var delegateUpdateRequest = DelegateUpdateRequest.create()
-			.withFilter(Map.of(
-				"key1", List.of("value1", "value2", "value3"),
-				"key2", List.of("value4", "value5"),
-				"key3", List.of("value6")));
-
+		final var filter = Filter.create()
+			.withAlias("alias2")
+			.withId("id2")
+			.withRules(List.of(
+				Rule.create().withAttributeName("attribute2").withAttributeValue("value2").withOperator(Operator.EQUALS)));
 		// Act
-		final var result = DelegateMapper.mergeIntoDelegateEntity(delegateEntity, delegateUpdateRequest);
+		final var result = DelegateMapper.mergeIntoDelegateFilterEntity(delegateFilterEntity, filter);
 
 		// Assert
 		assertThat(result).isNotNull();
-		assertThat(result).usingRecursiveComparison().ignoringFields("filters").isEqualTo(delegateEntity);
-		assertThat(result.getFilters()).containsExactlyInAnyOrder(
-			Filter.create().withKey("key1").withValue("value1"),
-			Filter.create().withKey("key1").withValue("value2"),
-			Filter.create().withKey("key1").withValue("value3"),
-			Filter.create().withKey("key2").withValue("value4"),
-			Filter.create().withKey("key2").withValue("value5"),
-			Filter.create().withKey("key3").withValue("value6"));
+		assertThat(result.getAlias()).isEqualTo("alias2");
+		assertThat(result.getFilterRules()).containsExactly(
+			DelegateFilterRule.create()
+				.withAttributeName("attribute2")
+				.withAttributeValue("value2")
+				.withOperator(Operator.EQUALS.toString()));
 	}
 
 	@Test
-	void toDelegateEntityFromDelegateUpdateRequestWhenNull() {
+	void mergeIntoDelegateFilterEntityWhenFilterIsNull() {
+
+		// Arrange
+		final var delegateFilterEntity = DelegateFilterEntity.create();
 
 		// Act
-		final var result = DelegateMapper.mergeIntoDelegateEntity(null, (DelegateUpdateRequest) null);
+		final var result = DelegateMapper.mergeIntoDelegateFilterEntity(DelegateFilterEntity.create(), null);
+
+		// Assert
+		assertThat(result).isEqualTo(delegateFilterEntity);
+	}
+
+	@Test
+	void mergeIntoDelegateFilterEntityWhenEntityIsNull() {
+
+		// Act
+		final var result = DelegateMapper.mergeIntoDelegateFilterEntity(null, Filter.create());
 
 		// Assert
 		assertThat(result).isNull();

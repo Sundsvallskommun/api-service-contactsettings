@@ -9,7 +9,7 @@ import se.sundsvall.contactsettings.api.validator.ValidFindDelegatesParameters;
 
 public class ValidFindDelegatesParametersConstraintValidator implements ConstraintValidator<ValidFindDelegatesParameters, FindDelegatesParameters> {
 
-	private static final String VALIDATION_MESSAGE = "One of agentId or principalId must be provided!";
+	private static final String VALIDATION_MESSAGE = "At least one of agentId or principalId must be provided!";
 
 	@Override
 	public boolean isValid(final FindDelegatesParameters value, final ConstraintValidatorContext context) {
