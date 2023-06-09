@@ -1,14 +1,16 @@
 INSERT INTO contact_setting (id, alias, created, modified, created_by_id, party_id) VALUES
-	('6c22993a-26b3-4a1f-805e-33a8c2b7c7e5', 'Mr blue', '2023-05-23 12:01:00', '2023-05-24 12:00:00', null, 'f6511275-4400-4073-a6be-076e332dc931'),
-	('1aa6df8d-6f5f-4e00-91aa-43dee8cfaef7', 'Mr pink', '2023-05-23 12:01:00', '2023-05-24 12:00:00', null, '27c4424a-9b9c-49f4-8635-bcaca8cc202b'),
-	('41e31470-150b-4db1-b3c1-c8f4108051ab', 'Mr white', '2023-05-23 12:01:00', '2023-05-24 12:00:00', null, '7903f7a9-325a-4a49-929a-d5952fef5c9a'),
-	('a552e909-d2b1-4f08-acbe-938040f95ff3', 'Mr brown', '2023-05-23 12:01:00', '2023-05-24 12:00:00', null, 'b63386a0-f19f-4a92-8f88-9fe8e9ad5339');
+	('6c22993a-26b3-4a1f-805e-33a8c2b7c7e5', 'Mr Blue', '2023-05-23 12:01:00', '2023-05-24 12:00:00', null, 'f6511275-4400-4073-a6be-076e332dc931'),
+	('1aa6df8d-6f5f-4e00-91aa-43dee8cfaef7', 'Mr Pink', '2023-05-23 12:01:00', '2023-05-24 12:00:00', null, '27c4424a-9b9c-49f4-8635-bcaca8cc202b'),
+	('41e31470-150b-4db1-b3c1-c8f4108051ab', 'Mr White', '2023-05-23 12:01:00', '2023-05-24 12:00:00', null, '7903f7a9-325a-4a49-929a-d5952fef5c9a'),
+	('a552e909-d2b1-4f08-acbe-938040f95ff3', 'Mr Brown', '2023-05-23 12:01:00', '2023-05-24 12:00:00', null, 'b63386a0-f19f-4a92-8f88-9fe8e9ad5339'),
+	('c2d0a7f8-e0d1-444d-9a7b-3cf6e7b46ad0', 'Mr Child', '2023-05-23 12:01:00', '2023-05-24 12:00:00', '41e31470-150b-4db1-b3c1-c8f4108051ab', null); -- Created by Mr white
 
 INSERT INTO contact_setting_channel (contact_setting_id, alias, contact_method, destination, disabled) VALUES
 	('6c22993a-26b3-4a1f-805e-33a8c2b7c7e5', 'Email', 'EMAIL', 'mr.blue@example.com', 0),
 	('1aa6df8d-6f5f-4e00-91aa-43dee8cfaef7', 'Email', 'EMAIL', 'mr.pink@example.com', 0),
 	('41e31470-150b-4db1-b3c1-c8f4108051ab', 'Email', 'EMAIL', 'mr.white@example.com', 0),
-	('a552e909-d2b1-4f08-acbe-938040f95ff3', 'Email', 'EMAIL', 'mr.brown@example.com', 0);
+	('a552e909-d2b1-4f08-acbe-938040f95ff3', 'Email', 'EMAIL', 'mr.brown@example.com', 0),
+	('c2d0a7f8-e0d1-444d-9a7b-3cf6e7b46ad0', 'Email', 'EMAIL', 'mr.child@example.com', 0);
 
 INSERT INTO delegate (id, principal_id, agent_id, created) VALUES
 	-- Mr Blue delegates to Mr Pink.

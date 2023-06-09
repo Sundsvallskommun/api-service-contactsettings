@@ -48,6 +48,9 @@
     create index contact_setting_created_by_id_index 
        on contact_setting (created_by_id);
 
+    create index contact_setting_channel_destination_index 
+       on contact_setting_channel (destination);
+
     alter table if exists contact_setting_channel 
        add constraint fk_contact_setting_contact_setting_channel 
        foreign key (contact_setting_id) 

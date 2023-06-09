@@ -12,7 +12,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 
 import org.junit.jupiter.api.Test;
 
-class GetDelegatesParametersTest {
+class FindDelegatesParametersTest {
 
 	@Test
 	void testBean() {

@@ -1,5 +1,6 @@
 package se.sundsvall.contactsettings.service;
 
+import static java.lang.String.format;
 import static java.util.Collections.emptyList;
 import static java.util.Optional.empty;
 import static java.util.UUID.randomUUID;
@@ -13,6 +14,7 @@ import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 import static org.zalando.problem.Status.CONFLICT;
 import static org.zalando.problem.Status.NOT_FOUND;
+import static se.sundsvall.contactsettings.api.model.enums.ContactMethod.EMAIL;
 import static se.sundsvall.contactsettings.api.model.enums.ContactMethod.SMS;
 import static se.sundsvall.contactsettings.service.Constants.ERROR_MESSAGE_CONTACT_SETTING_BY_PARTY_ALREADY_EXISTS;
 import static se.sundsvall.contactsettings.service.Constants.ERROR_MESSAGE_CONTACT_SETTING_BY_PARTY_ID_NOT_FOUND;
@@ -20,7 +22,6 @@ import static se.sundsvall.contactsettings.service.Constants.ERROR_MESSAGE_CONTA
 
 import java.util.List;
 import java.util.Optional;
-import java.util.UUID;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -34,7 +35,6 @@ import se.sundsvall.contactsettings.api.model.ContactChannel;
 import se.sundsvall.contactsettings.api.model.ContactSetting;
 import se.sundsvall.contactsettings.api.model.ContactSettingCreateRequest;
 import se.sundsvall.contactsettings.api.model.ContactSettingUpdateRequest;
-import se.sundsvall.contactsettings.api.model.enums.ContactMethod;
 import se.sundsvall.contactsettings.integration.db.ContactSettingRepository;
 import se.sundsvall.contactsettings.integration.db.DelegateRepository;
 import se.sundsvall.contactsettings.integration.db.model.Channel;
@@ -88,7 +88,7 @@ class ContactSettingsServiceTest {
 		// Assert
 		assertThat(exception.getStatus()).isEqualTo(CONFLICT);
 		assertThat(exception.getTitle()).isEqualTo(CONFLICT.getReasonPhrase());
-		assertThat(exception.getDetail()).isEqualTo(String.format(ERROR_MESSAGE_CONTACT_SETTING_BY_PARTY_ALREADY_EXISTS, contactSettingCreateRequest.getPartyId()));
+		assertThat(exception.getDetail()).isEqualTo(format(ERROR_MESSAGE_CONTACT_SETTING_BY_PARTY_ALREADY_EXISTS, contactSettingCreateRequest.getPartyId()));
 	}
 
 	@Test
@@ -119,7 +119,7 @@ class ContactSettingsServiceTest {
 		// Assert
 		assertThat(exception.getStatus()).isEqualTo(NOT_FOUND);
 		assertThat(exception.getTitle()).isEqualTo(NOT_FOUND.getReasonPhrase());
-		assertThat(exception.getDetail()).isEqualTo(String.format(ERROR_MESSAGE_CONTACT_SETTING_NOT_FOUND, ID));
+		assertThat(exception.getDetail()).isEqualTo(format(ERROR_MESSAGE_CONTACT_SETTING_NOT_FOUND, ID));
 		verify(contactSettingRepositoryMock).findById(ID);
 		verifyNoMoreInteractions(contactSettingRepositoryMock);
 	}
@@ -157,7 +157,7 @@ class ContactSettingsServiceTest {
 		// Assert
 		assertThat(exception.getStatus()).isEqualTo(NOT_FOUND);
 		assertThat(exception.getTitle()).isEqualTo(NOT_FOUND.getReasonPhrase());
-		assertThat(exception.getDetail()).isEqualTo(String.format(ERROR_MESSAGE_CONTACT_SETTING_NOT_FOUND, ID));
+		assertThat(exception.getDetail()).isEqualTo(format(ERROR_MESSAGE_CONTACT_SETTING_NOT_FOUND, ID));
 		verify(contactSettingRepositoryMock).existsById(ID);
 		verifyNoMoreInteractions(contactSettingRepositoryMock);
 	}
@@ -468,7 +468,7 @@ class ContactSettingsServiceTest {
 		// Assert
 		assertThat(exception.getStatus()).isEqualTo(NOT_FOUND);
 		assertThat(exception.getTitle()).isEqualTo(NOT_FOUND.getReasonPhrase());
-		assertThat(exception.getDetail()).isEqualTo(String.format(ERROR_MESSAGE_CONTACT_SETTING_BY_PARTY_ID_NOT_FOUND, partyId));
+		assertThat(exception.getDetail()).isEqualTo(format(ERROR_MESSAGE_CONTACT_SETTING_BY_PARTY_ID_NOT_FOUND, partyId));
 		verify(contactSettingRepositoryMock).findByPartyId(partyId);
 		verifyNoMoreInteractions(contactSettingRepositoryMock);
 	}
@@ -507,7 +507,7 @@ class ContactSettingsServiceTest {
 		// Assert
 		assertThat(exception.getStatus()).isEqualTo(NOT_FOUND);
 		assertThat(exception.getTitle()).isEqualTo(NOT_FOUND.getReasonPhrase());
-		assertThat(exception.getDetail()).isEqualTo(String.format(ERROR_MESSAGE_CONTACT_SETTING_NOT_FOUND, ID));
+		assertThat(exception.getDetail()).isEqualTo(format(ERROR_MESSAGE_CONTACT_SETTING_NOT_FOUND, ID));
 		verify(contactSettingRepositoryMock).findById(ID);
 		verifyNoMoreInteractions(contactSettingRepositoryMock);
 	}
@@ -516,8 +516,8 @@ class ContactSettingsServiceTest {
 	void deleteContactSetting() {
 
 		// Arrange
-		final var CHILD_ENTITY_ID_1 = UUID.randomUUID().toString();
-		final var CHILD_ENTITY_ID_2 = UUID.randomUUID().toString();
+		final var CHILD_ENTITY_ID_1 = randomUUID().toString();
+		final var CHILD_ENTITY_ID_2 = randomUUID().toString();
 
 		when(contactSettingRepositoryMock.findById(ID)).thenReturn(Optional.of(ContactSettingEntity.create().withId(ID).withPartyId("partyId")));
 		when(contactSettingRepositoryMock.findById(CHILD_ENTITY_ID_1)).thenReturn(Optional.of(ContactSettingEntity.create().withId(CHILD_ENTITY_ID_1)));
@@ -566,7 +566,7 @@ class ContactSettingsServiceTest {
 		// Assert
 		assertThat(exception.getStatus()).isEqualTo(NOT_FOUND);
 		assertThat(exception.getTitle()).isEqualTo(NOT_FOUND.getReasonPhrase());
-		assertThat(exception.getDetail()).isEqualTo(String.format(ERROR_MESSAGE_CONTACT_SETTING_NOT_FOUND, ID));
+		assertThat(exception.getDetail()).isEqualTo(format(ERROR_MESSAGE_CONTACT_SETTING_NOT_FOUND, ID));
 		verify(contactSettingRepositoryMock).findById(ID);
 		verifyNoMoreInteractions(contactSettingRepositoryMock);
 		verifyNoInteractions(delegateRepositoryMock);
@@ -578,7 +578,7 @@ class ContactSettingsServiceTest {
 			.withAlias("alias")
 			.withCreatedById("createdById")
 			.withContactChannels(List.of(ContactChannel.create()
-				.withContactMethod(ContactMethod.EMAIL)
+				.withContactMethod(EMAIL)
 				.withDestination("destination")
 				.withAlias("channelAlias")));
 	}
@@ -587,7 +587,7 @@ class ContactSettingsServiceTest {
 		return ContactSettingUpdateRequest.create()
 			.withAlias("alias")
 			.withContactChannels(List.of(ContactChannel.create()
-				.withContactMethod(ContactMethod.EMAIL)
+				.withContactMethod(EMAIL)
 				.withDestination("destination")
 				.withAlias("channelAlias")));
 	}
@@ -600,7 +600,7 @@ class ContactSettingsServiceTest {
 			.withAlias("alias")
 			.withCreatedById("createdById")
 			.withContactChannels(List.of(ContactChannel.create()
-				.withContactMethod(ContactMethod.EMAIL)
+				.withContactMethod(EMAIL)
 				.withDestination("destination")
 				.withAlias("channelAlias")));
 	}
@@ -612,7 +612,7 @@ class ContactSettingsServiceTest {
 			.withAlias("alias")
 			.withCreatedById("createdById")
 			.withChannels(List.of(Channel.create()
-				.withContactMethod(ContactMethod.EMAIL.toString())
+				.withContactMethod(EMAIL.toString())
 				.withDestination("destination")
 				.withAlias("channelAlias")));
 	}

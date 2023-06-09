@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Objects;
 
 import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.validation.Valid;
 import se.sundsvall.contactsettings.api.validator.ValidContactChannel;
 
 @Schema(description = "Contact setting update request model")
@@ -13,7 +14,7 @@ public class ContactSettingUpdateRequest {
 	private String alias;
 
 	@Schema(description = "List of contact channels which are connected to the contact setting")
-	private List<@ValidContactChannel ContactChannel> contactChannels;
+	private List<@Valid @ValidContactChannel ContactChannel> contactChannels;
 
 	public static ContactSettingUpdateRequest create() {
 		return new ContactSettingUpdateRequest();

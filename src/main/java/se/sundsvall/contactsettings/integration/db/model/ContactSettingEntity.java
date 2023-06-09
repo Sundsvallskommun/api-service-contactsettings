@@ -57,6 +57,9 @@ public class ContactSettingEntity {
 
 	@ElementCollection(fetch = FetchType.EAGER)
 	@CollectionTable(name = "contact_setting_channel",
+		indexes = {
+			@Index(name = "contact_setting_channel_destination_index", columnList = "destination")
+		},
 		joinColumns = @JoinColumn(
 			name = "contact_setting_id",
 			referencedColumnName = "id",

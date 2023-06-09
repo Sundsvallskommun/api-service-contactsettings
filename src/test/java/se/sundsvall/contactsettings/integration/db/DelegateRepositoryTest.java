@@ -192,7 +192,7 @@ class DelegateRepositoryTest {
 			.withChannels(List.of(Channel.create()
 				.withAlias("Email")
 				.withContactMethod("EMAIL")
-				.withDestination("0701234567")))
+				.withDestination("john.doe@host.com")))
 			.withPartyId(randomUUID().toString());
 	}
 

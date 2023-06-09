@@ -22,6 +22,5 @@ public enum ContactMethod {
 			.filter(e -> e.name().equalsIgnoreCase(value))
 			.findAny()
 			.orElseThrow(() -> Problem.valueOf(BAD_REQUEST, format(INVALID_VALUE_ERROR, value)));
-
 	}
 }

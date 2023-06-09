@@ -1,0 +1,15 @@
+{
+	"id": "${json-unit.regex}^[0-9a-fA-F]{8}\\b-[0-9a-fA-F]{4}\\b-[0-9a-fA-F]{4}\\b-[0-9a-fA-F]{4}\\b-[0-9a-fA-F]{12}$",
+	"partyId": "15aee472-46ab-4f03-9605-68bd64ebc73f",
+	"alias": "My contact-settings",
+	"virtual": false,
+	"contactChannels": [
+		{
+			"contactMethod": "SMS",
+			"alias": "Private phone",
+			"destination": "+46701234567",
+			"disabled": false
+		}
+	],
+	"created": "${json-unit.regex}^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}\\.\\d{1,5}\\+\\d{2}:00$"
+}

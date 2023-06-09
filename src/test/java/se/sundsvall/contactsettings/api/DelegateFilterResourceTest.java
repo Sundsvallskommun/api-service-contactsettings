@@ -1,5 +1,6 @@
 package se.sundsvall.contactsettings.api;
 
+import static java.util.UUID.randomUUID;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -10,7 +11,6 @@ import static se.sundsvall.contactsettings.api.model.enums.Operator.EQUALS;
 
 import java.util.List;
 import java.util.Map;
-import java.util.UUID;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,8 +28,8 @@ import se.sundsvall.contactsettings.service.DelegateFilterService;
 @ActiveProfiles("junit")
 class DelegateFilterResourceTest {
 
-	private final static String DELEGATE_ID = UUID.randomUUID().toString();
-	private final static String DELEGATE_FILTER_ID = UUID.randomUUID().toString();
+	private final static String DELEGATE_ID = randomUUID().toString();
+	private final static String DELEGATE_FILTER_ID = randomUUID().toString();
 
 	@MockBean
 	private DelegateFilterService delegateFilterServiceMock;
@@ -90,7 +90,10 @@ class DelegateFilterResourceTest {
 		// Arrange
 		final var body = Filter.create()
 			.withAlias("alias")
-			.withRules(List.of(Rule.create().withAttributeName("attribute").withAttributeValue("value").withOperator(EQUALS)));
+			.withRules(List.of(Rule.create()
+				.withAttributeName("attribute")
+				.withAttributeValue("value")
+				.withOperator(EQUALS)));
 
 		when(delegateFilterServiceMock.update(DELEGATE_ID, DELEGATE_FILTER_ID, body)).thenReturn(body.withId(DELEGATE_FILTER_ID));
 
