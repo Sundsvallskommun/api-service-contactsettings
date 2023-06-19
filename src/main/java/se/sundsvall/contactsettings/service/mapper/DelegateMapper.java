@@ -32,6 +32,7 @@ public class DelegateMapper {
 
 		Optional.ofNullable(filter).ifPresent(theFilter -> {
 			Optional.ofNullable(theFilter.getAlias()).ifPresent(existingDelegateFilterEntity::setAlias);
+			Optional.ofNullable(theFilter.getChannel()).ifPresent(existingDelegateFilterEntity::setChannel);
 			Optional.ofNullable(theFilter.getRules()).map(DelegateMapper::toDelegateFilterRuleList).ifPresent(existingDelegateFilterEntity::setFilterRules);
 		});
 
@@ -57,6 +58,7 @@ public class DelegateMapper {
 		return Optional.ofNullable(filter)
 			.map(filterObject -> DelegateFilterEntity.create()
 				.withAlias(filterObject.getAlias())
+				.withChannel(filterObject.getChannel())
 				.withId(filterObject.getId())
 				.withFilterRules(toDelegateFilterRuleList(filterObject.getRules())))
 			.orElse(null);
@@ -97,6 +99,7 @@ public class DelegateMapper {
 		return Optional.ofNullable(filterEntity)
 			.map(filterEntityObject -> Filter.create()
 				.withAlias(filterEntityObject.getAlias())
+				.withChannel(filterEntityObject.getChannel())
 				.withCreated(filterEntityObject.getCreated())
 				.withId(filterEntityObject.getId())
 				.withModified(filterEntityObject.getModified())

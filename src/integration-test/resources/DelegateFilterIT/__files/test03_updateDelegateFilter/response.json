@@ -1,6 +1,7 @@
 {
 	"id": "a28c428b-a374-417e-89ea-3dba7d30a2e9",
 	"alias": "My updated filter",
+	"channel": "My updated channel",
 	"modified": "${json-unit.regex}^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}\\.\\d{1,5}\\+\\d{2}:00$",
 	"rules": [
 		{

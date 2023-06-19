@@ -40,6 +40,7 @@ class FilterTest {
 	void testBuilderMethods() {
 
 		final var alias = "alias";
+		final var channel = "channel";
 		final var created = now();
 		final var id = randomUUID().toString();
 		final var modified = now();
@@ -47,6 +48,7 @@ class FilterTest {
 
 		final var bean = Filter.create()
 			.withAlias(alias)
+			.withChannel(channel)
 			.withCreated(created)
 			.withId(id)
 			.withModified(modified)
@@ -54,6 +56,7 @@ class FilterTest {
 
 		assertThat(bean).isNotNull().hasNoNullFieldsOrProperties();
 		assertThat(bean.getAlias()).isEqualTo(alias);
+		assertThat(bean.getChannel()).isEqualTo(channel);
 		assertThat(bean.getCreated()).isEqualTo(created);
 		assertThat(bean.getId()).isEqualTo(id);
 		assertThat(bean.getModified()).isEqualTo(modified);

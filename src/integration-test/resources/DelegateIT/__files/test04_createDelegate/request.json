@@ -4,6 +4,7 @@
 	"filters": [
 		{
 			"alias": "My first filter",
+			"channel": "Sundsvalls Energi",
 			"rules": [
 				{
 					"attributeName": "key1",

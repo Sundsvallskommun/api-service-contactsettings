@@ -1,5 +1,6 @@
 {
 	"alias": "My filter for delegating messages to my friend",
+	"channel": "My channel",
 	"rules": [
 		{
 			"attributeName": "facilityId",
