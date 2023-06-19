@@ -20,10 +20,10 @@ INSERT INTO delegate (id, principal_id, agent_id, created) VALUES
     -- Mr White delegates to Mr Brown.
     ('a1381b7f-9149-4fd5-a271-5513d9579a8d', '41e31470-150b-4db1-b3c1-c8f4108051ab', 'a552e909-d2b1-4f08-acbe-938040f95ff3', '2023-08-22 12:03:00');
 
-INSERT INTO delegate_filter (id, delegate_id, alias) VALUES 
-	('a28c428b-a374-417e-89ea-3dba7d30a2e9', '7d5fbffc-d1ff-4fff-86de-8158b4e34459', 'Mr Blue delegates to Mr Pink'),
-	('153555a5-5a25-41b2-b7b0-cee640427240', '336e4854-87f4-4407-9618-9fcf37e2f14f', 'Mr Blue delegates to Mr White'),
-	('b95eb1ed-0561-49f2-a7dc-5b8bc0411778', 'a1381b7f-9149-4fd5-a271-5513d9579a8d', 'Mr White delegates to Mr Brown'); 
+INSERT INTO delegate_filter (id, delegate_id, alias, channel) VALUES 
+	('a28c428b-a374-417e-89ea-3dba7d30a2e9', '7d5fbffc-d1ff-4fff-86de-8158b4e34459', 'Mr Blue delegates to Mr Pink', 'The channel'),
+	('153555a5-5a25-41b2-b7b0-cee640427240', '336e4854-87f4-4407-9618-9fcf37e2f14f', 'Mr Blue delegates to Mr White', null),
+	('b95eb1ed-0561-49f2-a7dc-5b8bc0411778', 'a1381b7f-9149-4fd5-a271-5513d9579a8d', 'Mr White delegates to Mr Brown', null); 
 
 INSERT INTO delegate_filter_rule (delegate_filter_id, attribute_name, operator, attribute_value) VALUES 
 	-- The "Mr Blue -> Mr Pink"-delegate is filtered on facilityId.

@@ -35,12 +35,14 @@ class DelegateMapperTest {
 			.withFilters(List.of(
 				DelegateFilterEntity.create()
 					.withAlias("alias1")
+					.withChannel("channel1")
 					.withCreated(created)
 					.withFilterRules(List.of(DelegateFilterRule.create().withAttributeName("attribute1").withOperator("EQUALS").withAttributeValue("value1")))
 					.withId("id1")
 					.withModified(modified),
 				DelegateFilterEntity.create()
 					.withAlias("alias2")
+					.withChannel("channel2")
 					.withCreated(created)
 					.withFilterRules(List.of(DelegateFilterRule.create().withAttributeName("attribute2").withOperator("NOT_EQUALS").withAttributeValue("value2")))
 					.withId("id2")
@@ -60,6 +62,7 @@ class DelegateMapperTest {
 		assertThat(result.getFilters()).containsExactly(
 			Filter.create()
 				.withAlias("alias1")
+				.withChannel("channel1")
 				.withCreated(created)
 				.withId("id1")
 				.withModified(modified)
@@ -67,6 +70,7 @@ class DelegateMapperTest {
 					Rule.create().withAttributeName("attribute1").withAttributeValue("value1").withOperator(Operator.EQUALS))),
 			Filter.create()
 				.withAlias("alias2")
+				.withChannel("channel2")
 				.withCreated(created)
 				.withId("id2")
 				.withModified(modified)
@@ -101,6 +105,7 @@ class DelegateMapperTest {
 			.withFilters(List.of(
 				Filter.create()
 					.withAlias("alias1")
+					.withChannel("channel1")
 					.withCreated(created)
 					.withId("id1")
 					.withModified(modified)
@@ -108,6 +113,7 @@ class DelegateMapperTest {
 						Rule.create().withAttributeName("attribute1").withAttributeValue("value1").withOperator(Operator.EQUALS))),
 				Filter.create()
 					.withAlias("alias2")
+					.withChannel("channel2")
 					.withCreated(created)
 					.withId("id2")
 					.withModified(modified)
@@ -125,9 +131,11 @@ class DelegateMapperTest {
 		assertThat(result.getFilters()).containsExactly(
 			DelegateFilterEntity.create()
 				.withAlias("alias1")
+				.withChannel("channel1")
 				.withFilterRules(List.of(DelegateFilterRule.create().withAttributeName("attribute1").withOperator("EQUALS").withAttributeValue("value1")))
 				.withId("id1"),
 			DelegateFilterEntity.create()
+				.withChannel("channel2")
 				.withAlias("alias2")
 				.withFilterRules(List.of(DelegateFilterRule.create().withAttributeName("attribute2").withOperator("EQUALS").withAttributeValue("value2")))
 				.withId("id2"));
@@ -152,6 +160,7 @@ class DelegateMapperTest {
 		// Arrange
 		final var delegateFilterEntity = DelegateFilterEntity.create()
 			.withAlias("alias1")
+			.withChannel("channel1")
 			.withFilterRules(List.of(DelegateFilterRule.create().withAttributeName("attribute1").withOperator("EQUALS").withAttributeValue("value1")))
 			.withId("id1")
 			.withModified(now(systemDefault()))
@@ -159,6 +168,7 @@ class DelegateMapperTest {
 
 		final var filter = Filter.create()
 			.withAlias("alias2")
+			.withChannel("channel2")
 			.withId("id2")
 			.withRules(List.of(
 				Rule.create().withAttributeName("attribute2").withAttributeValue("value2").withOperator(Operator.EQUALS)));
@@ -168,6 +178,7 @@ class DelegateMapperTest {
 		// Assert
 		assertThat(result).isNotNull();
 		assertThat(result.getAlias()).isEqualTo("alias2");
+		assertThat(result.getChannel()).isEqualTo("channel2");
 		assertThat(result.getFilterRules()).containsExactly(
 			DelegateFilterRule.create()
 				.withAttributeName("attribute2")

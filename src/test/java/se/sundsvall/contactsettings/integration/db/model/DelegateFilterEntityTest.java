@@ -40,6 +40,7 @@ class DelegateFilterEntityTest {
 	void hasValidBuilderMethods() {
 
 		final var alias = "alias";
+		final var channel = "channel";
 		final var created = now(ZoneId.systemDefault());
 		final var filterRules = List.of(DelegateFilterRule.create().withAttributeName("facitlityId").withOperator("EQUALS").withAttributeValue("12345"));
 		final var id = "id";
@@ -47,6 +48,7 @@ class DelegateFilterEntityTest {
 
 		final var entity = DelegateFilterEntity.create()
 			.withAlias(alias)
+			.withChannel(channel)
 			.withCreated(created)
 			.withFilterRules(filterRules)
 			.withId(id)
@@ -54,6 +56,7 @@ class DelegateFilterEntityTest {
 
 		assertThat(entity).hasNoNullFieldsOrProperties();
 		assertThat(entity.getAlias()).isEqualTo(alias);
+		assertThat(entity.getChannel()).isEqualTo(channel);
 		assertThat(entity.getCreated()).isEqualTo(created);
 		assertThat(entity.getFilterRules()).isEqualTo(filterRules);
 		assertThat(entity.getId()).isEqualTo(id);
