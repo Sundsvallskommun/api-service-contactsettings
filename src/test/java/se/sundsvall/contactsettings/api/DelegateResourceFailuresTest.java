@@ -1,5 +1,6 @@
 package se.sundsvall.contactsettings.api;
 
+import static java.util.Collections.emptyList;
 import static java.util.UUID.randomUUID;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.tuple;
@@ -8,6 +9,7 @@ import static org.springframework.boot.test.context.SpringBootTest.WebEnvironmen
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 import static org.springframework.http.MediaType.APPLICATION_PROBLEM_JSON;
 import static org.zalando.problem.Status.BAD_REQUEST;
+import static se.sundsvall.contactsettings.api.model.enums.Operator.EQUALS;
 
 import java.util.List;
 import java.util.Map;
@@ -67,6 +69,12 @@ class DelegateResourceFailuresTest {
 
 		// Arrange
 		final var body = DelegateCreateRequest.create()
+			.withFilters(List.of(Filter.create()
+				.withAlias("filter")
+				.withRules(List.of(Rule.create()
+					.withAttributeName("attribute")
+					.withOperator(EQUALS)
+					.withAttributeValue("value")))))
 			.withAgentId("invalid-agentId")
 			.withPrincipalId(randomUUID().toString());
 
@@ -98,6 +106,12 @@ class DelegateResourceFailuresTest {
 
 		// Arrange
 		final var body = DelegateCreateRequest.create()
+			.withFilters(List.of(Filter.create()
+				.withAlias("filter")
+				.withRules(List.of(Rule.create()
+					.withAttributeName("attribute")
+					.withOperator(EQUALS)
+					.withAttributeValue("value")))))
 			.withAgentId(randomUUID().toString())
 			.withPrincipalId("invalid-principalId");
 
@@ -157,6 +171,136 @@ class DelegateResourceFailuresTest {
 				tuple("filters[0].rules[0].attributeName", "must not be blank"),
 				tuple("filters[0].rules[0].attributeValue", "must not be blank"),
 				tuple("filters[0].rules[0].operator", "must not be null"));
+
+		verifyNoInteractions(delegateServiceMock);
+	}
+
+	@Test
+	void createWithMissingFilter() {
+
+		// Arrange
+		final var body = DelegateCreateRequest.create()
+			.withAgentId(randomUUID().toString())
+			.withPrincipalId(randomUUID().toString());
+
+		// Act
+		final var response = webTestClient.post()
+			.uri("/delegates")
+			.contentType(APPLICATION_JSON)
+			.bodyValue(body)
+			.exchange()
+			.expectStatus().isBadRequest()
+			.expectHeader().contentType(APPLICATION_PROBLEM_JSON)
+			.expectBody(ConstraintViolationProblem.class)
+			.returnResult()
+			.getResponseBody();
+
+		// Assert
+		assertThat(response).isNotNull();
+		assertThat(response.getTitle()).isEqualTo("Constraint Violation");
+		assertThat(response.getStatus()).isEqualTo(BAD_REQUEST);
+		assertThat(response.getViolations())
+			.extracting(Violation::getField, Violation::getMessage)
+			.containsExactlyInAnyOrder(tuple("filters", "must not be empty"));
+
+		verifyNoInteractions(delegateServiceMock);
+	}
+
+	@Test
+	void createWithEmptyFilter() {
+
+		// Arrange
+		final var body = DelegateCreateRequest.create()
+			.withAgentId(randomUUID().toString())
+			.withPrincipalId(randomUUID().toString())
+			.withFilters(emptyList());
+
+		// Act
+		final var response = webTestClient.post()
+			.uri("/delegates")
+			.contentType(APPLICATION_JSON)
+			.bodyValue(body)
+			.exchange()
+			.expectStatus().isBadRequest()
+			.expectHeader().contentType(APPLICATION_PROBLEM_JSON)
+			.expectBody(ConstraintViolationProblem.class)
+			.returnResult()
+			.getResponseBody();
+
+		// Assert
+		assertThat(response).isNotNull();
+		assertThat(response.getTitle()).isEqualTo("Constraint Violation");
+		assertThat(response.getStatus()).isEqualTo(BAD_REQUEST);
+		assertThat(response.getViolations())
+			.extracting(Violation::getField, Violation::getMessage)
+			.containsExactlyInAnyOrder(tuple("filters", "must not be empty"));
+
+		verifyNoInteractions(delegateServiceMock);
+	}
+
+	@Test
+	void createWithMissingFilterRule() {
+
+		// Arrange
+		final var body = DelegateCreateRequest.create()
+			.withFilters(List.of(Filter.create()
+				.withAlias("filter"))) // Missing rules
+			.withAgentId(randomUUID().toString())
+			.withPrincipalId(randomUUID().toString());
+
+		// Act
+		final var response = webTestClient.post()
+			.uri("/delegates")
+			.contentType(APPLICATION_JSON)
+			.bodyValue(body)
+			.exchange()
+			.expectStatus().isBadRequest()
+			.expectHeader().contentType(APPLICATION_PROBLEM_JSON)
+			.expectBody(ConstraintViolationProblem.class)
+			.returnResult()
+			.getResponseBody();
+
+		// Assert
+		assertThat(response).isNotNull();
+		assertThat(response.getTitle()).isEqualTo("Constraint Violation");
+		assertThat(response.getStatus()).isEqualTo(BAD_REQUEST);
+		assertThat(response.getViolations())
+			.extracting(Violation::getField, Violation::getMessage)
+			.containsExactlyInAnyOrder(tuple("filters[0].rules", "must not be empty"));
+
+		verifyNoInteractions(delegateServiceMock);
+	}
+
+	@Test
+	void createWithEmptyFilterRule() {
+
+		// Arrange
+		final var body = DelegateCreateRequest.create()
+			.withFilters(List.of(Filter.create()
+				.withAlias("filter")
+				.withRules(emptyList()))) // Empty rules
+			.withAgentId(randomUUID().toString())
+			.withPrincipalId(randomUUID().toString());
+
+		// Act
+		final var response = webTestClient.post()
+			.uri("/delegates")
+			.contentType(APPLICATION_JSON)
+			.bodyValue(body)
+			.exchange()
+			.expectStatus().isBadRequest()
+			.expectHeader().contentType(APPLICATION_PROBLEM_JSON)
+			.expectBody(ConstraintViolationProblem.class)
+			.returnResult()
+			.getResponseBody();
+
+		// Assert
+		assertThat(response).isNotNull();
+		assertThat(response.getTitle()).isEqualTo("Constraint Violation");
+		assertThat(response.getStatus()).isEqualTo(BAD_REQUEST);
+		assertThat(response.getViolations())
+			.extracting(Violation::getField, Violation::getMessage)
+			.containsExactlyInAnyOrder(tuple("filters[0].rules", "must not be empty"));
 
 		verifyNoInteractions(delegateServiceMock);
 	}
