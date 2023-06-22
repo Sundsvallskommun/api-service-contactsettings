@@ -33,8 +33,14 @@ public class DelegateFilterEntity {
 	@Column(name = "id")
 	private String id;
 
+	@Column(name = "delegate_id")
+	private String delegateId;
+
 	@Column(name = "alias")
 	private String alias;
+
+	@Column(name = "channel")
+	private String channel;
 
 	@ElementCollection(fetch = FetchType.EAGER)
 	@CollectionTable(name = "delegate_filter_rule",
@@ -69,6 +75,19 @@ public class DelegateFilterEntity {
 		return this;
 	}
 
+	public String getDelegateId() {
+		return delegateId;
+	}
+
+	public void setDelegateId(String delegateId) {
+		this.delegateId = delegateId;
+	}
+
+	public DelegateFilterEntity withDelegateId(String delegateId) {
+		this.delegateId = delegateId;
+		return this;
+	}
+
 	public String getAlias() {
 		return alias;
 	}
@@ -79,6 +98,19 @@ public class DelegateFilterEntity {
 
 	public DelegateFilterEntity withAlias(String alias) {
 		this.alias = alias;
+		return this;
+	}
+
+	public String getChannel() {
+		return channel;
+	}
+
+	public void setChannel(String channel) {
+		this.channel = channel;
+	}
+
+	public DelegateFilterEntity withChannel(String channel) {
+		this.channel = channel;
 		return this;
 	}
 
@@ -132,24 +164,23 @@ public class DelegateFilterEntity {
 
 	@Override
 	public int hashCode() {
-		return Objects.hash(alias, created, filterRules, id, modified);
+		return Objects.hash(alias, channel, created, delegateId, filterRules, id, modified);
 	}
 
 	@Override
 	public boolean equals(Object obj) {
-		if (this == obj) {
-			return true;
-		}
-		if (!(obj instanceof final DelegateFilterEntity other)) {
-			return false;
-		}
-		return Objects.equals(alias, other.alias) && Objects.equals(created, other.created) && Objects.equals(filterRules, other.filterRules) && Objects.equals(id, other.id) && Objects.equals(modified, other.modified);
+		if (this == obj) { return true; }
+		if (!(obj instanceof final DelegateFilterEntity other)) { return false; }
+		return Objects.equals(alias, other.alias) && Objects.equals(channel, other.channel) && Objects.equals(created, other.created) && Objects.equals(delegateId, other.delegateId) && Objects.equals(filterRules, other.filterRules) && Objects.equals(id,
+			other.id) && Objects.equals(modified, other.modified);
 	}
 
 	@Override
 	public String toString() {
 		final StringBuilder builder = new StringBuilder();
-		builder.append("DelegateFilterEntity [id=").append(id).append(", alias=").append(alias).append(", filterRules=").append(filterRules).append(", created=").append(created).append(", modified=").append(modified).append("]");
+		builder.append("DelegateFilterEntity [id=").append(id).append(", delegateId=").append(delegateId).append(", alias=").append(alias).append(", channel=").append(channel).append(", filterRules=").append(filterRules).append(", created=").append(
+			created)
+			.append(", modified=").append(modified).append("]");
 		return builder.toString();
 	}
 }

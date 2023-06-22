@@ -9,7 +9,16 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import se.sundsvall.contactsettings.api.model.enums.Operator;
 
-@Schema(description = "Filter rule model")
+@Schema(description = """
+	The rule model.
+
+	If you want to write a rule that accepts everything, you can use the special MATCH_ALL_RULE:
+	{
+	   "attributeName": "*",
+	   "operator": "EQUALS",
+	   "attributeValue": "*"
+	}
+	""")
 public class Rule {
 
 	@Schema(description = "The attribute name to apply the filter rule on", example = "facilityId", requiredMode = REQUIRED)

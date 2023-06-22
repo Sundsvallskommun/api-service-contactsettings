@@ -1,5 +1,6 @@
 package se.sundsvall.contactsettings.service;
 
+import static java.util.Optional.empty;
 import static java.util.UUID.randomUUID;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -121,7 +122,7 @@ class DelegateFilterServiceTest {
 		final var delegateId = randomUUID().toString();
 		final var filter = Filter.create();
 
-		when(delegateRepositoryMock.findById(delegateId)).thenReturn(Optional.empty());
+		when(delegateRepositoryMock.findById(delegateId)).thenReturn(empty());
 
 		// Act
 		final var exception = assertThrows(ThrowableProblem.class, () -> service.create(delegateId, filter));
@@ -151,8 +152,7 @@ class DelegateFilterServiceTest {
 				.withOperator(Operator.EQUALS.toString())
 				.withAttributeValue("value1")));
 
-		when(delegateRepositoryMock.existsById(delegateId)).thenReturn(true);
-		when(delegateFilterRepositoryMock.findById(delegateFilterId)).thenReturn(Optional.of(delegateFilterEntity));
+		when(delegateFilterRepositoryMock.findByIdAndDelegateId(delegateFilterId, delegateId)).thenReturn(Optional.of(delegateFilterEntity));
 
 		// Act
 		final var result = service.read(delegateId, delegateFilterId);
@@ -164,33 +164,9 @@ class DelegateFilterServiceTest {
 				.withAlias("Filter1")
 				.withRules(List.of(Rule.create().withAttributeName("key1").withAttributeValue("value1").withOperator(Operator.EQUALS))));
 
-		verify(delegateRepositoryMock).existsById(delegateId);
-		verify(delegateFilterRepositoryMock).findById(delegateFilterId);
-		verifyNoMoreInteractions(delegateRepositoryMock);
+		verify(delegateFilterRepositoryMock).findByIdAndDelegateId(delegateFilterId, delegateId);
+		verifyNoInteractions(delegateRepositoryMock);
 		verifyNoMoreInteractions(delegateFilterRepositoryMock);
-	}
-
-	@Test
-	void readDelegateNotFound() {
-
-		// Arrange
-		final var delegateId = randomUUID().toString();
-		final var delegateFilterId = randomUUID().toString();
-
-		when(delegateRepositoryMock.existsById(delegateId)).thenReturn(false);
-
-		// Act
-		final var exception = assertThrows(ThrowableProblem.class, () -> service.read(delegateId, delegateFilterId));
-
-		// Assert.
-		assertThat(exception).isNotNull();
-		assertThat(exception.getStatus()).isEqualTo(NOT_FOUND);
-		assertThat(exception.getDetail()).isEqualTo("No delegate with id: '" + delegateId + "' could be found!");
-		assertThat(exception.getMessage()).isEqualTo("Not Found: No delegate with id: '" + delegateId + "' could be found!");
-
-		verify(delegateRepositoryMock).existsById(delegateId);
-		verifyNoInteractions(delegateFilterRepositoryMock);
-		verifyNoMoreInteractions(delegateRepositoryMock);
 	}
 
 	@Test
@@ -200,8 +176,7 @@ class DelegateFilterServiceTest {
 		final var delegateId = randomUUID().toString();
 		final var delegateFilterId = randomUUID().toString();
 
-		when(delegateRepositoryMock.existsById(delegateId)).thenReturn(true);
-		when(delegateFilterRepositoryMock.findById(delegateFilterId)).thenReturn(Optional.empty());
+		when(delegateFilterRepositoryMock.findByIdAndDelegateId(delegateFilterId, delegateId)).thenReturn(empty());
 
 		// Act
 		final var exception = assertThrows(ThrowableProblem.class, () -> service.read(delegateId, delegateFilterId));
@@ -209,12 +184,11 @@ class DelegateFilterServiceTest {
 		// Assert.
 		assertThat(exception).isNotNull();
 		assertThat(exception.getStatus()).isEqualTo(NOT_FOUND);
-		assertThat(exception.getDetail()).isEqualTo("No filter with id: '" + delegateFilterId + "' could be found!");
-		assertThat(exception.getMessage()).isEqualTo("Not Found: No filter with id: '" + delegateFilterId + "' could be found!");
+		assertThat(exception.getDetail()).isEqualTo("No delegate filter with delegateId: '" + delegateId + "' and delegateFilterId: '" + delegateFilterId + "' could be found!");
+		assertThat(exception.getMessage()).isEqualTo("Not Found: No delegate filter with delegateId: '" + delegateId + "' and delegateFilterId: '" + delegateFilterId + "' could be found!");
 
-		verify(delegateRepositoryMock).existsById(delegateId);
-		verify(delegateFilterRepositoryMock).findById(delegateFilterId);
-		verifyNoMoreInteractions(delegateRepositoryMock);
+		verify(delegateFilterRepositoryMock).findByIdAndDelegateId(delegateFilterId, delegateId);
+		verifyNoInteractions(delegateRepositoryMock);
 		verifyNoMoreInteractions(delegateFilterRepositoryMock);
 	}
 
@@ -239,8 +213,7 @@ class DelegateFilterServiceTest {
 				Rule.create().withAttributeName("key2").withAttributeValue("value2").withOperator(Operator.EQUALS),
 				Rule.create().withAttributeName("key3").withAttributeValue("value3").withOperator(Operator.NOT_EQUALS)));
 
-		when(delegateRepositoryMock.existsById(delegateId)).thenReturn(true);
-		when(delegateFilterRepositoryMock.findById(delegateFilterId)).thenReturn(Optional.of(delegateFilterEntity));
+		when(delegateFilterRepositoryMock.findByIdAndDelegateId(delegateFilterId, delegateId)).thenReturn(Optional.of(delegateFilterEntity));
 		when(delegateFilterRepositoryMock.save(any())).thenReturn(delegateFilterEntity);
 
 		// Act
@@ -249,8 +222,7 @@ class DelegateFilterServiceTest {
 		// Assert.
 		assertThat(result).isEqualTo(updatedFilter);
 
-		verify(delegateRepositoryMock).existsById(delegateId);
-		verify(delegateFilterRepositoryMock).findById(delegateFilterId);
+		verify(delegateFilterRepositoryMock).findByIdAndDelegateId(delegateFilterId, delegateId);
 		verify(delegateFilterRepositoryMock).save(delegateFilterEntityCaptor.capture());
 		verifyNoMoreInteractions(delegateRepositoryMock);
 		verifyNoMoreInteractions(delegateFilterRepositoryMock);
@@ -274,30 +246,6 @@ class DelegateFilterServiceTest {
 	}
 
 	@Test
-	void updateDelegateNotFound() {
-
-		// Arrange
-		final var delegateId = randomUUID().toString();
-		final var delegateFilterId = randomUUID().toString();
-		final var filter = Filter.create();
-
-		when(delegateRepositoryMock.existsById(delegateId)).thenReturn(false);
-
-		// Act
-		final var exception = assertThrows(ThrowableProblem.class, () -> service.update(delegateId, delegateFilterId, filter));
-
-		// Assert.
-		assertThat(exception).isNotNull();
-		assertThat(exception.getStatus()).isEqualTo(NOT_FOUND);
-		assertThat(exception.getDetail()).isEqualTo("No delegate with id: '" + delegateId + "' could be found!");
-		assertThat(exception.getMessage()).isEqualTo("Not Found: No delegate with id: '" + delegateId + "' could be found!");
-
-		verify(delegateRepositoryMock).existsById(delegateId);
-		verifyNoInteractions(delegateFilterRepositoryMock);
-		verifyNoMoreInteractions(delegateRepositoryMock);
-	}
-
-	@Test
 	void updateNotFound() {
 
 		// Arrange
@@ -305,8 +253,7 @@ class DelegateFilterServiceTest {
 		final var delegateFilterId = randomUUID().toString();
 		final var filter = Filter.create();
 
-		when(delegateRepositoryMock.existsById(delegateId)).thenReturn(true);
-		when(delegateFilterRepositoryMock.findById(delegateFilterId)).thenReturn(Optional.empty());
+		when(delegateFilterRepositoryMock.findByIdAndDelegateId(delegateFilterId, delegateId)).thenReturn(empty());
 
 		// Act
 		final var exception = assertThrows(ThrowableProblem.class, () -> service.update(delegateId, delegateFilterId, filter));
@@ -314,64 +261,54 @@ class DelegateFilterServiceTest {
 		// Assert.
 		assertThat(exception).isNotNull();
 		assertThat(exception.getStatus()).isEqualTo(NOT_FOUND);
-		assertThat(exception.getDetail()).isEqualTo("No filter with id: '" + delegateFilterId + "' could be found!");
-		assertThat(exception.getMessage()).isEqualTo("Not Found: No filter with id: '" + delegateFilterId + "' could be found!");
+		assertThat(exception.getDetail()).isEqualTo("No delegate filter with delegateId: '" + delegateId + "' and delegateFilterId: '" + delegateFilterId + "' could be found!");
+		assertThat(exception.getMessage()).isEqualTo("Not Found: No delegate filter with delegateId: '" + delegateId + "' and delegateFilterId: '" + delegateFilterId + "' could be found!");
 
-		verify(delegateRepositoryMock).existsById(delegateId);
-		verify(delegateFilterRepositoryMock).findById(delegateFilterId);
-		verifyNoMoreInteractions(delegateRepositoryMock);
+		verify(delegateFilterRepositoryMock).findByIdAndDelegateId(delegateFilterId, delegateId);
+		verifyNoInteractions(delegateRepositoryMock);
 		verifyNoMoreInteractions(delegateFilterRepositoryMock);
 	}
 
 	@Test
-	void delete() {
+	void deleteWhenNotLastFilterOnDelegate() {
 
 		// Arrange
 		final var delegateId = randomUUID().toString();
 		final var delegateFilterId = randomUUID().toString();
 
-		final var delegateFilterEntity = DelegateFilterEntity.create()
-			.withAlias("Filter1")
-			.withFilterRules(List.of(DelegateFilterRule.create()
-				.withAttributeName("key1")
-				.withOperator(Operator.EQUALS.toString())
-				.withAttributeValue("value1")));
-
-		when(delegateRepositoryMock.existsById(delegateId)).thenReturn(true);
-		when(delegateFilterRepositoryMock.findById(delegateFilterId)).thenReturn(Optional.of(delegateFilterEntity));
+		when(delegateFilterRepositoryMock.countByDelegateId(delegateId)).thenReturn(2);
+		when(delegateFilterRepositoryMock.existsByIdAndDelegateId(delegateFilterId, delegateId)).thenReturn(true);
 
 		// Act
 		service.delete(delegateId, delegateFilterId);
 
 		// Assert.
-		verify(delegateRepositoryMock).existsById(delegateId);
-		verify(delegateFilterRepositoryMock).findById(delegateFilterId);
-		verify(delegateFilterRepositoryMock).delete(delegateFilterEntity);
-		verifyNoMoreInteractions(delegateRepositoryMock);
+		verify(delegateFilterRepositoryMock).countByDelegateId(delegateId);
+		verify(delegateFilterRepositoryMock).existsByIdAndDelegateId(delegateFilterId, delegateId);
+		verify(delegateFilterRepositoryMock).deleteById(delegateFilterId);
+		verifyNoInteractions(delegateRepositoryMock);
 		verifyNoMoreInteractions(delegateFilterRepositoryMock);
 	}
 
 	@Test
-	void deleteDelegateNotFound() {
+	void deleteWhenLastFilterOnDelegate() {
 
 		// Arrange
 		final var delegateId = randomUUID().toString();
 		final var delegateFilterId = randomUUID().toString();
 
-		when(delegateRepositoryMock.existsById(delegateId)).thenReturn(false);
+		when(delegateFilterRepositoryMock.countByDelegateId(delegateId)).thenReturn(1);
+		when(delegateFilterRepositoryMock.existsByIdAndDelegateId(delegateFilterId, delegateId)).thenReturn(true);
 
 		// Act
-		final var exception = assertThrows(ThrowableProblem.class, () -> service.delete(delegateId, delegateFilterId));
+		service.delete(delegateId, delegateFilterId);
 
 		// Assert.
-		assertThat(exception).isNotNull();
-		assertThat(exception.getStatus()).isEqualTo(NOT_FOUND);
-		assertThat(exception.getDetail()).isEqualTo("No delegate with id: '" + delegateId + "' could be found!");
-		assertThat(exception.getMessage()).isEqualTo("Not Found: No delegate with id: '" + delegateId + "' could be found!");
-
-		verify(delegateRepositoryMock).existsById(delegateId);
-		verifyNoInteractions(delegateFilterRepositoryMock);
+		verify(delegateFilterRepositoryMock).countByDelegateId(delegateId);
+		verify(delegateFilterRepositoryMock).existsByIdAndDelegateId(delegateFilterId, delegateId);
+		verify(delegateRepositoryMock).deleteById(delegateId);
 		verifyNoMoreInteractions(delegateRepositoryMock);
+		verifyNoMoreInteractions(delegateFilterRepositoryMock);
 	}
 
 	@Test
@@ -381,8 +318,7 @@ class DelegateFilterServiceTest {
 		final var delegateId = randomUUID().toString();
 		final var delegateFilterId = randomUUID().toString();
 
-		when(delegateRepositoryMock.existsById(delegateId)).thenReturn(true);
-		when(delegateFilterRepositoryMock.findById(delegateFilterId)).thenReturn(Optional.empty());
+		when(delegateFilterRepositoryMock.existsByIdAndDelegateId(delegateFilterId, delegateId)).thenReturn(false);
 
 		// Act
 		final var exception = assertThrows(ThrowableProblem.class, () -> service.delete(delegateId, delegateFilterId));
@@ -390,12 +326,11 @@ class DelegateFilterServiceTest {
 		// Assert.
 		assertThat(exception).isNotNull();
 		assertThat(exception.getStatus()).isEqualTo(NOT_FOUND);
-		assertThat(exception.getDetail()).isEqualTo("No filter with id: '" + delegateFilterId + "' could be found!");
-		assertThat(exception.getMessage()).isEqualTo("Not Found: No filter with id: '" + delegateFilterId + "' could be found!");
+		assertThat(exception.getDetail()).isEqualTo("No delegate filter with delegateId: '" + delegateId + "' and delegateFilterId: '" + delegateFilterId + "' could be found!");
+		assertThat(exception.getMessage()).isEqualTo("Not Found: No delegate filter with delegateId: '" + delegateId + "' and delegateFilterId: '" + delegateFilterId + "' could be found!");
 
-		verify(delegateRepositoryMock).existsById(delegateId);
-		verify(delegateFilterRepositoryMock).findById(delegateFilterId);
-		verifyNoMoreInteractions(delegateRepositoryMock);
+		verify(delegateFilterRepositoryMock).existsByIdAndDelegateId(delegateFilterId, delegateId);
+		verifyNoInteractions(delegateRepositoryMock);
 		verifyNoMoreInteractions(delegateFilterRepositoryMock);
 	}
 }

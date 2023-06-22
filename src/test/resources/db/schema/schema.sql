@@ -30,6 +30,7 @@
         created datetime(6),
         modified datetime(6),
         alias varchar(255),
+        channel varchar(255),
         delegate_id varchar(255),
         id varchar(255) not null,
         primary key (id)

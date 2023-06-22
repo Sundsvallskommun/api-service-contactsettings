@@ -1,5 +1,6 @@
 {
 	"alias": "My updated filter",
+	"channel": "My updated channel",
 	"rules": [
 		{
 			"attributeName": "key1",
