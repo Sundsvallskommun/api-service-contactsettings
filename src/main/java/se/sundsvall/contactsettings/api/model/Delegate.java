@@ -35,7 +35,7 @@ public class Delegate {
 		The delegate filters.
 		If more than one filter exists, there will be an implicit OR-condition between the filters.
 		I.e. at least one filter must evaluate to true in order to delegate anything.
-		If the filter list is empty, everything will be delegated.""")
+		At least one filter must exist on a delegate. If everything should be delegated, a MATCH_ALL_RULE can be used (see: Rule-model)""")
 	private List<Filter> filters;
 
 	public static Delegate create() {

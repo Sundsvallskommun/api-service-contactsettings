@@ -42,6 +42,7 @@ class DelegateFilterEntityTest {
 		final var alias = "alias";
 		final var channel = "channel";
 		final var created = now(ZoneId.systemDefault());
+		final var delegateId = "delegateId";
 		final var filterRules = List.of(DelegateFilterRule.create().withAttributeName("facitlityId").withOperator("EQUALS").withAttributeValue("12345"));
 		final var id = "id";
 		final var modified = now(ZoneId.systemDefault()).plusDays(1);
@@ -50,6 +51,7 @@ class DelegateFilterEntityTest {
 			.withAlias(alias)
 			.withChannel(channel)
 			.withCreated(created)
+			.withDelegateId(delegateId)
 			.withFilterRules(filterRules)
 			.withId(id)
 			.withModified(modified);
@@ -58,6 +60,7 @@ class DelegateFilterEntityTest {
 		assertThat(entity.getAlias()).isEqualTo(alias);
 		assertThat(entity.getChannel()).isEqualTo(channel);
 		assertThat(entity.getCreated()).isEqualTo(created);
+		assertThat(entity.getDelegateId()).isEqualTo(delegateId);
 		assertThat(entity.getFilterRules()).isEqualTo(filterRules);
 		assertThat(entity.getId()).isEqualTo(id);
 		assertThat(entity.getModified()).isEqualTo(modified);
