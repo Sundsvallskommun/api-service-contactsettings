@@ -60,8 +60,6 @@ public class ContactSettingsResource {
 	@ApiResponse(responseCode = "500", description = "Internal Server error", content = @Content(mediaType = APPLICATION_PROBLEM_JSON_VALUE, schema = @Schema(implementation = Problem.class)))
 	public ResponseEntity<Void> create(
 		final UriComponentsBuilder uriComponentsBuilder, @NotNull @Valid @RequestBody final ContactSettingCreateRequest body) {
-		
-		final String x = "test";
 
 		final var id = contactSettingsService.createContactSetting(body);
 		return created(uriComponentsBuilder.path("/settings/{id}").buildAndExpand(id).toUri()).header(CONTENT_TYPE, ALL_VALUE).build();
