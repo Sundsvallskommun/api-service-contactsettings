@@ -132,7 +132,7 @@ public class ContactSettingsService {
 			// All delegates where this contactSetting acts as a principal:
 			delegateRepository.findByPrincipalId(contactSettingId).stream()).map(DelegateEntity::getId).toList();
 
-		// Delete all delegates where this contactSetting occurs.
+		// Delete all delegates where this contactSetting occur.
 		if (!idList.isEmpty()) {
 			delegateRepository.deleteAllById(idList);
 		}
