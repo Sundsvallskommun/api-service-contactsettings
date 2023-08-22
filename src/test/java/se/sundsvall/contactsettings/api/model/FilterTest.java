@@ -8,13 +8,13 @@ import static com.google.code.beanmatchers.BeanMatchers.hasValidGettersAndSetter
 import static com.google.code.beanmatchers.BeanMatchers.registerValueGenerator;
 import static java.time.OffsetDateTime.now;
 import static java.util.UUID.randomUUID;
-import static org.apache.commons.lang3.RandomUtils.nextInt;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.CoreMatchers.allOf;
 import static org.hamcrest.MatcherAssert.assertThat;
 
 import java.time.OffsetDateTime;
 import java.util.List;
+import java.util.Random;
 
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -23,7 +23,7 @@ class FilterTest {
 
 	@BeforeAll
 	static void setup() {
-		registerValueGenerator(() -> now().plusDays(nextInt()), OffsetDateTime.class);
+		registerValueGenerator(() -> now().plusDays(new Random().nextInt()), OffsetDateTime.class);
 	}
 
 	@Test
