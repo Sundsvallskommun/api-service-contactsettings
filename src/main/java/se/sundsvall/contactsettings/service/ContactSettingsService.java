@@ -20,7 +20,6 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Stream;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.zalando.problem.Problem;
 
@@ -36,11 +35,13 @@ import se.sundsvall.contactsettings.service.mapper.ContactSettingMapper;
 @Service
 public class ContactSettingsService {
 
-	@Autowired
-	private ContactSettingRepository contactSettingRepository;
+	private final ContactSettingRepository contactSettingRepository;
+	private final DelegateRepository delegateRepository;
 
-	@Autowired
-	private DelegateRepository delegateRepository;
+	public ContactSettingsService(ContactSettingRepository contactSettingRepository, DelegateRepository delegateRepository) {
+		this.contactSettingRepository = contactSettingRepository;
+		this.delegateRepository = delegateRepository;
+	}
 
 	public String createContactSetting(final ContactSettingCreateRequest contactSettingCreateRequest) {
 		Optional.ofNullable(contactSettingCreateRequest.getPartyId()).ifPresent(partyId -> {
