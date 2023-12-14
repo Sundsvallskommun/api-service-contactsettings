@@ -12,7 +12,6 @@ import static org.springframework.http.ResponseEntity.ok;
 import java.util.List;
 import java.util.Optional;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.util.MultiValueMap;
 import org.springframework.validation.annotation.Validated;
@@ -50,8 +49,11 @@ import se.sundsvall.dept44.common.validators.annotation.ValidUuid;
 @Tag(name = "ContactSettings", description = "Contact setting operations")
 public class ContactSettingsResource {
 
-	@Autowired
-	private ContactSettingsService contactSettingsService;
+	private final ContactSettingsService contactSettingsService;
+
+	public ContactSettingsResource(ContactSettingsService contactSettingsService) {
+		this.contactSettingsService = contactSettingsService;
+	}
 
 	@PostMapping(consumes = APPLICATION_JSON_VALUE, produces = { APPLICATION_JSON_VALUE, APPLICATION_PROBLEM_JSON_VALUE })
 	@Operation(summary = "Create contact setting")

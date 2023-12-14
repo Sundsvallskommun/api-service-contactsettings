@@ -17,7 +17,6 @@ import static se.sundsvall.contactsettings.service.mapper.DelegateMapper.toDeleg
 import java.util.ArrayList;
 import java.util.List;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.zalando.problem.Problem;
 
@@ -32,11 +31,13 @@ import se.sundsvall.contactsettings.service.mapper.DelegateMapper;
 @Service
 public class DelegateService {
 
-	@Autowired
-	private DelegateRepository delegateRepository;
+	private final DelegateRepository delegateRepository;
+	private final ContactSettingRepository contactSettingRepository;
 
-	@Autowired
-	private ContactSettingRepository contactSettingRepository;
+	public DelegateService(DelegateRepository delegateRepository, ContactSettingRepository contactSettingRepository) {
+		this.delegateRepository = delegateRepository;
+		this.contactSettingRepository = contactSettingRepository;
+	}
 
 	public Delegate create(final DelegateCreateRequest delegateCreateRequest) {
 
