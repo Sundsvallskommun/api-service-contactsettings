@@ -6,7 +6,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT;
-import static org.springframework.http.HttpHeaders.LOCATION;
+import static org.springframework.http.MediaType.ALL;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 import static se.sundsvall.contactsettings.api.model.enums.Operator.EQUALS;
 
@@ -63,7 +63,8 @@ class DelegateResourceTest {
 			.bodyValue(body)
 			.exchange()
 			.expectStatus().isCreated()
-			.expectHeader().exists(LOCATION);
+			.expectHeader().contentType(ALL)
+			.expectHeader().location("/delegates/" + DELEGATE_ID);
 
 		// Assert
 		verify(delegateServiceMock).create(body);

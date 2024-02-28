@@ -61,7 +61,7 @@ class DelegateFilterResourceFailuresTest {
 		assertThat(response.getTitle()).isEqualTo("Bad Request");
 		assertThat(response.getStatus()).isEqualTo(BAD_REQUEST);
 		assertThat(response.getDetail()).isEqualTo(
-			"Required request body is missing: public org.springframework.http.ResponseEntity<java.lang.Void> se.sundsvall.contactsettings.api.DelegateFilterResource.create(org.springframework.web.util.UriComponentsBuilder,java.lang.String,se.sundsvall.contactsettings.api.model.Filter)");
+			"Required request body is missing: public org.springframework.http.ResponseEntity<java.lang.Void> se.sundsvall.contactsettings.api.DelegateFilterResource.create(java.lang.String,se.sundsvall.contactsettings.api.model.Filter)");
 
 		verifyNoInteractions(delegateFilterServiceMock);
 	}

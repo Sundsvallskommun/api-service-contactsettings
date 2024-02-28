@@ -59,7 +59,7 @@ class DelegateResourceFailuresTest {
 		assertThat(response.getTitle()).isEqualTo("Bad Request");
 		assertThat(response.getStatus()).isEqualTo(BAD_REQUEST);
 		assertThat(response.getDetail()).isEqualTo(
-			"Required request body is missing: public org.springframework.http.ResponseEntity<java.lang.Void> se.sundsvall.contactsettings.api.DelegateResource.create(org.springframework.web.util.UriComponentsBuilder,se.sundsvall.contactsettings.api.model.DelegateCreateRequest)");
+			"Required request body is missing: public org.springframework.http.ResponseEntity<java.lang.Void> se.sundsvall.contactsettings.api.DelegateResource.create(se.sundsvall.contactsettings.api.model.DelegateCreateRequest)");
 
 		verifyNoInteractions(delegateServiceMock);
 	}

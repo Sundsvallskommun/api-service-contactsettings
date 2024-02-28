@@ -18,8 +18,6 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.boot.test.web.server.LocalServerPort;
-import org.springframework.http.HttpHeaders;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.reactive.server.WebTestClient;
 import org.springframework.util.LinkedMultiValueMap;
@@ -46,9 +44,6 @@ class ContactSettingsResourceTest {
 	@MockBean
 	private ContactSettingsService contactSettingsServiceMock;
 
-	@LocalServerPort
-	private int port;
-
 	@Test
 	void create() {
 
@@ -65,7 +60,7 @@ class ContactSettingsResourceTest {
 			.exchange()
 			.expectStatus().isCreated()
 			.expectHeader().contentType(ALL)
-			.expectHeader().exists(HttpHeaders.LOCATION)
+			.expectHeader().location("/settings/" + CONTACT_SETTING_ID)
 			.expectBody().isEmpty();
 
 		// Assert

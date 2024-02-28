@@ -62,7 +62,7 @@ class ContactSettingsResourceFailuresTest {
 		assertThat(response.getTitle()).isEqualTo(BAD_REQUEST.getReasonPhrase());
 		assertThat(response.getStatus()).isEqualTo(BAD_REQUEST);
 		assertThat(response.getDetail()).isEqualTo(
-			"Required request body is missing: public org.springframework.http.ResponseEntity<java.lang.Void> se.sundsvall.contactsettings.api.ContactSettingsResource.create(org.springframework.web.util.UriComponentsBuilder,se.sundsvall.contactsettings.api.model.ContactSettingCreateRequest)");
+			"Required request body is missing: public org.springframework.http.ResponseEntity<java.lang.Void> se.sundsvall.contactsettings.api.ContactSettingsResource.create(se.sundsvall.contactsettings.api.model.ContactSettingCreateRequest)");
 
 		verifyNoInteractions(contactSettingsServiceMock);
 	}
