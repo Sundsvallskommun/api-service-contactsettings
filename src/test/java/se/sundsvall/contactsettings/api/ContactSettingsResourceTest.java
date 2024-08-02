@@ -9,6 +9,7 @@ import static org.mockito.Mockito.when;
 import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT;
 import static org.springframework.http.MediaType.ALL;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
+import static org.springframework.web.util.UriComponentsBuilder.fromPath;
 import static se.sundsvall.contactsettings.api.model.enums.ContactMethod.EMAIL;
 
 import java.util.List;
@@ -33,7 +34,9 @@ import se.sundsvall.contactsettings.service.ContactSettingsService;
 @ActiveProfiles("junit")
 class ContactSettingsResourceTest {
 
-	private static final String PATH = "/settings";
+	private static final String PATH_TEMPLATE = "/{municipalityId}/settings";
+	private static final String LOCATION_TEMPLATE = "/{municipalityId}/settings/{id}";
+	private static final String MUNICIPALITY_ID = "2281";
 	private static final String CONTACT_SETTING_ID = randomUUID().toString();
 	private static final String PARTY_ID = randomUUID().toString();
 	private static final String CONTACT_CHANNEL_DESTINATION = "0701234567";
@@ -50,21 +53,21 @@ class ContactSettingsResourceTest {
 		// Arrange
 		final var contactSetting = contactSettingCreateRequest();
 
-		when(contactSettingsServiceMock.createContactSetting(contactSetting)).thenReturn(CONTACT_SETTING_ID);
+		when(contactSettingsServiceMock.createContactSetting(MUNICIPALITY_ID, contactSetting)).thenReturn(CONTACT_SETTING_ID);
 
 		// Act
 		webTestClient.post()
-			.uri(builder -> builder.path(PATH).build())
+			.uri(builder -> builder.path(PATH_TEMPLATE).build(Map.of("municipalityId", MUNICIPALITY_ID)))
 			.contentType(APPLICATION_JSON)
 			.bodyValue(contactSetting)
 			.exchange()
 			.expectStatus().isCreated()
 			.expectHeader().contentType(ALL)
-			.expectHeader().location("/settings/" + CONTACT_SETTING_ID)
+			.expectHeader().location(fromPath(LOCATION_TEMPLATE).buildAndExpand(MUNICIPALITY_ID, CONTACT_SETTING_ID).toString())
 			.expectBody().isEmpty();
 
 		// Assert
-		verify(contactSettingsServiceMock).createContactSetting(contactSetting);
+		verify(contactSettingsServiceMock).createContactSetting(MUNICIPALITY_ID, contactSetting);
 	}
 
 	@Test
@@ -72,11 +75,13 @@ class ContactSettingsResourceTest {
 
 		// Arrange
 		final var contactSetting = contactSetting();
-		when(contactSettingsServiceMock.readContactSetting(CONTACT_SETTING_ID)).thenReturn(contactSetting);
+		when(contactSettingsServiceMock.readContactSetting(MUNICIPALITY_ID, CONTACT_SETTING_ID)).thenReturn(contactSetting);
 
 		// Act
 		final var response = webTestClient.get()
-			.uri(builder -> builder.path(PATH + "/{id}").build(Map.of("id", CONTACT_SETTING_ID)))
+			.uri(builder -> builder.path(PATH_TEMPLATE + "/{id}").build(Map.of(
+				"municipalityId", MUNICIPALITY_ID,
+				"id", CONTACT_SETTING_ID)))
 			.exchange()
 			.expectStatus().isOk()
 			.expectHeader().contentType(APPLICATION_JSON)
@@ -86,7 +91,7 @@ class ContactSettingsResourceTest {
 
 		// Assert
 		assertThat(response).isNotNull().isEqualTo(contactSetting);
-		verify(contactSettingsServiceMock).readContactSetting(CONTACT_SETTING_ID);
+		verify(contactSettingsServiceMock).readContactSetting(MUNICIPALITY_ID, CONTACT_SETTING_ID);
 	}
 
 	@Test
@@ -94,11 +99,13 @@ class ContactSettingsResourceTest {
 
 		// Arrange
 		final var contectSettingChildren = List.of(contactSetting(), contactSetting());
-		when(contactSettingsServiceMock.readContactSettingChildren(CONTACT_SETTING_ID)).thenReturn(contectSettingChildren);
+		when(contactSettingsServiceMock.readContactSettingChildren(MUNICIPALITY_ID, CONTACT_SETTING_ID)).thenReturn(contectSettingChildren);
 
 		// Act
 		final var response = webTestClient.get()
-			.uri(builder -> builder.path(PATH + "/{id}/children").build(Map.of("id", CONTACT_SETTING_ID)))
+			.uri(builder -> builder.path(PATH_TEMPLATE + "/{id}/children").build(Map.of(
+				"municipalityId", MUNICIPALITY_ID,
+				"id", CONTACT_SETTING_ID)))
 			.exchange()
 			.expectStatus().isOk()
 			.expectHeader().contentType(APPLICATION_JSON)
@@ -108,7 +115,7 @@ class ContactSettingsResourceTest {
 
 		// Assert
 		assertThat(response).isNotNull();
-		verify(contactSettingsServiceMock).readContactSettingChildren(CONTACT_SETTING_ID);
+		verify(contactSettingsServiceMock).readContactSettingChildren(MUNICIPALITY_ID, CONTACT_SETTING_ID);
 	}
 
 	@Test
@@ -118,11 +125,13 @@ class ContactSettingsResourceTest {
 		final var contactSettingUpdateRequest = contactSettingUpdateRequest();
 		final var contactSetting = contactSetting();
 
-		when(contactSettingsServiceMock.updateContactSetting(eq(CONTACT_SETTING_ID), any(ContactSettingUpdateRequest.class))).thenReturn(contactSetting);
+		when(contactSettingsServiceMock.updateContactSetting(eq(MUNICIPALITY_ID), eq(CONTACT_SETTING_ID), any(ContactSettingUpdateRequest.class))).thenReturn(contactSetting);
 
 		// Act
 		final var response = webTestClient.patch()
-			.uri(builder -> builder.path(PATH + "/{id}").build(Map.of("id", CONTACT_SETTING_ID)))
+			.uri(builder -> builder.path(PATH_TEMPLATE + "/{id}").build(Map.of(
+				"municipalityId", MUNICIPALITY_ID,
+				"id", CONTACT_SETTING_ID)))
 			.contentType(APPLICATION_JSON)
 			.bodyValue(contactSettingUpdateRequest)
 			.exchange()
@@ -137,7 +146,7 @@ class ContactSettingsResourceTest {
 		assertThat(response.getId()).isEqualTo(CONTACT_SETTING_ID);
 		assertThat(response.getContactChannels()).isEqualTo(contactSettingUpdateRequest.getContactChannels());
 		assertThat(response.getAlias()).isEqualTo(contactSettingUpdateRequest.getAlias());
-		verify(contactSettingsServiceMock).updateContactSetting(eq(CONTACT_SETTING_ID), any(ContactSettingUpdateRequest.class));
+		verify(contactSettingsServiceMock).updateContactSetting(eq(MUNICIPALITY_ID), eq(CONTACT_SETTING_ID), any(ContactSettingUpdateRequest.class));
 	}
 
 	@Test
@@ -147,11 +156,13 @@ class ContactSettingsResourceTest {
 		final var emptyInstance = ContactSettingUpdateRequest.create();
 		final var updatedInstance = ContactSetting.create().withId(CONTACT_SETTING_ID);
 
-		when(contactSettingsServiceMock.updateContactSetting(eq(CONTACT_SETTING_ID), any(ContactSettingUpdateRequest.class))).thenReturn(updatedInstance);
+		when(contactSettingsServiceMock.updateContactSetting(eq(MUNICIPALITY_ID), eq(CONTACT_SETTING_ID), any(ContactSettingUpdateRequest.class))).thenReturn(updatedInstance);
 
 		// Act
 		final var response = webTestClient.patch()
-			.uri(builder -> builder.path(PATH + "/{id}").build(Map.of("id", CONTACT_SETTING_ID)))
+			.uri(builder -> builder.path(PATH_TEMPLATE + "/{id}").build(Map.of(
+				"municipalityId", MUNICIPALITY_ID,
+				"id", CONTACT_SETTING_ID)))
 			.contentType(APPLICATION_JSON)
 			.bodyValue(emptyInstance)
 			.exchange()
@@ -163,7 +174,7 @@ class ContactSettingsResourceTest {
 
 		// Assert
 		assertThat(response).isEqualTo(updatedInstance);
-		verify(contactSettingsServiceMock).updateContactSetting(eq(CONTACT_SETTING_ID), any(ContactSettingUpdateRequest.class));
+		verify(contactSettingsServiceMock).updateContactSetting(eq(MUNICIPALITY_ID), eq(CONTACT_SETTING_ID), any(ContactSettingUpdateRequest.class));
 	}
 
 	@Test
@@ -174,16 +185,16 @@ class ContactSettingsResourceTest {
 		inputQuery.put("key1", List.of("value1", "value2"));
 		inputQuery.put("key2", List.of("value3", "value4"));
 
-		when(contactSettingsServiceMock.findByPartyIdAndQueryFilter(PARTY_ID, inputQuery)).thenReturn(List.of(
+		when(contactSettingsServiceMock.findByPartyIdAndQueryFilter(MUNICIPALITY_ID, PARTY_ID, inputQuery)).thenReturn(List.of(
 			ContactSetting.create(),
 			ContactSetting.create()));
 
 		// Act
 		final var response = webTestClient.get()
-			.uri(builder -> builder.path(PATH)
+			.uri(builder -> builder.path(PATH_TEMPLATE)
 				.queryParam("partyId", PARTY_ID)
 				.queryParams(inputQuery)
-				.build())
+				.build(Map.of("municipalityId", MUNICIPALITY_ID)))
 			.exchange()
 			.expectStatus().isOk()
 			.expectHeader().contentType(APPLICATION_JSON)
@@ -193,7 +204,7 @@ class ContactSettingsResourceTest {
 
 		// Assert
 		assertThat(response).isNotNull().hasSize(2);
-		verify(contactSettingsServiceMock).findByPartyIdAndQueryFilter(PARTY_ID, inputQuery);
+		verify(contactSettingsServiceMock).findByPartyIdAndQueryFilter(MUNICIPALITY_ID, PARTY_ID, inputQuery);
 	}
 
 	@Test
@@ -201,13 +212,13 @@ class ContactSettingsResourceTest {
 
 		// Arrange
 		final var contactSettings = List.of(contactSetting());
-		when(contactSettingsServiceMock.findByChannelsDestination(CONTACT_CHANNEL_DESTINATION)).thenReturn(contactSettings);
+		when(contactSettingsServiceMock.findByChannelsDestination(MUNICIPALITY_ID, CONTACT_CHANNEL_DESTINATION)).thenReturn(contactSettings);
 
 		// Act
 		final var response = webTestClient.get()
-			.uri(builder -> builder.path(PATH + "/contact-channels")
+			.uri(builder -> builder.path(PATH_TEMPLATE + "/contact-channels")
 				.queryParam("destination", CONTACT_CHANNEL_DESTINATION)
-				.build())
+				.build(Map.of("municipalityId", MUNICIPALITY_ID)))
 			.exchange()
 			.expectStatus().isOk()
 			.expectHeader().contentType(APPLICATION_JSON)
@@ -217,7 +228,7 @@ class ContactSettingsResourceTest {
 
 		// Assert
 		assertThat(response).hasSize(1);
-		verify(contactSettingsServiceMock).findByChannelsDestination(CONTACT_CHANNEL_DESTINATION);
+		verify(contactSettingsServiceMock).findByChannelsDestination(MUNICIPALITY_ID, CONTACT_CHANNEL_DESTINATION);
 	}
 
 	@Test
@@ -225,13 +236,15 @@ class ContactSettingsResourceTest {
 
 		// Act
 		webTestClient.delete()
-			.uri(builder -> builder.path(PATH + "/{id}").build(Map.of("id", CONTACT_SETTING_ID)))
+			.uri(builder -> builder.path(PATH_TEMPLATE + "/{id}").build(Map.of(
+				"municipalityId", MUNICIPALITY_ID,
+				"id", CONTACT_SETTING_ID)))
 			.exchange()
 			.expectStatus().isNoContent()
 			.expectBody().isEmpty();
 
 		// Assert
-		verify(contactSettingsServiceMock).deleteContactSetting(CONTACT_SETTING_ID);
+		verify(contactSettingsServiceMock).deleteContactSetting(MUNICIPALITY_ID, CONTACT_SETTING_ID);
 	}
 
 	private static ContactSettingCreateRequest contactSettingCreateRequest() {

@@ -34,7 +34,8 @@ import se.sundsvall.contactsettings.service.ContactSettingsService;
 @ActiveProfiles("junit")
 class ContactSettingsResourceFailuresTest {
 
-	private static final String PATH = "/settings";
+	private static final String PATH_TEMPLATE = "/{municipalityId}/settings";
+	private static final String MUNICIPALITY_ID = "2281";
 	private static final String CONTACT_SETTING_ID = randomUUID().toString();
 
 	@Autowired
@@ -48,7 +49,7 @@ class ContactSettingsResourceFailuresTest {
 
 		// Act
 		final var response = webTestClient.post()
-			.uri(PATH)
+			.uri(builder -> builder.path(PATH_TEMPLATE).build(Map.of("municipalityId", MUNICIPALITY_ID)))
 			.contentType(APPLICATION_JSON)
 			.exchange()
 			.expectStatus().isBadRequest()
@@ -62,7 +63,38 @@ class ContactSettingsResourceFailuresTest {
 		assertThat(response.getTitle()).isEqualTo(BAD_REQUEST.getReasonPhrase());
 		assertThat(response.getStatus()).isEqualTo(BAD_REQUEST);
 		assertThat(response.getDetail()).isEqualTo(
-			"Required request body is missing: public org.springframework.http.ResponseEntity<java.lang.Void> se.sundsvall.contactsettings.api.ContactSettingsResource.create(se.sundsvall.contactsettings.api.model.ContactSettingCreateRequest)");
+			"Required request body is missing: public org.springframework.http.ResponseEntity<java.lang.Void> se.sundsvall.contactsettings.api.ContactSettingsResource.create(java.lang.String,se.sundsvall.contactsettings.api.model.ContactSettingCreateRequest)");
+
+		verifyNoInteractions(contactSettingsServiceMock);
+	}
+
+	@Test
+	void createWithInvalidMunicipalityId() {
+
+		// Arrange
+		final var body = ContactSettingCreateRequest.create()
+			.withCreatedById(randomUUID().toString())
+			.withPartyId(randomUUID().toString());
+
+		// Act
+		final var response = webTestClient.post()
+			.uri(builder -> builder.path(PATH_TEMPLATE).build(Map.of("municipalityId", "invalid-municipality-id")))
+			.contentType(APPLICATION_JSON)
+			.bodyValue(body)
+			.exchange()
+			.expectStatus().isBadRequest()
+			.expectHeader().contentType(APPLICATION_PROBLEM_JSON)
+			.expectBody(ConstraintViolationProblem.class)
+			.returnResult()
+			.getResponseBody();
+
+		// Assert
+		assertThat(response).isNotNull();
+		assertThat(response.getTitle()).isEqualTo("Constraint Violation");
+		assertThat(response.getStatus()).isEqualTo(BAD_REQUEST);
+		assertThat(response.getViolations())
+			.extracting(Violation::getField, Violation::getMessage)
+			.containsExactlyInAnyOrder(tuple("create.municipalityId", "not a valid municipality ID"));
 
 		verifyNoInteractions(contactSettingsServiceMock);
 	}
@@ -77,7 +109,7 @@ class ContactSettingsResourceFailuresTest {
 
 		// Act
 		final var response = webTestClient.post()
-			.uri(PATH)
+			.uri(builder -> builder.path(PATH_TEMPLATE).build(Map.of("municipalityId", MUNICIPALITY_ID)))
 			.contentType(APPLICATION_JSON)
 			.bodyValue(body)
 			.exchange()
@@ -108,7 +140,7 @@ class ContactSettingsResourceFailuresTest {
 
 		// Act
 		final var response = webTestClient.post()
-			.uri(PATH)
+			.uri(builder -> builder.path(PATH_TEMPLATE).build(Map.of("municipalityId", MUNICIPALITY_ID)))
 			.contentType(APPLICATION_JSON)
 			.bodyValue(body)
 			.exchange()
@@ -143,7 +175,7 @@ class ContactSettingsResourceFailuresTest {
 
 		// Act
 		final var response = webTestClient.post()
-			.uri(PATH)
+			.uri(builder -> builder.path(PATH_TEMPLATE).build(Map.of("municipalityId", MUNICIPALITY_ID)))
 			.contentType(APPLICATION_JSON)
 			.bodyValue(body)
 			.exchange()
@@ -178,7 +210,7 @@ class ContactSettingsResourceFailuresTest {
 
 		// Act
 		final var response = webTestClient.post()
-			.uri(PATH)
+			.uri(builder -> builder.path(PATH_TEMPLATE).build(Map.of("municipalityId", MUNICIPALITY_ID)))
 			.contentType(APPLICATION_JSON)
 			.bodyValue(body)
 			.exchange()
@@ -210,7 +242,7 @@ class ContactSettingsResourceFailuresTest {
 
 		// Act
 		final var response = webTestClient.post()
-			.uri(PATH)
+			.uri(builder -> builder.path(PATH_TEMPLATE).build(Map.of("municipalityId", MUNICIPALITY_ID)))
 			.contentType(APPLICATION_JSON)
 			.bodyValue(body)
 			.exchange()
@@ -240,7 +272,9 @@ class ContactSettingsResourceFailuresTest {
 
 		// Act
 		final var response = webTestClient.patch()
-			.uri(builder -> builder.path("/settings/{id}").build(Map.of("id", CONTACT_SETTING_ID)))
+			.uri(builder -> builder.path(PATH_TEMPLATE + "/{id}").build(Map.of(
+				"municipalityId", MUNICIPALITY_ID,
+				"id", CONTACT_SETTING_ID)))
 			.contentType(APPLICATION_JSON)
 			.exchange()
 			.expectStatus().isBadRequest()
@@ -254,7 +288,7 @@ class ContactSettingsResourceFailuresTest {
 		assertThat(response.getTitle()).isEqualTo(BAD_REQUEST.getReasonPhrase());
 		assertThat(response.getStatus()).isEqualTo(BAD_REQUEST);
 		assertThat(response.getDetail()).isEqualTo(
-			"Required request body is missing: public org.springframework.http.ResponseEntity<se.sundsvall.contactsettings.api.model.ContactSetting> se.sundsvall.contactsettings.api.ContactSettingsResource.update(java.lang.String,se.sundsvall.contactsettings.api.model.ContactSettingUpdateRequest)");
+			"Required request body is missing: public org.springframework.http.ResponseEntity<se.sundsvall.contactsettings.api.model.ContactSetting> se.sundsvall.contactsettings.api.ContactSettingsResource.update(java.lang.String,java.lang.String,se.sundsvall.contactsettings.api.model.ContactSettingUpdateRequest)");
 
 		verifyNoInteractions(contactSettingsServiceMock);
 	}
@@ -267,7 +301,9 @@ class ContactSettingsResourceFailuresTest {
 
 		// Act
 		final var response = webTestClient.patch()
-			.uri(builder -> builder.path("/settings/{id}").build(Map.of("id", "not-valid-id")))
+			.uri(builder -> builder.path(PATH_TEMPLATE + "/{id}").build(Map.of(
+				"municipalityId", MUNICIPALITY_ID,
+				"id", "invalid-id")))
 			.contentType(APPLICATION_JSON)
 			.bodyValue(body)
 			.exchange()
@@ -289,6 +325,37 @@ class ContactSettingsResourceFailuresTest {
 	}
 
 	@Test
+	void updateWithInvalidMunicipalityId() {
+
+		// Arrange
+		final var body = ContactSettingUpdateRequest.create().withAlias("alias");
+
+		// Act
+		final var response = webTestClient.patch()
+			.uri(builder -> builder.path(PATH_TEMPLATE + "/{id}").build(Map.of(
+				"municipalityId", "invalid-id",
+				"id", CONTACT_SETTING_ID)))
+			.contentType(APPLICATION_JSON)
+			.bodyValue(body)
+			.exchange()
+			.expectStatus().isBadRequest()
+			.expectHeader().contentType(APPLICATION_PROBLEM_JSON)
+			.expectBody(ConstraintViolationProblem.class)
+			.returnResult()
+			.getResponseBody();
+
+		// Assert
+		assertThat(response).isNotNull();
+		assertThat(response.getTitle()).isEqualTo("Constraint Violation");
+		assertThat(response.getStatus()).isEqualTo(BAD_REQUEST);
+		assertThat(response.getViolations())
+			.extracting(Violation::getField, Violation::getMessage)
+			.containsExactlyInAnyOrder(tuple("update.municipalityId", "not a valid municipality ID"));
+
+		verifyNoInteractions(contactSettingsServiceMock);
+	}
+
+	@Test
 	void updateWithInvalidEmailDestination() {
 
 		// Arrange
@@ -300,7 +367,9 @@ class ContactSettingsResourceFailuresTest {
 
 		// Act
 		final var response = webTestClient.patch()
-			.uri(builder -> builder.path("/settings/{id}").build(Map.of("id", CONTACT_SETTING_ID)))
+			.uri(builder -> builder.path(PATH_TEMPLATE + "/{id}").build(Map.of(
+				"municipalityId", MUNICIPALITY_ID,
+				"id", CONTACT_SETTING_ID)))
 			.contentType(APPLICATION_JSON)
 			.bodyValue(body)
 			.exchange()
@@ -333,7 +402,9 @@ class ContactSettingsResourceFailuresTest {
 
 		// Act
 		final var response = webTestClient.patch()
-			.uri(builder -> builder.path("/settings/{id}").build(Map.of("id", CONTACT_SETTING_ID)))
+			.uri(builder -> builder.path(PATH_TEMPLATE + "/{id}").build(Map.of(
+				"municipalityId", MUNICIPALITY_ID,
+				"id", CONTACT_SETTING_ID)))
 			.contentType(APPLICATION_JSON)
 			.bodyValue(body)
 			.exchange()
@@ -363,7 +434,9 @@ class ContactSettingsResourceFailuresTest {
 
 		// Act
 		final var response = webTestClient.patch()
-			.uri(builder -> builder.path("/settings/{id}").build(Map.of("id", CONTACT_SETTING_ID)))
+			.uri(builder -> builder.path(PATH_TEMPLATE + "/{id}").build(Map.of(
+				"municipalityId", MUNICIPALITY_ID,
+				"id", CONTACT_SETTING_ID)))
 			.contentType(APPLICATION_JSON)
 			.bodyValue(body)
 			.exchange()
@@ -393,7 +466,9 @@ class ContactSettingsResourceFailuresTest {
 
 		// Act
 		final var response = webTestClient.delete()
-			.uri(builder -> builder.path("/settings/{id}").build(Map.of("id", "not-valid-id")))
+			.uri(builder -> builder.path(PATH_TEMPLATE + "/{id}").build(Map.of(
+				"municipalityId", MUNICIPALITY_ID,
+				"id", "invalid-id")))
 			.exchange()
 			.expectStatus().isBadRequest()
 			.expectHeader().contentType(APPLICATION_PROBLEM_JSON)
@@ -417,7 +492,9 @@ class ContactSettingsResourceFailuresTest {
 
 		// Act
 		final var response = webTestClient.get()
-			.uri(builder -> builder.path("/settings/{id}").build(Map.of("id", "not-valid-id")))
+			.uri(builder -> builder.path(PATH_TEMPLATE + "/{id}").build(Map.of(
+				"municipalityId", MUNICIPALITY_ID,
+				"id", "invalid-id")))
 			.exchange()
 			.expectStatus().isBadRequest()
 			.expectHeader().contentType(APPLICATION_PROBLEM_JSON)
@@ -437,13 +514,39 @@ class ContactSettingsResourceFailuresTest {
 	}
 
 	@Test
+	void readWithInvalidMunicipalityId() {
+
+		// Act
+		final var response = webTestClient.get()
+			.uri(builder -> builder.path(PATH_TEMPLATE + "/{id}").build(Map.of(
+				"municipalityId", "invalid-id",
+				"id", CONTACT_SETTING_ID)))
+			.exchange()
+			.expectStatus().isBadRequest()
+			.expectHeader().contentType(APPLICATION_PROBLEM_JSON)
+			.expectBody(ConstraintViolationProblem.class)
+			.returnResult()
+			.getResponseBody();
+
+		// Assert
+		assertThat(response).isNotNull();
+		assertThat(response.getTitle()).isEqualTo("Constraint Violation");
+		assertThat(response.getStatus()).isEqualTo(BAD_REQUEST);
+		assertThat(response.getViolations())
+			.extracting(Violation::getField, Violation::getMessage)
+			.containsExactlyInAnyOrder(tuple("read.municipalityId", "not a valid municipality ID"));
+
+		verifyNoInteractions(contactSettingsServiceMock);
+	}
+
+	@Test
 	void findByPartyIdAndQueryFilterWithInvalidPartyId() {
 
 		// Act
 		final var response = webTestClient.get()
-			.uri(builder -> builder.path(PATH)
+			.uri(builder -> builder.path(PATH_TEMPLATE)
 				.queryParam("partyId", "invalid-partyId")
-				.build())
+				.build(Map.of("municipalityId", MUNICIPALITY_ID)))
 			.exchange()
 			.expectStatus().isBadRequest()
 			.expectHeader().contentType(APPLICATION_PROBLEM_JSON)
@@ -467,7 +570,7 @@ class ContactSettingsResourceFailuresTest {
 
 		// Act
 		final var response = webTestClient.get()
-			.uri(builder -> builder.path(PATH).build())
+			.uri(builder -> builder.path(PATH_TEMPLATE).build(Map.of("municipalityId", MUNICIPALITY_ID)))
 			.exchange()
 			.expectStatus().isBadRequest()
 			.expectHeader().contentType(APPLICATION_PROBLEM_JSON)
@@ -480,6 +583,32 @@ class ContactSettingsResourceFailuresTest {
 		assertThat(response.getTitle()).isEqualTo(BAD_REQUEST.getReasonPhrase());
 		assertThat(response.getStatus()).isEqualTo(BAD_REQUEST);
 		assertThat(response.getDetail()).isEqualTo("Required request parameter 'partyId' for method parameter type String is not present");
+
+		verifyNoInteractions(contactSettingsServiceMock);
+	}
+
+	@Test
+	void findByPartyIdAndQueryFilterWithInvalidMunicipalityId() {
+
+		// Act
+		final var response = webTestClient.get()
+			.uri(builder -> builder.path(PATH_TEMPLATE)
+				.queryParam("partyId", randomUUID().toString())
+				.build(Map.of("municipalityId", "invalid-id")))
+			.exchange()
+			.expectStatus().isBadRequest()
+			.expectHeader().contentType(APPLICATION_PROBLEM_JSON)
+			.expectBody(ConstraintViolationProblem.class)
+			.returnResult()
+			.getResponseBody();
+
+		// Assert
+		assertThat(response).isNotNull();
+		assertThat(response.getTitle()).isEqualTo("Constraint Violation");
+		assertThat(response.getStatus()).isEqualTo(BAD_REQUEST);
+		assertThat(response.getViolations())
+			.extracting(Violation::getField, Violation::getMessage)
+			.containsExactlyInAnyOrder(tuple("findByPartyIdAndQueryFilter.municipalityId", "not a valid municipality ID"));
 
 		verifyNoInteractions(contactSettingsServiceMock);
 	}

@@ -8,6 +8,7 @@ import static org.mockito.Mockito.when;
 import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT;
 import static org.springframework.http.MediaType.ALL;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
+import static org.springframework.web.util.UriComponentsBuilder.fromPath;
 import static se.sundsvall.contactsettings.api.model.enums.Operator.EQUALS;
 
 import java.util.List;
@@ -32,6 +33,9 @@ import se.sundsvall.contactsettings.service.DelegateService;
 @ActiveProfiles("junit")
 class DelegateResourceTest {
 
+	private static final String PATH_TEMPLATE = "/{municipalityId}/delegates";
+	private static final String LOCATION_TEMPLATE = "/{municipalityId}/delegates/{delegateId}";
+	private static final String MUNICIPALITY_ID = "2281";
 	private static final String DELEGATE_ID = randomUUID().toString();
 
 	@MockBean
@@ -44,6 +48,7 @@ class DelegateResourceTest {
 	void create() {
 
 		// Arrange
+		final var municipalityId = "2281";
 		final var body = DelegateCreateRequest.create()
 			.withAgentId(randomUUID().toString())
 			.withPrincipalId(randomUUID().toString())
@@ -54,31 +59,35 @@ class DelegateResourceTest {
 					.withOperator(EQUALS)
 					.withAttributeValue("value")))));
 
-		when(delegateServiceMock.create(any())).thenReturn(Delegate.create().withId(DELEGATE_ID));
+		when(delegateServiceMock.create(any(), any())).thenReturn(Delegate.create().withId(DELEGATE_ID));
 
 		// Act
 		webTestClient.post()
-			.uri("/delegates")
+			.uri(builder -> builder.path(PATH_TEMPLATE).build(Map.of("municipalityId", MUNICIPALITY_ID)))
 			.contentType(APPLICATION_JSON)
 			.bodyValue(body)
 			.exchange()
 			.expectStatus().isCreated()
 			.expectHeader().contentType(ALL)
-			.expectHeader().location("/delegates/" + DELEGATE_ID);
+			.expectHeader().location(fromPath(LOCATION_TEMPLATE).buildAndExpand(MUNICIPALITY_ID, DELEGATE_ID).toString());
 
 		// Assert
-		verify(delegateServiceMock).create(body);
+		verify(delegateServiceMock).create(municipalityId, body);
 	}
 
 	@Test
 	void read() {
 
 		// Arrange
-		when(delegateServiceMock.read(DELEGATE_ID)).thenReturn(Delegate.create().withId(DELEGATE_ID));
+		final var municipalityId = "2281";
+
+		when(delegateServiceMock.read(municipalityId, DELEGATE_ID)).thenReturn(Delegate.create().withId(DELEGATE_ID));
 
 		// Act
 		final var response = webTestClient.get()
-			.uri(builder -> builder.path("/delegates/{id}").build(Map.of("id", DELEGATE_ID)))
+			.uri(builder -> builder.path(PATH_TEMPLATE + "/{id}").build(Map.of(
+				"municipalityId", MUNICIPALITY_ID,
+				"id", DELEGATE_ID)))
 			.exchange()
 			.expectStatus().is2xxSuccessful()
 			.expectHeader().contentType(APPLICATION_JSON)
@@ -88,20 +97,25 @@ class DelegateResourceTest {
 
 		// Assert
 		assertThat(response).isNotNull();
-		verify(delegateServiceMock).read(DELEGATE_ID);
+		verify(delegateServiceMock).read(municipalityId, DELEGATE_ID);
 	}
 
 	@Test
 	void delete() {
 
+		// Arrange
+		final var municipalityId = "2281";
+
 		// Act
 		webTestClient.delete()
-			.uri(builder -> builder.path("/delegates/{id}").build(Map.of("id", DELEGATE_ID)))
+			.uri(builder -> builder.path(PATH_TEMPLATE + "/{id}").build(Map.of(
+				"municipalityId", MUNICIPALITY_ID,
+				"id", DELEGATE_ID)))
 			.exchange()
 			.expectStatus().isNoContent();
 
 		// Assert
-		verify(delegateServiceMock).delete(DELEGATE_ID);
+		verify(delegateServiceMock).delete(municipalityId, DELEGATE_ID);
 	}
 
 	@Test
@@ -109,12 +123,13 @@ class DelegateResourceTest {
 
 		// Arrange
 		final var agentId = randomUUID().toString();
-		when(delegateServiceMock.find(any())).thenReturn(List.of(Delegate.create()));
+		final var municipalityId = "2281";
+
+		when(delegateServiceMock.find(any(), any())).thenReturn(List.of(Delegate.create()));
 
 		// Act
 		final var response = webTestClient.get()
-			.uri(builder -> builder.path("/delegates")
-				.queryParam("agentId", agentId).build())
+			.uri(builder -> builder.path(PATH_TEMPLATE).queryParam("agentId", agentId).build(Map.of("municipalityId", MUNICIPALITY_ID)))
 			.exchange()
 			.expectStatus().is2xxSuccessful()
 			.expectHeader().contentType(APPLICATION_JSON)
@@ -124,7 +139,7 @@ class DelegateResourceTest {
 
 		// Assert
 		assertThat(response).isNotNull();
-		verify(delegateServiceMock).find(FindDelegatesParameters.create()
+		verify(delegateServiceMock).find(municipalityId, FindDelegatesParameters.create()
 			.withAgentId(agentId)
 			.withPrincipalId(null));
 	}
@@ -133,13 +148,14 @@ class DelegateResourceTest {
 	void findByPrincipalId() {
 
 		// Arrange
+		final var municipalityId = "2281";
 		final var principalId = randomUUID().toString();
-		when(delegateServiceMock.find(any())).thenReturn(List.of(Delegate.create()));
+
+		when(delegateServiceMock.find(any(), any())).thenReturn(List.of(Delegate.create()));
 
 		// Act
 		final var response = webTestClient.get()
-			.uri(builder -> builder.path("/delegates")
-				.queryParam("principalId", principalId).build())
+			.uri(builder -> builder.path(PATH_TEMPLATE).queryParam("principalId", principalId).build(Map.of("municipalityId", MUNICIPALITY_ID)))
 			.exchange()
 			.expectStatus().is2xxSuccessful()
 			.expectHeader().contentType(APPLICATION_JSON)
@@ -149,7 +165,7 @@ class DelegateResourceTest {
 
 		// Assert
 		assertThat(response).isNotNull();
-		verify(delegateServiceMock).find(FindDelegatesParameters.create()
+		verify(delegateServiceMock).find(municipalityId, FindDelegatesParameters.create()
 			.withAgentId(null)
 			.withPrincipalId(principalId));
 	}
@@ -158,15 +174,18 @@ class DelegateResourceTest {
 	void findByPrincipalIdAndAgentId() {
 
 		// Arrange
+		final var municipalityId = "2281";
 		final var agentId = randomUUID().toString();
 		final var principalId = randomUUID().toString();
-		when(delegateServiceMock.find(any())).thenReturn(List.of(Delegate.create()));
+
+		when(delegateServiceMock.find(any(), any())).thenReturn(List.of(Delegate.create()));
 
 		// Act
 		final var response = webTestClient.get()
-			.uri(builder -> builder.path("/delegates")
+			.uri(builder -> builder.path(PATH_TEMPLATE)
 				.queryParam("agentId", agentId)
-				.queryParam("principalId", principalId).build())
+				.queryParam("principalId", principalId)
+				.build(Map.of("municipalityId", MUNICIPALITY_ID)))
 			.exchange()
 			.expectStatus().is2xxSuccessful()
 			.expectHeader().contentType(APPLICATION_JSON)
@@ -176,7 +195,7 @@ class DelegateResourceTest {
 
 		// Assert
 		assertThat(response).isNotNull();
-		verify(delegateServiceMock).find(FindDelegatesParameters.create()
+		verify(delegateServiceMock).find(municipalityId, FindDelegatesParameters.create()
 			.withAgentId(agentId)
 			.withPrincipalId(principalId));
 	}

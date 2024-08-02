@@ -1,13 +1,13 @@
 package se.sundsvall.contactsettings.api.model;
 
 import static io.swagger.v3.oas.annotations.media.Schema.AccessMode.READ_ONLY;
+import static org.springframework.format.annotation.DateTimeFormat.ISO.DATE_TIME;
 
 import java.time.OffsetDateTime;
 import java.util.List;
 import java.util.Objects;
 
 import org.springframework.format.annotation.DateTimeFormat;
-import org.springframework.format.annotation.DateTimeFormat.ISO;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 
@@ -20,15 +20,15 @@ public class Delegate {
 	@Schema(description = "Contact setting ID of the delegate principal (owner)", example = "0d64c132-3aea-11ec-8d3d-0242ac130003", accessMode = READ_ONLY)
 	private String principalId;
 
-	@Schema(description = "Contact setting ID of the delegate agent", example = "0d64c132-3aea-11ec-8d3d-0242ac130003", accessMode = READ_ONLY)
+	@Schema(description = "Contact setting ID of the delegate agent (performer)", example = "0d64c132-3aea-11ec-8d3d-0242ac130003", accessMode = READ_ONLY)
 	private String agentId;
 
 	@Schema(description = "Timestamp when delegate was created", example = "2020-08-31T01:30:00.000+02:00", accessMode = READ_ONLY)
-	@DateTimeFormat(iso = ISO.DATE_TIME)
+	@DateTimeFormat(iso = DATE_TIME)
 	private OffsetDateTime created;
 
 	@Schema(description = "Timestamp when delegate was last modified", example = "2020-08-31T01:30:00.000+02:00", accessMode = READ_ONLY)
-	@DateTimeFormat(iso = ISO.DATE_TIME)
+	@DateTimeFormat(iso = DATE_TIME)
 	private OffsetDateTime modified;
 
 	@Schema(description = """

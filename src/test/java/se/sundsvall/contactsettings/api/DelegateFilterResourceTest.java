@@ -7,6 +7,7 @@ import static org.mockito.Mockito.when;
 import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT;
 import static org.springframework.http.MediaType.ALL;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
+import static org.springframework.web.util.UriComponentsBuilder.fromPath;
 import static se.sundsvall.contactsettings.api.model.enums.Operator.EQUALS;
 
 import java.util.List;
@@ -28,6 +29,9 @@ import se.sundsvall.contactsettings.service.DelegateFilterService;
 @ActiveProfiles("junit")
 class DelegateFilterResourceTest {
 
+	private static final String PATH_TEMPLATE = "/{municipalityId}/delegates/{id}/filters";
+	private static final String LOCATION_TEMPLATE = "/{municipalityId}/delegates/{id}/filters/{delegateFilterId}";
+	private static final String MUNICIPALITY_ID = "2281";
 	private final static String DELEGATE_ID = randomUUID().toString();
 	private final static String DELEGATE_FILTER_ID = randomUUID().toString();
 
@@ -49,14 +53,13 @@ class DelegateFilterResourceTest {
 
 		// Act
 		webTestClient.post()
-			.uri(builder -> builder.path("/delegates/{id}/filters").build(Map.of(
-				"id", DELEGATE_ID)))
+			.uri(builder -> builder.path(PATH_TEMPLATE).build(Map.of("municipalityId", MUNICIPALITY_ID, "id", DELEGATE_ID)))
 			.contentType(APPLICATION_JSON)
 			.bodyValue(body)
 			.exchange()
 			.expectStatus().isCreated()
 			.expectHeader().contentType(ALL)
-			.expectHeader().location("/delegates/" + DELEGATE_ID + "/filters/" + DELEGATE_FILTER_ID);
+			.expectHeader().location(fromPath(LOCATION_TEMPLATE).buildAndExpand(MUNICIPALITY_ID, DELEGATE_ID, DELEGATE_FILTER_ID).toString());
 
 		// Assert
 		verify(delegateFilterServiceMock).create(DELEGATE_ID, body);
@@ -70,7 +73,8 @@ class DelegateFilterResourceTest {
 
 		// Act
 		final var response = webTestClient.get()
-			.uri(builder -> builder.path("/delegates/{id}/filters/{delegateFilterId}").build(Map.of(
+			.uri(builder -> builder.path(PATH_TEMPLATE + "/{delegateFilterId}").build(Map.of(
+				"municipalityId", MUNICIPALITY_ID,
 				"id", DELEGATE_ID,
 				"delegateFilterId", DELEGATE_FILTER_ID)))
 			.exchange()
@@ -100,7 +104,8 @@ class DelegateFilterResourceTest {
 
 		// Act
 		final var response = webTestClient.patch()
-			.uri(builder -> builder.path("/delegates/{id}/filters/{delegateFilterId}").build(Map.of(
+			.uri(builder -> builder.path(PATH_TEMPLATE + "/{delegateFilterId}").build(Map.of(
+				"municipalityId", MUNICIPALITY_ID,
 				"id", DELEGATE_ID,
 				"delegateFilterId", DELEGATE_FILTER_ID)))
 			.contentType(APPLICATION_JSON)
@@ -122,7 +127,8 @@ class DelegateFilterResourceTest {
 
 		// Act
 		webTestClient.delete()
-			.uri(builder -> builder.path("/delegates/{id}/filters/{delegateFilterId}").build(Map.of(
+			.uri(builder -> builder.path(PATH_TEMPLATE + "/{delegateFilterId}").build(Map.of(
+				"municipalityId", MUNICIPALITY_ID,
 				"id", DELEGATE_ID,
 				"delegateFilterId", DELEGATE_FILTER_ID)))
 			.exchange()

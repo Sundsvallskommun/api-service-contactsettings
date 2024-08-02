@@ -7,13 +7,13 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.Valid;
 import se.sundsvall.contactsettings.api.validator.ValidContactChannel;
 
-@Schema(description = "Contact setting update request model")
+@Schema(description = "ContactSettingUpdateRequest model")
 public class ContactSettingUpdateRequest {
 
-	@Schema(description = "Alias for this contact setting", example = "My contact-settings")
+	@Schema(description = "Alias for this contact setting", example = "My contact-setting")
 	private String alias;
 
-	@Schema(description = "List of contact channels which are connected to the contact setting")
+	@Schema(description = "List of contact channels connected to this contact setting")
 	private List<@Valid @ValidContactChannel ContactChannel> contactChannels;
 
 	public static ContactSettingUpdateRequest create() {

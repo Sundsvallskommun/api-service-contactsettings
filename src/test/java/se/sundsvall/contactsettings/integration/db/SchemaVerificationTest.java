@@ -1,6 +1,5 @@
 package se.sundsvall.contactsettings.integration.db;
 
-import static java.lang.String.format;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase.Replace.NONE;
 
@@ -32,9 +31,9 @@ class SchemaVerificationTest {
 		final var storedSchema = getResourceString(STORED_SCHEMA_FILE);
 		final var generatedSchema = Files.readString(Path.of(generatedSchemaFile));
 
-		assertThat(storedSchema)
-			.as(format("Please reflect modifications to entities in file: %s", STORED_SCHEMA_FILE))
-			.isEqualToNormalizingWhitespace(generatedSchema);
+		assertThat(generatedSchema)
+			.as("Please reflect modifications to entities in file: %s".formatted(STORED_SCHEMA_FILE))
+			.isEqualToNormalizingWhitespace(storedSchema);
 	}
 
 	private String getResourceString(final String fileName) throws IOException, URISyntaxException {

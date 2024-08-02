@@ -45,6 +45,7 @@ class ContactSettingEntityTest {
 		final var createdById = randomUUID().toString();
 		final var id = randomUUID().toString();
 		final var modified = now();
+		final var municipalityId = "2281";
 		final var partyId = randomUUID().toString();
 
 		final var entity = ContactSettingEntity.create()
@@ -54,6 +55,7 @@ class ContactSettingEntityTest {
 			.withCreatedById(createdById)
 			.withId(id)
 			.withModified(modified)
+			.withMunicipalityId(municipalityId)
 			.withPartyId(partyId);
 
 		assertThat(entity).hasNoNullFieldsOrProperties();
@@ -63,6 +65,7 @@ class ContactSettingEntityTest {
 		assertThat(entity.getCreatedById()).isEqualTo(createdById);
 		assertThat(entity.getId()).isEqualTo(id);
 		assertThat(entity.getModified()).isEqualTo(modified);
+		assertThat(entity.getMunicipalityId()).isEqualTo(municipalityId);
 		assertThat(entity.getPartyId()).isEqualTo(partyId);
 	}
 

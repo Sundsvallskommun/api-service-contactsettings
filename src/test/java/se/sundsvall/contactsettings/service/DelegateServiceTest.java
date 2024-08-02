@@ -59,6 +59,7 @@ class DelegateServiceTest {
 		// Arrange
 		final var agentId = randomUUID().toString();
 		final var principalId = randomUUID().toString();
+		final var municipalityId = "municipalityId";
 		final var delegateCreateRequest = DelegateCreateRequest.create()
 			.withAgentId(agentId)
 			.withPrincipalId(principalId)
@@ -76,18 +77,18 @@ class DelegateServiceTest {
 						.withOperator(Operator.NOT_EQUALS)
 						.withAttributeValue("value2")))));
 
-		when(contactSettingRepositoryMock.existsById(any())).thenReturn(true);
+		when(contactSettingRepositoryMock.existsByMunicipalityIdAndId(any(), any())).thenReturn(true);
 		when(delegateRepositoryMock.findByPrincipalIdAndAgentId(any(), any())).thenReturn(emptyList());
 		when(delegateRepositoryMock.save(any())).thenReturn(DelegateEntity.create());
 
 		// Act
-		final var result = service.create(delegateCreateRequest);
+		final var result = service.create(municipalityId, delegateCreateRequest);
 
 		// Assert.
 		assertThat(result).isNotNull();
 
-		verify(contactSettingRepositoryMock).existsById(agentId);
-		verify(contactSettingRepositoryMock).existsById(principalId);
+		verify(contactSettingRepositoryMock).existsByMunicipalityIdAndId(municipalityId, agentId);
+		verify(contactSettingRepositoryMock).existsByMunicipalityIdAndId(municipalityId, principalId);
 		verify(delegateRepositoryMock).findByPrincipalIdAndAgentId(principalId, agentId);
 		verify(delegateRepositoryMock).save(delegateEntityCaptor.capture());
 
@@ -116,23 +117,24 @@ class DelegateServiceTest {
 		// Arrange
 		final var agentId = randomUUID().toString();
 		final var principalId = randomUUID().toString();
+		final var municipalityId = "municipalityId";
 		final var delegateCreateRequest = DelegateCreateRequest.create()
 			.withAgentId(agentId)
 			.withPrincipalId(principalId);
 
-		when(contactSettingRepositoryMock.existsById(agentId)).thenReturn(false);
+		when(contactSettingRepositoryMock.existsByMunicipalityIdAndId(any(), any())).thenReturn(false);
 
 		// Act
-		final var exception = assertThrows(ThrowableProblem.class, () -> service.create(delegateCreateRequest));
+		final var exception = assertThrows(ThrowableProblem.class, () -> service.create(municipalityId, delegateCreateRequest));
 
 		// Assert.
 		assertThat(exception).isNotNull();
 		assertThat(exception.getStatus()).isEqualTo(NOT_FOUND);
-		assertThat(exception.getDetail()).isEqualTo("No agent with contactSettingsId: '" + agentId + "' could be found!");
-		assertThat(exception.getMessage()).isEqualTo("Not Found: No agent with contactSettingsId: '" + agentId + "' could be found!");
+		assertThat(exception.getDetail()).isEqualTo("No agent with contactSettingsId: '" + agentId + "' could be found for this municipality!");
+		assertThat(exception.getMessage()).isEqualTo("Not Found: No agent with contactSettingsId: '" + agentId + "' could be found for this municipality!");
 
-		verify(contactSettingRepositoryMock).existsById(agentId);
-		verify(contactSettingRepositoryMock, never()).existsById(principalId);
+		verify(contactSettingRepositoryMock).existsByMunicipalityIdAndId(municipalityId, agentId);
+		verify(contactSettingRepositoryMock, never()).existsByMunicipalityIdAndId(municipalityId, principalId);
 		verifyNoInteractions(delegateRepositoryMock);
 	}
 
@@ -142,24 +144,25 @@ class DelegateServiceTest {
 		// Arrange
 		final var agentId = randomUUID().toString();
 		final var principalId = randomUUID().toString();
+		final var municipalityId = "municipalityId";
 		final var delegateCreateRequest = DelegateCreateRequest.create()
 			.withAgentId(agentId)
 			.withPrincipalId(principalId);
 
-		when(contactSettingRepositoryMock.existsById(agentId)).thenReturn(true);
-		when(contactSettingRepositoryMock.existsById(principalId)).thenReturn(false);
+		when(contactSettingRepositoryMock.existsByMunicipalityIdAndId(municipalityId, agentId)).thenReturn(true);
+		when(contactSettingRepositoryMock.existsByMunicipalityIdAndId(municipalityId, principalId)).thenReturn(false);
 
 		// Act
-		final var exception = assertThrows(ThrowableProblem.class, () -> service.create(delegateCreateRequest));
+		final var exception = assertThrows(ThrowableProblem.class, () -> service.create(municipalityId, delegateCreateRequest));
 
 		// Assert.
 		assertThat(exception).isNotNull();
 		assertThat(exception.getStatus()).isEqualTo(NOT_FOUND);
-		assertThat(exception.getDetail()).isEqualTo("No principal with contactSettingsId: '" + principalId + "' could be found!");
-		assertThat(exception.getMessage()).isEqualTo("Not Found: No principal with contactSettingsId: '" + principalId + "' could be found!");
+		assertThat(exception.getDetail()).isEqualTo("No principal with contactSettingsId: '" + principalId + "' could be found for this municipality!");
+		assertThat(exception.getMessage()).isEqualTo("Not Found: No principal with contactSettingsId: '" + principalId + "' could be found for this municipality!");
 
-		verify(contactSettingRepositoryMock).existsById(agentId);
-		verify(contactSettingRepositoryMock).existsById(principalId);
+		verify(contactSettingRepositoryMock).existsByMunicipalityIdAndId(municipalityId, agentId);
+		verify(contactSettingRepositoryMock).existsByMunicipalityIdAndId(municipalityId, principalId);
 		verifyNoInteractions(delegateRepositoryMock);
 	}
 
@@ -169,16 +172,17 @@ class DelegateServiceTest {
 		// Arrange
 		final var agentId = randomUUID().toString();
 		final var principalId = randomUUID().toString();
+		final var municipalityId = "municipalityId";
 		final var delegateCreateRequest = DelegateCreateRequest.create()
 			.withAgentId(agentId)
 			.withPrincipalId(principalId);
 
-		when(contactSettingRepositoryMock.existsById(agentId)).thenReturn(true);
-		when(contactSettingRepositoryMock.existsById(principalId)).thenReturn(true);
+		when(contactSettingRepositoryMock.existsByMunicipalityIdAndId(municipalityId, agentId)).thenReturn(true);
+		when(contactSettingRepositoryMock.existsByMunicipalityIdAndId(municipalityId, principalId)).thenReturn(true);
 		when(delegateRepositoryMock.findByPrincipalIdAndAgentId(principalId, agentId)).thenReturn(List.of(DelegateEntity.create()));
 
 		// Act
-		final var exception = assertThrows(ThrowableProblem.class, () -> service.create(delegateCreateRequest));
+		final var exception = assertThrows(ThrowableProblem.class, () -> service.create(municipalityId, delegateCreateRequest));
 
 		// Assert.
 		assertThat(exception).isNotNull();
@@ -186,8 +190,8 @@ class DelegateServiceTest {
 		assertThat(exception.getDetail()).isEqualTo("A delegate with this this principal and agent already exists!");
 		assertThat(exception.getMessage()).isEqualTo("Conflict: A delegate with this this principal and agent already exists!");
 
-		verify(contactSettingRepositoryMock).existsById(agentId);
-		verify(contactSettingRepositoryMock).existsById(principalId);
+		verify(contactSettingRepositoryMock).existsByMunicipalityIdAndId(municipalityId, agentId);
+		verify(contactSettingRepositoryMock).existsByMunicipalityIdAndId(municipalityId, principalId);
 		verify(delegateRepositoryMock).findByPrincipalIdAndAgentId(principalId, agentId);
 		verify(delegateRepositoryMock, never()).save(any());
 	}
@@ -199,8 +203,9 @@ class DelegateServiceTest {
 		final var delegateId = randomUUID().toString();
 		final var agentId = randomUUID().toString();
 		final var principalId = randomUUID().toString();
+		final var municipalityId = "2281";
 		final var delgateEntity = DelegateEntity.create()
-			.withAgent(ContactSettingEntity.create().withId(agentId))
+			.withAgent(ContactSettingEntity.create().withId(agentId).withMunicipalityId(municipalityId))
 			.withFilters(List.of(
 				DelegateFilterEntity.create()
 					.withAlias("Filter1")
@@ -215,12 +220,12 @@ class DelegateServiceTest {
 						.withOperator(Operator.NOT_EQUALS.toString())
 						.withAttributeValue("value2")))))
 			.withId(delegateId)
-			.withPrincipal(ContactSettingEntity.create().withId(principalId));
+			.withPrincipal(ContactSettingEntity.create().withId(principalId).withMunicipalityId(municipalityId));
 
 		when(delegateRepositoryMock.findById(any())).thenReturn(Optional.of(delgateEntity));
 
 		// Act
-		final var result = service.read(delegateId);
+		final var result = service.read(municipalityId, delegateId);
 
 		// Assert.
 		assertThat(result).isNotNull();
@@ -249,17 +254,98 @@ class DelegateServiceTest {
 
 		// Arrange
 		final var delegateId = randomUUID().toString();
+		final var municipalityId = "2281";
 
 		when(delegateRepositoryMock.findById(any())).thenReturn(Optional.empty());
 
 		// Act
-		final var exception = assertThrows(ThrowableProblem.class, () -> service.read(delegateId));
+		final var exception = assertThrows(ThrowableProblem.class, () -> service.read(municipalityId, delegateId));
 
 		// Assert.
 		assertThat(exception).isNotNull();
 		assertThat(exception.getStatus()).isEqualTo(NOT_FOUND);
-		assertThat(exception.getDetail()).isEqualTo("No delegate with id: '" + delegateId + "' could be found!");
-		assertThat(exception.getMessage()).isEqualTo("Not Found: No delegate with id: '" + delegateId + "' could be found!");
+		assertThat(exception.getDetail()).isEqualTo("No delegate with id: '" + delegateId + "' could be found for this municipality!");
+		assertThat(exception.getMessage()).isEqualTo("Not Found: No delegate with id: '" + delegateId + "' could be found for this municipality!");
+
+		verify(delegateRepositoryMock).findById(delegateId);
+	}
+
+	@Test
+	void readWhenWrongMunicipalityOnAgent() {
+
+		// Arrange
+		final var delegateId = randomUUID().toString();
+		final var agentId = randomUUID().toString();
+		final var principalId = randomUUID().toString();
+		final var municipalityId = "2281";
+		final var delgateEntity = DelegateEntity.create()
+			.withAgent(ContactSettingEntity.create().withId(agentId).withMunicipalityId("something-else"))  // Wrong municipality
+			.withFilters(List.of(
+				DelegateFilterEntity.create()
+					.withAlias("Filter1")
+					.withFilterRules(List.of(DelegateFilterRule.create()
+						.withAttributeName("key1")
+						.withOperator(Operator.EQUALS.toString())
+						.withAttributeValue("value1"))),
+				DelegateFilterEntity.create()
+					.withAlias("Filter2")
+					.withFilterRules(List.of(DelegateFilterRule.create()
+						.withAttributeName("key2")
+						.withOperator(Operator.NOT_EQUALS.toString())
+						.withAttributeValue("value2")))))
+			.withId(delegateId)
+			.withPrincipal(ContactSettingEntity.create().withId(principalId).withMunicipalityId(municipalityId));
+
+		when(delegateRepositoryMock.findById(any())).thenReturn(Optional.of(delgateEntity));
+
+		// Act
+		final var exception = assertThrows(ThrowableProblem.class, () -> service.read(municipalityId, delegateId));
+
+		// Assert.
+		assertThat(exception).isNotNull();
+		assertThat(exception.getStatus()).isEqualTo(NOT_FOUND);
+		assertThat(exception.getDetail()).isEqualTo("No delegate with id: '" + delegateId + "' could be found for this municipality!");
+		assertThat(exception.getMessage()).isEqualTo("Not Found: No delegate with id: '" + delegateId + "' could be found for this municipality!");
+
+		verify(delegateRepositoryMock).findById(delegateId);
+	}
+
+	@Test
+	void readWhenWrongMunicipalityOnPrincipal() {
+
+		// Arrange
+		final var delegateId = randomUUID().toString();
+		final var agentId = randomUUID().toString();
+		final var principalId = randomUUID().toString();
+		final var municipalityId = "2281";
+		final var delgateEntity = DelegateEntity.create()
+			.withAgent(ContactSettingEntity.create().withId(agentId).withMunicipalityId(municipalityId))
+			.withFilters(List.of(
+				DelegateFilterEntity.create()
+					.withAlias("Filter1")
+					.withFilterRules(List.of(DelegateFilterRule.create()
+						.withAttributeName("key1")
+						.withOperator(Operator.EQUALS.toString())
+						.withAttributeValue("value1"))),
+				DelegateFilterEntity.create()
+					.withAlias("Filter2")
+					.withFilterRules(List.of(DelegateFilterRule.create()
+						.withAttributeName("key2")
+						.withOperator(Operator.NOT_EQUALS.toString())
+						.withAttributeValue("value2")))))
+			.withId(delegateId)
+			.withPrincipal(ContactSettingEntity.create().withId(principalId).withMunicipalityId("something-else")); // Wrong municipality
+
+		when(delegateRepositoryMock.findById(any())).thenReturn(Optional.of(delgateEntity));
+
+		// Act
+		final var exception = assertThrows(ThrowableProblem.class, () -> service.read(municipalityId, delegateId));
+
+		// Assert.
+		assertThat(exception).isNotNull();
+		assertThat(exception.getStatus()).isEqualTo(NOT_FOUND);
+		assertThat(exception.getDetail()).isEqualTo("No delegate with id: '" + delegateId + "' could be found for this municipality!");
+		assertThat(exception.getMessage()).isEqualTo("Not Found: No delegate with id: '" + delegateId + "' could be found for this municipality!");
 
 		verify(delegateRepositoryMock).findById(delegateId);
 	}
@@ -271,15 +357,16 @@ class DelegateServiceTest {
 		final var delegateId = randomUUID().toString();
 		final var agentId = randomUUID().toString();
 		final var principalId = randomUUID().toString();
+		final var municipalityId = "2281";
 		final var delgateEntity = DelegateEntity.create()
-			.withAgent(ContactSettingEntity.create().withId(agentId))
 			.withId(delegateId)
-			.withPrincipal(ContactSettingEntity.create().withId(principalId));
+			.withAgent(ContactSettingEntity.create().withId(agentId).withMunicipalityId(municipalityId))
+			.withPrincipal(ContactSettingEntity.create().withId(principalId).withMunicipalityId(municipalityId));
 
 		when(delegateRepositoryMock.findById(any())).thenReturn(Optional.of(delgateEntity));
 
 		// Act
-		service.delete(delegateId);
+		service.delete(municipalityId, delegateId);
 
 		// Assert.
 		verify(delegateRepositoryMock).findById(delegateId);
@@ -287,21 +374,51 @@ class DelegateServiceTest {
 	}
 
 	@Test
-	void deleteNotFound() {
+	void deleteWhenWrongMunicipality() {
 
 		// Arrange
 		final var delegateId = randomUUID().toString();
+		final var agentId = randomUUID().toString();
+		final var principalId = randomUUID().toString();
+		final var municipalityId = "2281";
+		final var delgateEntity = DelegateEntity.create()
+			.withId(delegateId)
+			.withAgent(ContactSettingEntity.create().withId(agentId).withMunicipalityId(municipalityId))
+			.withPrincipal(ContactSettingEntity.create().withId(principalId).withMunicipalityId("something-else")); // Wrong municipality
 
-		when(delegateRepositoryMock.findById(any())).thenReturn(Optional.empty());
+		when(delegateRepositoryMock.findById(any())).thenReturn(Optional.of(delgateEntity));
 
 		// Act
-		final var exception = assertThrows(ThrowableProblem.class, () -> service.delete(delegateId));
+		final var exception = assertThrows(ThrowableProblem.class, () -> service.delete(municipalityId, delegateId));
 
 		// Assert.
 		assertThat(exception).isNotNull();
 		assertThat(exception.getStatus()).isEqualTo(NOT_FOUND);
-		assertThat(exception.getDetail()).isEqualTo("No delegate with id: '" + delegateId + "' could be found!");
-		assertThat(exception.getMessage()).isEqualTo("Not Found: No delegate with id: '" + delegateId + "' could be found!");
+		assertThat(exception.getDetail()).isEqualTo("No delegate with id: '" + delegateId + "' could be found for this municipality!");
+		assertThat(exception.getMessage()).isEqualTo("Not Found: No delegate with id: '" + delegateId + "' could be found for this municipality!");
+
+		// Assert.
+		verify(delegateRepositoryMock).findById(delegateId);
+		verify(delegateRepositoryMock, never()).delete(delgateEntity);
+	}
+
+	@Test
+	void deleteNotFound() {
+
+		// Arrange
+		final var delegateId = randomUUID().toString();
+		final var municipalityId = "2281";
+
+		when(delegateRepositoryMock.findById(any())).thenReturn(Optional.empty());
+
+		// Act
+		final var exception = assertThrows(ThrowableProblem.class, () -> service.delete(municipalityId, delegateId));
+
+		// Assert.
+		assertThat(exception).isNotNull();
+		assertThat(exception.getStatus()).isEqualTo(NOT_FOUND);
+		assertThat(exception.getDetail()).isEqualTo("No delegate with id: '" + delegateId + "' could be found for this municipality!");
+		assertThat(exception.getMessage()).isEqualTo("Not Found: No delegate with id: '" + delegateId + "' could be found for this municipality!");
 
 		// Assert.
 		verify(delegateRepositoryMock).findById(delegateId);
@@ -314,8 +431,9 @@ class DelegateServiceTest {
 		// Arrange
 		final var id = randomUUID().toString();
 		final var agentId = randomUUID().toString();
+		final var municipalityId = "2281";
 		final var delgateEntity = DelegateEntity.create()
-			.withAgent(ContactSettingEntity.create().withId(agentId))
+			.withAgent(ContactSettingEntity.create().withId(agentId).withMunicipalityId(municipalityId))
 			.withFilters(List.of(
 				DelegateFilterEntity.create()
 					.withAlias("Filter1")
@@ -332,10 +450,11 @@ class DelegateServiceTest {
 			.withId(id);
 		final var parameters = FindDelegatesParameters.create().withAgentId(agentId);
 
+		when(contactSettingRepositoryMock.existsByMunicipalityIdAndId(any(), any())).thenReturn(true);
 		when(delegateRepositoryMock.findByAgentId(any())).thenReturn(List.of(delgateEntity));
 
 		// Act
-		final var result = service.find(parameters);
+		final var result = service.find(municipalityId, parameters);
 
 		// Assert.
 		assertThat(result)
@@ -354,6 +473,7 @@ class DelegateServiceTest {
 						.withOperator(Operator.NOT_EQUALS)
 						.withAttributeValue("value2"))))));
 
+		verify(contactSettingRepositoryMock).existsByMunicipalityIdAndId(municipalityId, agentId);
 		verify(delegateRepositoryMock).findByAgentId(agentId);
 		verify(delegateRepositoryMock, never()).findByPrincipalId(any());
 		verify(delegateRepositoryMock, never()).findByPrincipalIdAndAgentId(any(), any());
@@ -364,17 +484,20 @@ class DelegateServiceTest {
 
 		// Arrange
 		final var agentId = randomUUID().toString();
+		final var municipalityId = "2281";
 		final var parameters = FindDelegatesParameters.create().withAgentId(agentId);
 
-		when(delegateRepositoryMock.findByAgentId(any())).thenReturn(emptyList());
-
 		// Act
-		final var result = service.find(parameters);
+		final var exception = assertThrows(ThrowableProblem.class, () -> service.find(municipalityId, parameters));
 
 		// Assert.
-		assertThat(result).isEmpty();
+		assertThat(exception).isNotNull();
+		assertThat(exception.getStatus()).isEqualTo(NOT_FOUND);
+		assertThat(exception.getDetail()).isEqualTo("No agent with contactSettingsId: '" + agentId + "' could be found for this municipality!");
+		assertThat(exception.getMessage()).isEqualTo("Not Found: No agent with contactSettingsId: '" + agentId + "' could be found for this municipality!");
 
-		verify(delegateRepositoryMock).findByAgentId(agentId);
+		verify(contactSettingRepositoryMock).existsByMunicipalityIdAndId(municipalityId, agentId);
+		verify(delegateRepositoryMock, never()).findByAgentId(agentId);
 		verify(delegateRepositoryMock, never()).findByPrincipalId(any());
 		verify(delegateRepositoryMock, never()).findByPrincipalIdAndAgentId(any(), any());
 	}
@@ -385,8 +508,9 @@ class DelegateServiceTest {
 		// Arrange
 		final var id = randomUUID().toString();
 		final var principalId = randomUUID().toString();
+		final var municipalityId = "2281";
 		final var delgateEntity = DelegateEntity.create()
-			.withPrincipal(ContactSettingEntity.create().withId(principalId))
+			.withPrincipal(ContactSettingEntity.create().withId(principalId).withMunicipalityId(municipalityId))
 			.withFilters(List.of(
 				DelegateFilterEntity.create()
 					.withAlias("Filter1")
@@ -403,10 +527,11 @@ class DelegateServiceTest {
 			.withId(id);
 		final var parameters = FindDelegatesParameters.create().withPrincipalId(principalId);
 
+		when(contactSettingRepositoryMock.existsByMunicipalityIdAndId(any(), any())).thenReturn(true);
 		when(delegateRepositoryMock.findByPrincipalId(any())).thenReturn(List.of(delgateEntity));
 
 		// Act
-		final var result = service.find(parameters);
+		final var result = service.find(municipalityId, parameters);
 
 		// Assert.
 		assertThat(result)
@@ -425,6 +550,7 @@ class DelegateServiceTest {
 						.withOperator(Operator.NOT_EQUALS)
 						.withAttributeValue("value2"))))));
 
+		verify(contactSettingRepositoryMock).existsByMunicipalityIdAndId(municipalityId, principalId);
 		verify(delegateRepositoryMock).findByPrincipalId(principalId);
 		verify(delegateRepositoryMock, never()).findByAgentId(any());
 		verify(delegateRepositoryMock, never()).findByPrincipalIdAndAgentId(any(), any());
@@ -435,18 +561,21 @@ class DelegateServiceTest {
 
 		// Arrange
 		final var principalId = randomUUID().toString();
+		final var municipalityId = "2281";
 		final var parameters = FindDelegatesParameters.create().withPrincipalId(principalId);
 
-		when(delegateRepositoryMock.findByPrincipalId(any())).thenReturn(emptyList());
-
 		// Act
-		final var result = service.find(parameters);
+		final var exception = assertThrows(ThrowableProblem.class, () -> service.find(municipalityId, parameters));
 
 		// Assert.
-		assertThat(result).isEmpty();
+		assertThat(exception).isNotNull();
+		assertThat(exception.getStatus()).isEqualTo(NOT_FOUND);
+		assertThat(exception.getDetail()).isEqualTo("No principal with contactSettingsId: '" + principalId + "' could be found for this municipality!");
+		assertThat(exception.getMessage()).isEqualTo("Not Found: No principal with contactSettingsId: '" + principalId + "' could be found for this municipality!");
 
-		verify(delegateRepositoryMock).findByPrincipalId(principalId);
-		verify(delegateRepositoryMock, never()).findByAgentId(any());
+		verify(contactSettingRepositoryMock).existsByMunicipalityIdAndId(municipalityId, principalId);
+		verify(delegateRepositoryMock, never()).findByAgentId(principalId);
+		verify(delegateRepositoryMock, never()).findByPrincipalId(any());
 		verify(delegateRepositoryMock, never()).findByPrincipalIdAndAgentId(any(), any());
 	}
 
@@ -455,13 +584,12 @@ class DelegateServiceTest {
 
 		// Arrange
 		final var id = randomUUID().toString();
-
-		final var principalAndAgentId = randomUUID().toString();
-		final var agentId = principalAndAgentId;
-		final var principalId = principalAndAgentId;
+		final var agentId = randomUUID().toString();
+		final var principalId = randomUUID().toString();
+		final var municipalityId = "2281";
 		final var delgateEntity = DelegateEntity.create()
-			.withAgent(ContactSettingEntity.create().withId(agentId))
-			.withPrincipal(ContactSettingEntity.create().withId(principalId))
+			.withAgent(ContactSettingEntity.create().withId(agentId).withMunicipalityId(municipalityId))
+			.withPrincipal(ContactSettingEntity.create().withId(principalId).withMunicipalityId(municipalityId))
 			.withFilters(List.of(
 				DelegateFilterEntity.create()
 					.withAlias("Filter1")
@@ -478,10 +606,11 @@ class DelegateServiceTest {
 			.withId(id);
 		final var parameters = FindDelegatesParameters.create().withAgentId(agentId).withPrincipalId(principalId);
 
+		when(contactSettingRepositoryMock.existsByMunicipalityIdAndId(any(), any())).thenReturn(true);
 		when(delegateRepositoryMock.findByPrincipalIdAndAgentId(any(), any())).thenReturn(List.of(delgateEntity));
 
 		// Act
-		final var result = service.find(parameters);
+		final var result = service.find(municipalityId, parameters);
 
 		// Assert.
 		assertThat(result)
@@ -501,6 +630,8 @@ class DelegateServiceTest {
 						.withOperator(Operator.NOT_EQUALS)
 						.withAttributeValue("value2"))))));
 
+		verify(contactSettingRepositoryMock).existsByMunicipalityIdAndId(municipalityId, agentId);
+		verify(contactSettingRepositoryMock).existsByMunicipalityIdAndId(municipalityId, principalId);
 		verify(delegateRepositoryMock).findByPrincipalIdAndAgentId(principalId, agentId);
 		verify(delegateRepositoryMock, never()).findByAgentId(any());
 		verify(delegateRepositoryMock, never()).findByPrincipalId(any());
@@ -510,33 +641,40 @@ class DelegateServiceTest {
 	void findByPrincipalIdAndAgentIdNotFound() {
 
 		// Arrange
-		final var principalAndAgentId = randomUUID().toString();
-		final var agentId = principalAndAgentId;
-		final var principalId = principalAndAgentId;
+		final var agentId = randomUUID().toString();
+		final var principalId = randomUUID().toString();
+		final var municipalityId = "2281";
 		final var parameters = FindDelegatesParameters.create().withAgentId(agentId).withPrincipalId(principalId);
 
-		when(delegateRepositoryMock.findByPrincipalIdAndAgentId(any(), any())).thenReturn(emptyList());
-
 		// Act
-		final var result = service.find(parameters);
+		final var exception = assertThrows(ThrowableProblem.class, () -> service.find(municipalityId, parameters));
 
 		// Assert.
-		assertThat(result).isEmpty();
+		assertThat(exception).isNotNull();
+		assertThat(exception.getStatus()).isEqualTo(NOT_FOUND);
+		assertThat(exception.getDetail()).isEqualTo("No agent with contactSettingsId: '" + agentId + "' could be found for this municipality!");
+		assertThat(exception.getMessage()).isEqualTo("Not Found: No agent with contactSettingsId: '" + agentId + "' could be found for this municipality!");
 
-		verify(delegateRepositoryMock).findByPrincipalIdAndAgentId(principalId, agentId);
-		verify(delegateRepositoryMock, never()).findByAgentId(any());
+		verify(contactSettingRepositoryMock).existsByMunicipalityIdAndId(municipalityId, agentId);
+		verify(contactSettingRepositoryMock, never()).existsByMunicipalityIdAndId(municipalityId, principalId);
+		verify(delegateRepositoryMock, never()).findByAgentId(agentId);
 		verify(delegateRepositoryMock, never()).findByPrincipalId(any());
+		verify(delegateRepositoryMock, never()).findByPrincipalIdAndAgentId(any(), any());
 	}
 
 	@Test
 	void findByNullParameter() {
 
+		// Arrange
+		final var municipalityId = "2281";
+
 		// Act
-		final var result = service.find(null);
+		final var result = service.find(municipalityId, null);
 
 		// Assert.
 		assertThat(result).isEmpty();
 
+		verify(contactSettingRepositoryMock, never()).existsByMunicipalityIdAndId(any(), any());
 		verify(delegateRepositoryMock, never()).findByPrincipalIdAndAgentId(any(), any());
 		verify(delegateRepositoryMock, never()).findByAgentId(any());
 		verify(delegateRepositoryMock, never()).findByPrincipalId(any());

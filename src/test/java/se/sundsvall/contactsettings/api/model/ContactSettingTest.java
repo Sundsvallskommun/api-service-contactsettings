@@ -44,6 +44,7 @@ class ContactSettingTest {
 		final var createdById = "createdById";
 		final var alias = "alias";
 		final var modified = now();
+		final var municipalityId = "2281";
 		final var contactChannels = List.of(ContactChannel.create());
 		final var isVirtual = true;
 
@@ -52,6 +53,7 @@ class ContactSettingTest {
 			.withCreatedById(createdById)
 			.withId(id)
 			.withModified(modified)
+			.withMunicipalityId(municipalityId)
 			.withPartyId(partyId)
 			.withAlias(alias)
 			.withContactChannels(contactChannels)
@@ -62,6 +64,7 @@ class ContactSettingTest {
 		assertThat(bean.getCreated()).isEqualTo(created);
 		assertThat(bean.getCreatedById()).isEqualTo(createdById);
 		assertThat(bean.getModified()).isEqualTo(modified);
+		assertThat(bean.getMunicipalityId()).isEqualTo(municipalityId);
 		assertThat(bean.getPartyId()).isEqualTo(partyId);
 		assertThat(bean.getAlias()).isEqualTo(alias);
 		assertThat(bean.getContactChannels()).isEqualTo(contactChannels);

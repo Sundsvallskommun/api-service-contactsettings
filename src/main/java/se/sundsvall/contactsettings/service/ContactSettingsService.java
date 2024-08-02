@@ -1,6 +1,5 @@
 package se.sundsvall.contactsettings.service;
 
-import static java.lang.String.format;
 import static java.util.Collections.emptyMap;
 import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
@@ -43,39 +42,39 @@ public class ContactSettingsService {
 		this.delegateRepository = delegateRepository;
 	}
 
-	public String createContactSetting(final ContactSettingCreateRequest contactSettingCreateRequest) {
+	public String createContactSetting(final String municipalityId, final ContactSettingCreateRequest contactSettingCreateRequest) {
 		Optional.ofNullable(contactSettingCreateRequest.getPartyId()).ifPresent(partyId -> {
-			if (contactSettingRepository.findByPartyId(partyId).isPresent()) {
-				throw Problem.valueOf(CONFLICT, format(ERROR_MESSAGE_CONTACT_SETTING_BY_PARTY_ALREADY_EXISTS, contactSettingCreateRequest.getPartyId()));
+			if (contactSettingRepository.findByMunicipalityIdAndPartyId(municipalityId, partyId).isPresent()) {
+				throw Problem.valueOf(CONFLICT, ERROR_MESSAGE_CONTACT_SETTING_BY_PARTY_ALREADY_EXISTS.formatted(contactSettingCreateRequest.getPartyId()));
 			}
 		});
 
-		return contactSettingRepository.save(toContactSettingEntity(contactSettingCreateRequest)).getId();
+		return contactSettingRepository.save(toContactSettingEntity(municipalityId, contactSettingCreateRequest)).getId();
 	}
 
-	public ContactSetting readContactSetting(final String id) {
-		return contactSettingRepository.findById(id).map(ContactSettingMapper::toContactSetting)
-			.orElseThrow(() -> Problem.valueOf(NOT_FOUND, format(ERROR_MESSAGE_CONTACT_SETTING_NOT_FOUND, id)));
+	public ContactSetting readContactSetting(final String municipalityId, final String id) {
+		return contactSettingRepository.findByMunicipalityIdAndId(municipalityId, id).map(ContactSettingMapper::toContactSetting)
+			.orElseThrow(() -> Problem.valueOf(NOT_FOUND, ERROR_MESSAGE_CONTACT_SETTING_NOT_FOUND.formatted(id)));
 	}
 
-	public List<ContactSetting> readContactSettingChildren(final String id) {
-		verifyThatContactSettingExists(id);
-		return contactSettingRepository.findByCreatedById(id).stream()
+	public List<ContactSetting> readContactSettingChildren(final String municipalityId, final String id) {
+		verifyThatContactSettingExists(municipalityId, id);
+		return contactSettingRepository.findByMunicipalityIdAndCreatedById(municipalityId, id).stream()
 			.map(ContactSettingMapper::toContactSetting)
 			.toList();
 	}
 
-	public List<ContactSetting> findByChannelsDestination(final String destination) {
-		return contactSettingRepository.findByChannelsDestination(destination).stream()
+	public List<ContactSetting> findByChannelsDestination(final String municipalityId, final String destination) {
+		return contactSettingRepository.findByMunicipalityIdAndChannelsDestination(municipalityId, destination).stream()
 			.map(ContactSettingMapper::toContactSetting)
 			.toList();
 	}
 
-	public List<ContactSetting> findByPartyIdAndQueryFilter(final String partyId, final Map<String, List<String>> inputQuery) {
+	public List<ContactSetting> findByPartyIdAndQueryFilter(final String municipalityId, final String partyId, final Map<String, List<String>> inputQuery) {
 
 		// Fetch root entity, or throw a 404.
-		final var parent = contactSettingRepository.findByPartyId(partyId)
-			.orElseThrow(() -> Problem.valueOf(NOT_FOUND, format(ERROR_MESSAGE_CONTACT_SETTING_BY_PARTY_ID_NOT_FOUND, partyId)));
+		final var parent = contactSettingRepository.findByMunicipalityIdAndPartyId(municipalityId, partyId)
+			.orElseThrow(() -> Problem.valueOf(NOT_FOUND, ERROR_MESSAGE_CONTACT_SETTING_BY_PARTY_ID_NOT_FOUND.formatted(partyId)));
 
 		// Call the actual search-and-collect logic.
 		return searchAndCollectFromDelegateChain(parent, Optional.ofNullable(inputQuery).orElse(emptyMap()), new HashSet<>()).stream()
@@ -95,30 +94,29 @@ public class ContactSettingsService {
 			.toList();
 	}
 
-	public ContactSetting updateContactSetting(final String id, final ContactSettingUpdateRequest contactSettingUpdateRequest) {
+	public ContactSetting updateContactSetting(final String municipalityId, final String id, final ContactSettingUpdateRequest contactSettingUpdateRequest) {
 
 		// Fetch entity, or throw a 404.
-		final var contactSettingEntity = contactSettingRepository.findById(id)
-			.orElseThrow(() -> Problem.valueOf(NOT_FOUND, format(ERROR_MESSAGE_CONTACT_SETTING_NOT_FOUND, id)));
+		final var contactSettingEntity = contactSettingRepository.findByMunicipalityIdAndId(municipalityId, id)
+			.orElseThrow(() -> Problem.valueOf(NOT_FOUND, ERROR_MESSAGE_CONTACT_SETTING_NOT_FOUND.formatted(id)));
 
 		return toContactSetting(contactSettingRepository.save(mergeIntoContactSettingEntity(contactSettingEntity, contactSettingUpdateRequest)));
 	}
 
-	public void deleteContactSetting(final String id) {
+	public void deleteContactSetting(final String municipalityId, final String id) {
 
 		// Fetch entity, or throw a 404.
-		final var contactSetting = contactSettingRepository.findById(id)
-			.orElseThrow(() -> Problem.valueOf(NOT_FOUND, format(ERROR_MESSAGE_CONTACT_SETTING_NOT_FOUND, id)));
+		final var contactSetting = contactSettingRepository.findByMunicipalityIdAndId(municipalityId, id)
+			.orElseThrow(() -> Problem.valueOf(NOT_FOUND, ERROR_MESSAGE_CONTACT_SETTING_NOT_FOUND.formatted(id)));
 
 		// Delete all related delegates (delegates where this entity is principal or agent).
 		deleteAllRelatedDelegates(id);
 
 		// For all "real" (i.e. non-virtual) instances: delete all created virtual instances.
 		if (nonNull(contactSetting.getPartyId())) {
-			contactSettingRepository.findByCreatedById(id).stream()
+			contactSettingRepository.findByMunicipalityIdAndCreatedById(municipalityId, id).stream()
 				.filter(child -> isNull(child.getPartyId()))
-				.map(ContactSettingEntity::getId)
-				.forEach(this::deleteContactSetting);
+				.forEach(contactSettingEntity -> deleteContactSetting(contactSettingEntity.getMunicipalityId(), contactSettingEntity.getId()));
 		}
 
 		contactSettingRepository.deleteById(id);
@@ -139,9 +137,9 @@ public class ContactSettingsService {
 		}
 	}
 
-	private void verifyThatContactSettingExists(final String id) {
-		if (!contactSettingRepository.existsById(id)) {
-			throw Problem.valueOf(NOT_FOUND, format(ERROR_MESSAGE_CONTACT_SETTING_NOT_FOUND, id));
+	private void verifyThatContactSettingExists(final String municipalityId, final String id) {
+		if (!contactSettingRepository.existsByMunicipalityIdAndId(municipalityId, id)) {
+			throw Problem.valueOf(NOT_FOUND, ERROR_MESSAGE_CONTACT_SETTING_NOT_FOUND.formatted(id));
 		}
 	}
 }

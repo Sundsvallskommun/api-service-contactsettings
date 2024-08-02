@@ -11,7 +11,6 @@ import static org.springframework.http.ResponseEntity.ok;
 import static org.springframework.web.util.UriComponentsBuilder.fromPath;
 
 import java.util.List;
-import java.util.Optional;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
@@ -38,11 +37,12 @@ import se.sundsvall.contactsettings.api.model.Delegate;
 import se.sundsvall.contactsettings.api.model.DelegateCreateRequest;
 import se.sundsvall.contactsettings.api.model.FindDelegatesParameters;
 import se.sundsvall.contactsettings.service.DelegateService;
+import se.sundsvall.dept44.common.validators.annotation.ValidMunicipalityId;
 import se.sundsvall.dept44.common.validators.annotation.ValidUuid;
 
 @RestController
 @Validated
-@RequestMapping("/delegates")
+@RequestMapping("/{municipalityId}/delegates")
 @Tag(name = "Delegates", description = "Delegate operations")
 public class DelegateResource {
 
@@ -58,8 +58,12 @@ public class DelegateResource {
 	@ApiResponse(responseCode = "400", description = "Bad request", content = @Content(mediaType = APPLICATION_PROBLEM_JSON_VALUE, schema = @Schema(oneOf = { Problem.class, ConstraintViolationProblem.class })))
 	@ApiResponse(responseCode = "409", description = "Conflict", content = @Content(mediaType = APPLICATION_PROBLEM_JSON_VALUE, schema = @Schema(implementation = Problem.class)))
 	@ApiResponse(responseCode = "500", description = "Internal Server error", content = @Content(mediaType = APPLICATION_PROBLEM_JSON_VALUE, schema = @Schema(implementation = Problem.class)))
-	public ResponseEntity<Void> create(@NotNull @Valid @RequestBody final DelegateCreateRequest body) {
-		return created(fromPath("/delegates/{id}").buildAndExpand(Optional.ofNullable(delegateService.create(body)).orElse(Delegate.create()).getId()).toUri())
+	public ResponseEntity<Void> create(
+		@Parameter(name = "municipalityId", description = "Municipality id", example = "2281") @ValidMunicipalityId @PathVariable final String municipalityId,
+		@NotNull @Valid @RequestBody final DelegateCreateRequest body) {
+
+		final var delegateId = delegateService.create(municipalityId, body).getId();
+		return created(fromPath("/{municipalityId}/delegates/{id}").buildAndExpand(municipalityId, delegateId).toUri())
 			.header(CONTENT_TYPE, ALL_VALUE)
 			.build();
 	}
@@ -70,8 +74,11 @@ public class DelegateResource {
 	@ApiResponse(responseCode = "400", description = "Bad request", content = @Content(mediaType = APPLICATION_PROBLEM_JSON_VALUE, schema = @Schema(oneOf = { Problem.class, ConstraintViolationProblem.class })))
 	@ApiResponse(responseCode = "404", description = "Not found", content = @Content(mediaType = APPLICATION_PROBLEM_JSON_VALUE, schema = @Schema(implementation = Problem.class)))
 	@ApiResponse(responseCode = "500", description = "Internal Server error", content = @Content(mediaType = APPLICATION_PROBLEM_JSON_VALUE, schema = @Schema(implementation = Problem.class)))
-	public ResponseEntity<Delegate> read(@Parameter(name = "id", description = "Delegate ID", example = "81471222-5798-11e9-ae24-57fa13b361e1") @ValidUuid @PathVariable(name = "id") final String id) {
-		return ok(delegateService.read(id));
+	public ResponseEntity<Delegate> read(
+		@Parameter(name = "municipalityId", description = "Municipality id", example = "2281") @ValidMunicipalityId @PathVariable final String municipalityId,
+		@Parameter(name = "id", description = "Delegate ID", example = "81471222-5798-11e9-ae24-57fa13b361e1") @ValidUuid @PathVariable(name = "id") final String id) {
+
+		return ok(delegateService.read(municipalityId, id));
 	}
 
 	@DeleteMapping(path = "/{id}", produces = APPLICATION_PROBLEM_JSON_VALUE)
@@ -80,8 +87,11 @@ public class DelegateResource {
 	@ApiResponse(responseCode = "400", description = "Bad request", content = @Content(schema = @Schema(oneOf = { Problem.class, ConstraintViolationProblem.class })))
 	@ApiResponse(responseCode = "404", description = "Not found", content = @Content(schema = @Schema(implementation = Problem.class)))
 	@ApiResponse(responseCode = "500", description = "Internal Server error", content = @Content(schema = @Schema(implementation = Problem.class)))
-	public ResponseEntity<Void> delete(@Parameter(name = "id", description = "Delegate ID", example = "81471222-5798-11e9-ae24-57fa13b361e1") @ValidUuid @PathVariable(name = "id") final String id) {
-		delegateService.delete(id);
+	public ResponseEntity<Void> delete(
+		@Parameter(name = "municipalityId", description = "Municipality id", example = "2281") @ValidMunicipalityId @PathVariable final String municipalityId,
+		@Parameter(name = "id", description = "Delegate ID", example = "81471222-5798-11e9-ae24-57fa13b361e1") @ValidUuid @PathVariable(name = "id") final String id) {
+
+		delegateService.delete(municipalityId, id);
 		return noContent().build();
 	}
 
@@ -91,7 +101,10 @@ public class DelegateResource {
 	@ApiResponse(responseCode = "400", description = "Bad request", content = @Content(mediaType = APPLICATION_PROBLEM_JSON_VALUE, schema = @Schema(oneOf = { Problem.class, ConstraintViolationProblem.class })))
 	@ApiResponse(responseCode = "404", description = "Not found", content = @Content(mediaType = APPLICATION_PROBLEM_JSON_VALUE, schema = @Schema(implementation = Problem.class)))
 	@ApiResponse(responseCode = "500", description = "Internal Server error", content = @Content(mediaType = APPLICATION_PROBLEM_JSON_VALUE, schema = @Schema(implementation = Problem.class)))
-	public ResponseEntity<List<Delegate>> findByParameters(@NotNull @Valid final FindDelegatesParameters queryParameters) {
-		return ok(delegateService.find(queryParameters));
+	public ResponseEntity<List<Delegate>> findByParameters(
+		@Parameter(name = "municipalityId", description = "Municipality id", example = "2281") @ValidMunicipalityId @PathVariable final String municipalityId,
+		@NotNull @Valid final FindDelegatesParameters queryParameters) {
+
+		return ok(delegateService.find(municipalityId, queryParameters));
 	}
 }

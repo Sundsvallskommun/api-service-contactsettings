@@ -91,6 +91,7 @@ class ContactSettingMapperTest {
 		// Arrange
 		final var alias = "alias";
 		final var partyId = "partyId";
+		final var municipalityId = "municipalityId";
 		final var createdById = "createdById";
 		final var channelAlias = "channelAlias";
 		final var destination = "destination";
@@ -105,12 +106,13 @@ class ContactSettingMapperTest {
 				.withContactMethod(ContactMethod.valueOf(contactMethod))));
 
 		// Act
-		final var result = ContactSettingMapper.toContactSettingEntity(contactSettingCreateRequest);
+		final var result = ContactSettingMapper.toContactSettingEntity(municipalityId, contactSettingCreateRequest);
 
 		// Assert
 		assertThat(result).isNotNull();
 		assertThat(result.getAlias()).isEqualTo(alias);
 		assertThat(result.getPartyId()).isEqualTo(partyId);
+		assertThat(result.getMunicipalityId()).isEqualTo(municipalityId);
 		assertThat(result.getCreatedById()).isEqualTo(createdById);
 		assertThat(result.getChannels()).hasSize(1);
 		assertThat(result.getChannels().get(0).getAlias()).isEqualTo(channelAlias);
@@ -121,8 +123,11 @@ class ContactSettingMapperTest {
 	@Test
 	void toContactSettingEntityFromContactSettingCreateRequestWhenNull() {
 
+		// Arrange
+		final var municipalityId = "2281";
+
 		// Act
-		final var result = ContactSettingMapper.toContactSettingEntity((ContactSettingCreateRequest) null);
+		final var result = ContactSettingMapper.toContactSettingEntity(municipalityId, (ContactSettingCreateRequest) null);
 
 		// Assert
 		assertThat(result).isNull();
@@ -131,8 +136,11 @@ class ContactSettingMapperTest {
 	@Test
 	void toContactSettingEntityFromContactSettingCreateRequestWhenEmpty() {
 
+		// Arrange
+		final var municipalityId = "2281";
+
 		// Act
-		final var result = ContactSettingMapper.toContactSettingEntity(ContactSettingCreateRequest.create());
+		final var result = ContactSettingMapper.toContactSettingEntity(municipalityId, ContactSettingCreateRequest.create());
 
 		// Assert
 		assertThat(result).isNotNull();
@@ -141,6 +149,7 @@ class ContactSettingMapperTest {
 		assertThat(result.getPartyId()).isNull();
 		assertThat(result.getCreated()).isNull();
 		assertThat(result.getModified()).isNull();
+		assertThat(result.getMunicipalityId()).isEqualTo(municipalityId);
 		assertThat(result.getCreatedById()).isNull();
 		assertThat(result.getChannels()).isEmpty();
 	}

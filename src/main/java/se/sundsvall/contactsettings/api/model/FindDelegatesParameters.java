@@ -7,7 +7,7 @@ import se.sundsvall.contactsettings.api.validator.ValidFindDelegatesParameters;
 import se.sundsvall.dept44.common.validators.annotation.ValidUuid;
 
 @ValidFindDelegatesParameters
-@Schema(description = "GetDelegatesParameters model")
+@Schema(description = "FindDelegatesParameters model")
 public class FindDelegatesParameters {
 
 	@Schema(description = "Agent contact setting ID", example = "15aee472-46ab-4f03-9605-68bd64ebc73f")

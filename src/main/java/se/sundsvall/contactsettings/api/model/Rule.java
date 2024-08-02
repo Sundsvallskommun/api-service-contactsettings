@@ -10,13 +10,29 @@ import jakarta.validation.constraints.NotNull;
 import se.sundsvall.contactsettings.api.model.enums.Operator;
 
 @Schema(description = """
-	The rule model.
+	Rule model.
 
-	If you want to write a rule that accepts everything, you can use the special MATCH_ALL_RULE:
+	Here are some rule examples.
+
+	A rule that mathches everything. The MATCH_ALL_RULE:
 	{
 	   "attributeName": "*",
 	   "operator": "EQUALS",
 	   "attributeValue": "*"
+	}
+
+	A rule that matches a single attribute:
+	{
+	   "attributeName": "someAttributeName",
+	   "operator": "EQUALS",
+	   "attributeValue": "theValue"
+	}
+
+	A rule that matches everything but a single attribute (i.e. a negation of the rule above):
+	{
+	   "attributeName": "someAttributeName",
+	   "operator": "NOT_EQUALS",
+	   "attributeValue": "theValue"
 	}
 	""")
 public class Rule {
