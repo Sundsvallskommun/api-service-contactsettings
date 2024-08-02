@@ -32,8 +32,8 @@ class DelegateFilterResourceTest {
 	private static final String PATH_TEMPLATE = "/{municipalityId}/delegates/{id}/filters";
 	private static final String LOCATION_TEMPLATE = "/{municipalityId}/delegates/{id}/filters/{delegateFilterId}";
 	private static final String MUNICIPALITY_ID = "2281";
-	private final static String DELEGATE_ID = randomUUID().toString();
-	private final static String DELEGATE_FILTER_ID = randomUUID().toString();
+	private static final String DELEGATE_ID = randomUUID().toString();
+	private static final String DELEGATE_FILTER_ID = randomUUID().toString();
 
 	@MockBean
 	private DelegateFilterService delegateFilterServiceMock;
