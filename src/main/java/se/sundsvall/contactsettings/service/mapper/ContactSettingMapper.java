@@ -22,10 +22,11 @@ public class ContactSettingMapper {
 	 * From API-model to DB-model.
 	 */
 
-	public static ContactSettingEntity toContactSettingEntity(final ContactSettingCreateRequest contactSettingCreateRequest) {
+	public static ContactSettingEntity toContactSettingEntity(final String municipalityId, final ContactSettingCreateRequest contactSettingCreateRequest) {
 		return Optional.ofNullable(contactSettingCreateRequest)
 			.map(request -> ContactSettingEntity.create()
 				.withPartyId(request.getPartyId())
+				.withMunicipalityId(municipalityId)
 				.withChannels(toChannels(request.getContactChannels()))
 				.withAlias(request.getAlias())
 				.withCreatedById(request.getCreatedById()))
@@ -73,6 +74,7 @@ public class ContactSettingMapper {
 				.withAlias(entity.getAlias())
 				.withCreated(entity.getCreated())
 				.withModified(entity.getModified())
+				.withMunicipalityId(contactSettingEntity.getMunicipalityId())
 				.withCreatedById(entity.getCreatedById()))
 			.orElse(null);
 	}

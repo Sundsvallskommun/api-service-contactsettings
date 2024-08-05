@@ -2,13 +2,13 @@ package se.sundsvall.contactsettings.api.model;
 
 import static io.swagger.v3.oas.annotations.media.Schema.AccessMode.READ_ONLY;
 import static io.swagger.v3.oas.annotations.media.Schema.RequiredMode.REQUIRED;
+import static org.springframework.format.annotation.DateTimeFormat.ISO.DATE_TIME;
 
 import java.time.OffsetDateTime;
 import java.util.List;
 import java.util.Objects;
 
 import org.springframework.format.annotation.DateTimeFormat;
-import org.springframework.format.annotation.DateTimeFormat.ISO;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.Valid;
@@ -20,18 +20,18 @@ public class Filter {
 	@Schema(description = "ID of the filter", example = "5d8403b1-1bf0-4cb1-b39e-c7c504d501a1", accessMode = READ_ONLY)
 	private String id;
 
-	@Schema(description = "The filter alias", example = "My filter for delegating messages to my friend")
+	@Schema(description = "The filter alias", example = "My filter for delegating messages to a friend")
 	private String alias;
 
 	@Schema(description = "The channel that created this filter.", example = "Sundsvalls Energi")
 	private String channel;
 
 	@Schema(description = "Timestamp when filter was created", example = "2020-08-31T01:30:00.000+02:00", accessMode = READ_ONLY)
-	@DateTimeFormat(iso = ISO.DATE_TIME)
+	@DateTimeFormat(iso = DATE_TIME)
 	private OffsetDateTime created;
 
 	@Schema(description = "Timestamp when filter was last modified", example = "2020-08-31T01:30:00.000+02:00", accessMode = READ_ONLY)
-	@DateTimeFormat(iso = ISO.DATE_TIME)
+	@DateTimeFormat(iso = DATE_TIME)
 	private OffsetDateTime modified;
 
 	@Schema(description = """
@@ -131,7 +131,7 @@ public class Filter {
 	@Override
 	public boolean equals(Object obj) {
 		if (this == obj) { return true; }
-		if (!(obj instanceof Filter other)) { return false; }
+		if (!(obj instanceof final Filter other)) { return false; }
 		return Objects.equals(alias, other.alias) && Objects.equals(channel, other.channel) && Objects.equals(created, other.created) && Objects.equals(id, other.id) && Objects.equals(modified, other.modified) && Objects.equals(rules, other.rules);
 	}
 

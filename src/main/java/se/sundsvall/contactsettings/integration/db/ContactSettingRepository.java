@@ -14,26 +14,47 @@ import se.sundsvall.contactsettings.integration.db.model.ContactSettingEntity;
 public interface ContactSettingRepository extends JpaRepository<ContactSettingEntity, String> {
 
 	/**
-	 * Find by partyId.
+	 * Find by municipalityId and idd.
 	 *
-	 * @param partyId of the ContactSetting owner.
-	 * @return an Optional of ContactSettingEntity object.
+	 * @param  municipalityId of the ContactSetting.
+	 * @param  id             the ID of the ContactSetting.
+	 * @return                an Optional of ContactSettingEntity object.
 	 */
-	Optional<ContactSettingEntity> findByPartyId(String partyId);
+	Optional<ContactSettingEntity> findByMunicipalityIdAndId(String municipalityId, String id);
 
 	/**
-	 * Find by createdById.
+	 * Find by municipalityId and partyId.
 	 *
-	 * @param createdById the id of the ContactSetting that created the instance to find.
-	 * @return a List of ContactSettingEntity objects.
+	 * @param  municipalityId of the ContactSetting.
+	 * @param  partyId        of the ContactSetting owner.
+	 * @return                an Optional of ContactSettingEntity object.
 	 */
-	List<ContactSettingEntity> findByCreatedById(String createdById);
+	Optional<ContactSettingEntity> findByMunicipalityIdAndPartyId(String municipalityId, String partyId);
+
+	/**
+	 * Find by municipalityId and createdById.
+	 *
+	 * @param  municipalityId of the ContactSetting.
+	 * @param  createdById    the id of the ContactSetting that created the instance to find.
+	 * @return                a List of ContactSettingEntity objects.
+	 */
+	List<ContactSettingEntity> findByMunicipalityIdAndCreatedById(String municipalityId, String createdById);
+
+	/**
+	 * Returns whether an entity with the given municipalityId and id exists.
+	 *
+	 * @param  municipalityId of the ContactSetting.
+	 * @param  id             the id of the ContactSetting.
+	 * @return                a List of ContactSettingEntity objects.
+	 */
+	boolean existsByMunicipalityIdAndId(String municipalityId, String id);
 
 	/**
 	 * Find by channel destination (SMS, EMAIL, etc.).
 	 *
-	 * @param destination channel-destination of the ContactSettings to find.
-	 * @return a List of ContactSettingEntity objects.
+	 * @param  municipalityId of the ContactSetting.
+	 * @param  destination    channel-destination of the ContactSettings to find.
+	 * @return                a List of ContactSettingEntity objects.
 	 */
-	List<ContactSettingEntity> findByChannelsDestination(String destination);
+	List<ContactSettingEntity> findByMunicipalityIdAndChannelsDestination(String municipalityId, String destination);
 }

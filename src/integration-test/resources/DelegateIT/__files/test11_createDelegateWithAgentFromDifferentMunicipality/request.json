@@ -1,0 +1,16 @@
+{
+	"principalId": "6c22993a-26b3-4a1f-805e-33a8c2b7c7e5",
+	"agentId": "951dacb1-645a-41fd-952a-6089abdce481",
+	"filters": [
+		{
+			"alias": "My filter",
+			"rules": [
+				{
+					"attributeName": "attribute",
+					"operator": "EQUALS",
+					"attributeValue": "value"
+				}
+			]
+		}
+	]
+}

@@ -130,8 +130,8 @@ class DelegateFilterServiceTest {
 		// Assert.
 		assertThat(exception).isNotNull();
 		assertThat(exception.getStatus()).isEqualTo(NOT_FOUND);
-		assertThat(exception.getDetail()).isEqualTo("No delegate with id: '" + delegateId + "' could be found!");
-		assertThat(exception.getMessage()).isEqualTo("Not Found: No delegate with id: '" + delegateId + "' could be found!");
+		assertThat(exception.getDetail()).isEqualTo("No delegate with id: '" + delegateId + "' could be found for this municipality!");
+		assertThat(exception.getMessage()).isEqualTo("Not Found: No delegate with id: '" + delegateId + "' could be found for this municipality!");
 
 		verify(delegateRepositoryMock).findById(delegateId);
 		verifyNoInteractions(delegateFilterRepositoryMock);

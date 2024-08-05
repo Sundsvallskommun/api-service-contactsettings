@@ -12,7 +12,7 @@ import se.sundsvall.contactsettings.api.validator.ValidContactChannel;
 import se.sundsvall.contactsettings.api.validator.ValidContactSettingCreateRequest;
 import se.sundsvall.dept44.common.validators.annotation.ValidUuid;
 
-@Schema(description = "Contact setting create request model")
+@Schema(description = "ContactSettingCreateRequest model")
 @ValidContactSettingCreateRequest
 public class ContactSettingCreateRequest {
 
@@ -27,7 +27,7 @@ public class ContactSettingCreateRequest {
 	@Schema(description = "Alias for this contact setting", example = "My contact-settings", requiredMode = NOT_REQUIRED)
 	private String alias;
 
-	@Schema(description = "List of contact channels which are connected to the contact setting")
+	@Schema(description = "List of contact channels connected to this contact setting")
 	private List<@Valid @ValidContactChannel ContactChannel> contactChannels;
 
 	public static ContactSettingCreateRequest create() {

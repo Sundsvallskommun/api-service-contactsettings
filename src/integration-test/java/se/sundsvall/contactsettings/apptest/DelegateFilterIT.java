@@ -38,8 +38,8 @@ class DelegateFilterIT extends AbstractAppTest {
 	private static final String DELEGATE_FILTER_ID_TO_DELETE_1 = "daaea12d-5643-4f2d-b9a6-bf15d836fcf5"; // "Mr Green delegates to Mr Brown" in testdata-it.sql
 	private static final String DELEGATE_FILTER_ID_TO_DELETE_2 = "1d525a22-c805-494a-acaf-4961728d3a5c"; // "Mr Green delegates to Mr Brown" in testdata-it.sql
 
-	private static final String PATH = "/delegates/" + DELEGATE_ID + "/filters";
-	private static final String DELETE_PATH = "/delegates/" + DELEGATE_ID_TO_DELETE + "/filters";
+	private static final String PATH = "/2281/delegates/" + DELEGATE_ID + "/filters";
+	private static final String DELETE_PATH = "/2281/delegates/" + DELEGATE_ID_TO_DELETE + "/filters";
 	private static final String REQUEST_FILE = "request.json";
 	private static final String RESPONSE_FILE = "response.json";
 

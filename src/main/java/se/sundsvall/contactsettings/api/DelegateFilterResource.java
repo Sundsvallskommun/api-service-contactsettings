@@ -10,8 +10,6 @@ import static org.springframework.http.ResponseEntity.noContent;
 import static org.springframework.http.ResponseEntity.ok;
 import static org.springframework.web.util.UriComponentsBuilder.fromPath;
 
-import java.util.Optional;
-
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -36,11 +34,12 @@ import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 import se.sundsvall.contactsettings.api.model.Filter;
 import se.sundsvall.contactsettings.service.DelegateFilterService;
+import se.sundsvall.dept44.common.validators.annotation.ValidMunicipalityId;
 import se.sundsvall.dept44.common.validators.annotation.ValidUuid;
 
 @RestController
 @Validated
-@RequestMapping("/delegates/{id}/filters")
+@RequestMapping("/{municipalityId}/delegates/{id}/filters")
 @Tag(name = "Delegates", description = "Delegate operations")
 public class DelegateFilterResource {
 
@@ -57,10 +56,12 @@ public class DelegateFilterResource {
 	@ApiResponse(responseCode = "409", description = "Conflict", content = @Content(mediaType = APPLICATION_PROBLEM_JSON_VALUE, schema = @Schema(implementation = Problem.class)))
 	@ApiResponse(responseCode = "500", description = "Internal Server error", content = @Content(mediaType = APPLICATION_PROBLEM_JSON_VALUE, schema = @Schema(implementation = Problem.class)))
 	public ResponseEntity<Void> create(
+		@Parameter(name = "municipalityId", description = "Municipality id", example = "2281") @ValidMunicipalityId @PathVariable final String municipalityId,
 		@Parameter(name = "id", description = "Delegate ID", example = "81471222-5798-11e9-ae24-57fa13b361e1") @ValidUuid @PathVariable(name = "id") String id,
 		@NotNull @Valid @RequestBody Filter body) {
 
-		return created(fromPath("/delegates/{id}/filters/{filterId}").buildAndExpand(id, Optional.ofNullable(delegateFilterService.create(id, body)).orElse(Filter.create()).getId()).toUri())
+		final var delegateFilterId = delegateFilterService.create(id, body).getId();
+		return created(fromPath("/{municipalityId}/delegates/{id}/filters/{filterId}").buildAndExpand(municipalityId, id, delegateFilterId).toUri())
 			.header(CONTENT_TYPE, ALL_VALUE)
 			.build();
 	}
@@ -72,6 +73,7 @@ public class DelegateFilterResource {
 	@ApiResponse(responseCode = "404", description = "Not found", content = @Content(mediaType = APPLICATION_PROBLEM_JSON_VALUE, schema = @Schema(implementation = Problem.class)))
 	@ApiResponse(responseCode = "500", description = "Internal Server error", content = @Content(mediaType = APPLICATION_PROBLEM_JSON_VALUE, schema = @Schema(implementation = Problem.class)))
 	public ResponseEntity<Filter> read(
+		@Parameter(name = "municipalityId", description = "Municipality id", example = "2281") @ValidMunicipalityId @PathVariable final String municipalityId,
 		@Parameter(name = "id", description = "Delegate ID", example = "81471222-5798-11e9-ae24-57fa13b361e1") @ValidUuid @PathVariable(name = "id") final String id,
 		@Parameter(name = "filterId", description = "Delegate filter ID", example = "b95eb1ed-0561-49f2-a7dc-5b8bc0411778") @ValidUuid @PathVariable(name = "filterId") String filterId) {
 
@@ -85,6 +87,7 @@ public class DelegateFilterResource {
 	@ApiResponse(responseCode = "404", description = "Not found", content = @Content(mediaType = APPLICATION_PROBLEM_JSON_VALUE, schema = @Schema(implementation = Problem.class)))
 	@ApiResponse(responseCode = "500", description = "Internal Server error", content = @Content(mediaType = APPLICATION_PROBLEM_JSON_VALUE, schema = @Schema(implementation = Problem.class)))
 	public ResponseEntity<Filter> update(
+		@Parameter(name = "municipalityId", description = "Municipality id", example = "2281") @ValidMunicipalityId @PathVariable final String municipalityId,
 		@Parameter(name = "id", description = "Delegate ID", example = "81471222-5798-11e9-ae24-57fa13b361e1") @ValidUuid @PathVariable(name = "id") String id,
 		@Parameter(name = "filterId", description = "Delegate filter ID", example = "b95eb1ed-0561-49f2-a7dc-5b8bc0411778") @ValidUuid @PathVariable(name = "filterId") String filterId,
 		@NotNull @Valid @RequestBody final Filter body) {
@@ -99,6 +102,7 @@ public class DelegateFilterResource {
 	@ApiResponse(responseCode = "404", description = "Not found", content = @Content(schema = @Schema(implementation = Problem.class)))
 	@ApiResponse(responseCode = "500", description = "Internal Server error", content = @Content(schema = @Schema(implementation = Problem.class)))
 	public ResponseEntity<Void> delete(
+		@Parameter(name = "municipalityId", description = "Municipality id", example = "2281") @ValidMunicipalityId @PathVariable final String municipalityId,
 		@Parameter(name = "id", description = "Delegate ID", example = "81471222-5798-11e9-ae24-57fa13b361e1") @ValidUuid @PathVariable(name = "id") String id,
 		@Parameter(name = "filterId", description = "Delegate filter ID", example = "b95eb1ed-0561-49f2-a7dc-5b8bc0411778") @ValidUuid @PathVariable(name = "filterId") String filterId) {
 

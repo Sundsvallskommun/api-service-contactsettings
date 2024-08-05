@@ -1,6 +1,5 @@
 package se.sundsvall.contactsettings.service;
 
-import static java.lang.String.format;
 import static java.util.Collections.emptyList;
 import static java.util.Optional.empty;
 import static java.util.UUID.randomUUID;
@@ -8,6 +7,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.tuple;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
@@ -47,6 +47,7 @@ import se.sundsvall.contactsettings.integration.db.model.DelegateFilterRule;
 class ContactSettingsServiceTest {
 
 	private static final String ID = "contactSettingId";
+	private static final String MUNICIPALITY_ID = "2281";
 
 	@Mock
 	private ContactSettingRepository contactSettingRepositoryMock;
@@ -61,16 +62,16 @@ class ContactSettingsServiceTest {
 	void createContactSetting() {
 
 		// Arrange
-		when(contactSettingRepositoryMock.findByPartyId(any(String.class))).thenReturn(empty());
+		when(contactSettingRepositoryMock.findByMunicipalityIdAndPartyId(any(String.class), any(String.class))).thenReturn(empty());
 		when(contactSettingRepositoryMock.save(any(ContactSettingEntity.class))).thenReturn(ContactSettingEntity.create().withId(ID));
 
 		// Act
-		final var result = service.createContactSetting(buildContactSettingCreateRequest());
+		final var result = service.createContactSetting(MUNICIPALITY_ID, buildContactSettingCreateRequest());
 
-		//Assert
+		// Assert
 		assertThat(result).isEqualTo(ID);
 
-		verify(contactSettingRepositoryMock).findByPartyId(any(String.class));
+		verify(contactSettingRepositoryMock).findByMunicipalityIdAndPartyId(eq(MUNICIPALITY_ID), any(String.class));
 		verify(contactSettingRepositoryMock).save(any(ContactSettingEntity.class));
 		verifyNoMoreInteractions(contactSettingRepositoryMock);
 	}
@@ -80,30 +81,34 @@ class ContactSettingsServiceTest {
 
 		// Arrange
 		final var contactSettingCreateRequest = buildContactSettingCreateRequest();
-		when(contactSettingRepositoryMock.findByPartyId(any(String.class))).thenReturn(Optional.of(ContactSettingEntity.create().withId(ID)));
+
+		when(contactSettingRepositoryMock.findByMunicipalityIdAndPartyId(any(String.class), any(String.class))).thenReturn(Optional.of(ContactSettingEntity.create().withId(ID)));
 
 		// Act
-		final var exception = assertThrows(ThrowableProblem.class, () -> service.createContactSetting(contactSettingCreateRequest));
+		final var exception = assertThrows(ThrowableProblem.class, () -> service.createContactSetting(MUNICIPALITY_ID, contactSettingCreateRequest));
 
 		// Assert
 		assertThat(exception.getStatus()).isEqualTo(CONFLICT);
 		assertThat(exception.getTitle()).isEqualTo(CONFLICT.getReasonPhrase());
-		assertThat(exception.getDetail()).isEqualTo(format(ERROR_MESSAGE_CONTACT_SETTING_BY_PARTY_ALREADY_EXISTS, contactSettingCreateRequest.getPartyId()));
+		assertThat(exception.getDetail()).isEqualTo(ERROR_MESSAGE_CONTACT_SETTING_BY_PARTY_ALREADY_EXISTS.formatted(contactSettingCreateRequest.getPartyId()));
+
+		verify(contactSettingRepositoryMock).findByMunicipalityIdAndPartyId(eq(MUNICIPALITY_ID), any(String.class));
+		verifyNoMoreInteractions(contactSettingRepositoryMock);
 	}
 
 	@Test
 	void readContactSetting() {
 
 		// Arrange
-		when(contactSettingRepositoryMock.findById(ID)).thenReturn(Optional.of(ContactSettingEntity.create().withId(ID)));
+		when(contactSettingRepositoryMock.findByMunicipalityIdAndId(MUNICIPALITY_ID, ID)).thenReturn(Optional.of(ContactSettingEntity.create().withId(ID)));
 
 		// Act
-		final var result = service.readContactSetting(ID);
+		final var result = service.readContactSetting(MUNICIPALITY_ID, ID);
 
 		// Assert
 		assertThat(result).isEqualTo(ContactSetting.create().withId(ID).withVirtual(true).withContactChannels(emptyList()));
 
-		verify(contactSettingRepositoryMock).findById(ID);
+		verify(contactSettingRepositoryMock).findByMunicipalityIdAndId(MUNICIPALITY_ID, ID);
 		verifyNoMoreInteractions(contactSettingRepositoryMock);
 	}
 
@@ -111,16 +116,16 @@ class ContactSettingsServiceTest {
 	void readContactSettingNotFound() {
 
 		// Arrange
-		when(contactSettingRepositoryMock.findById(ID)).thenReturn(Optional.empty());
+		when(contactSettingRepositoryMock.findByMunicipalityIdAndId(MUNICIPALITY_ID, ID)).thenReturn(Optional.empty());
 
 		// Act
-		final var exception = assertThrows(ThrowableProblem.class, () -> service.readContactSetting(ID));
+		final var exception = assertThrows(ThrowableProblem.class, () -> service.readContactSetting(MUNICIPALITY_ID, ID));
 
 		// Assert
 		assertThat(exception.getStatus()).isEqualTo(NOT_FOUND);
 		assertThat(exception.getTitle()).isEqualTo(NOT_FOUND.getReasonPhrase());
-		assertThat(exception.getDetail()).isEqualTo(format(ERROR_MESSAGE_CONTACT_SETTING_NOT_FOUND, ID));
-		verify(contactSettingRepositoryMock).findById(ID);
+		assertThat(exception.getDetail()).isEqualTo(ERROR_MESSAGE_CONTACT_SETTING_NOT_FOUND.formatted(ID));
+		verify(contactSettingRepositoryMock).findByMunicipalityIdAndId(MUNICIPALITY_ID, ID);
 		verifyNoMoreInteractions(contactSettingRepositoryMock);
 	}
 
@@ -132,19 +137,19 @@ class ContactSettingsServiceTest {
 			ContactSettingEntity.create().withCreatedById(ID).withAlias("Child-1"),
 			ContactSettingEntity.create().withCreatedById(ID).withAlias("Child-2"));
 
-		when(contactSettingRepositoryMock.existsById(ID)).thenReturn(true);
-		when(contactSettingRepositoryMock.findByCreatedById(ID)).thenReturn(children);
+		when(contactSettingRepositoryMock.existsByMunicipalityIdAndId(MUNICIPALITY_ID, ID)).thenReturn(true);
+		when(contactSettingRepositoryMock.findByMunicipalityIdAndCreatedById(MUNICIPALITY_ID, ID)).thenReturn(children);
 
 		// Act
-		final var result = service.readContactSettingChildren(ID);
+		final var result = service.readContactSettingChildren(MUNICIPALITY_ID, ID);
 
 		// Assert
 		assertThat(result).isEqualTo(List.of(
 			ContactSetting.create().withCreatedById(ID).withAlias("Child-1").withVirtual(true).withContactChannels(emptyList()),
 			ContactSetting.create().withCreatedById(ID).withAlias("Child-2").withVirtual(true).withContactChannels(emptyList())));
 
-		verify(contactSettingRepositoryMock).existsById(ID);
-		verify(contactSettingRepositoryMock).findByCreatedById(ID);
+		verify(contactSettingRepositoryMock).existsByMunicipalityIdAndId(MUNICIPALITY_ID, ID);
+		verify(contactSettingRepositoryMock).findByMunicipalityIdAndCreatedById(MUNICIPALITY_ID, ID);
 		verifyNoMoreInteractions(contactSettingRepositoryMock);
 	}
 
@@ -152,13 +157,13 @@ class ContactSettingsServiceTest {
 	void readContactSettingChildrenNotFoundParent() {
 
 		// Act
-		final var exception = assertThrows(ThrowableProblem.class, () -> service.readContactSettingChildren(ID));
+		final var exception = assertThrows(ThrowableProblem.class, () -> service.readContactSettingChildren(MUNICIPALITY_ID, ID));
 
 		// Assert
 		assertThat(exception.getStatus()).isEqualTo(NOT_FOUND);
 		assertThat(exception.getTitle()).isEqualTo(NOT_FOUND.getReasonPhrase());
-		assertThat(exception.getDetail()).isEqualTo(format(ERROR_MESSAGE_CONTACT_SETTING_NOT_FOUND, ID));
-		verify(contactSettingRepositoryMock).existsById(ID);
+		assertThat(exception.getDetail()).isEqualTo(ERROR_MESSAGE_CONTACT_SETTING_NOT_FOUND.formatted(ID));
+		verify(contactSettingRepositoryMock).existsByMunicipalityIdAndId(MUNICIPALITY_ID, ID);
 		verifyNoMoreInteractions(contactSettingRepositoryMock);
 	}
 
@@ -166,17 +171,17 @@ class ContactSettingsServiceTest {
 	void readContactSettingChildrenNotFoundChildren() {
 
 		// Arrange
-		when(contactSettingRepositoryMock.existsById(ID)).thenReturn(true);
-		when(contactSettingRepositoryMock.findByCreatedById(ID)).thenReturn(emptyList());
+		when(contactSettingRepositoryMock.existsByMunicipalityIdAndId(MUNICIPALITY_ID, ID)).thenReturn(true);
+		when(contactSettingRepositoryMock.findByMunicipalityIdAndCreatedById(MUNICIPALITY_ID, ID)).thenReturn(emptyList());
 
 		// Act
-		final var result = service.readContactSettingChildren(ID);
+		final var result = service.readContactSettingChildren(MUNICIPALITY_ID, ID);
 
 		// Assert
 		assertThat(result).isEmpty();
 
-		verify(contactSettingRepositoryMock).existsById(ID);
-		verify(contactSettingRepositoryMock).findByCreatedById(ID);
+		verify(contactSettingRepositoryMock).existsByMunicipalityIdAndId(MUNICIPALITY_ID, ID);
+		verify(contactSettingRepositoryMock).findByMunicipalityIdAndCreatedById(MUNICIPALITY_ID, ID);
 		verifyNoMoreInteractions(contactSettingRepositoryMock);
 	}
 
@@ -185,16 +190,16 @@ class ContactSettingsServiceTest {
 
 		// Arrange
 		final var destination = "0701234567";
-		when(contactSettingRepositoryMock.findByChannelsDestination(destination)).thenReturn(List.of(ContactSettingEntity.create().withChannels(List.of(
+		when(contactSettingRepositoryMock.findByMunicipalityIdAndChannelsDestination(MUNICIPALITY_ID, destination)).thenReturn(List.of(ContactSettingEntity.create().withChannels(List.of(
 			Channel.create().withDestination(destination).withContactMethod("SMS")))));
 
 		// Act
-		final var result = service.findByChannelsDestination(destination);
+		final var result = service.findByChannelsDestination(MUNICIPALITY_ID, destination);
 
 		// Assert
 		assertThat(result).hasSize(1);
 
-		verify(contactSettingRepositoryMock).findByChannelsDestination(destination);
+		verify(contactSettingRepositoryMock).findByMunicipalityIdAndChannelsDestination(MUNICIPALITY_ID, destination);
 		verifyNoMoreInteractions(contactSettingRepositoryMock);
 	}
 
@@ -203,15 +208,15 @@ class ContactSettingsServiceTest {
 
 		// Arrange
 		final var destination = "0701234567";
-		when(contactSettingRepositoryMock.findByChannelsDestination(any())).thenReturn(emptyList());
+		when(contactSettingRepositoryMock.findByMunicipalityIdAndChannelsDestination(any(), any())).thenReturn(emptyList());
 
 		// Act
-		final var result = service.findByChannelsDestination(destination);
+		final var result = service.findByChannelsDestination(MUNICIPALITY_ID, destination);
 
 		// Assert
 		assertThat(result).isEmpty();
 
-		verify(contactSettingRepositoryMock).findByChannelsDestination(destination);
+		verify(contactSettingRepositoryMock).findByMunicipalityIdAndChannelsDestination(MUNICIPALITY_ID, destination);
 		verifyNoMoreInteractions(contactSettingRepositoryMock);
 	}
 
@@ -238,11 +243,11 @@ class ContactSettingsServiceTest {
 			.withAgent(agent)
 			.withPrincipal(principal);
 
-		when(contactSettingRepositoryMock.findByPartyId(principal.getPartyId())).thenReturn(Optional.of(principal));
+		when(contactSettingRepositoryMock.findByMunicipalityIdAndPartyId(MUNICIPALITY_ID, principal.getPartyId())).thenReturn(Optional.of(principal));
 		when(delegateRepositoryMock.findByPrincipalId(principal.getId())).thenReturn(List.of(delegate));
 
 		// Act
-		final var result = service.findByPartyIdAndQueryFilter(principalPartyId, null);
+		final var result = service.findByPartyIdAndQueryFilter(MUNICIPALITY_ID, principalPartyId, null);
 
 		// Assert
 		assertThat(result)
@@ -251,7 +256,7 @@ class ContactSettingsServiceTest {
 				tuple(principal.getId(), principalPartyId, "Principal", List.of(ContactChannel.create().withContactMethod(SMS).withDestination("070111111111"))),
 				tuple(agent.getId(), agentPartyId, "Agent", List.of(ContactChannel.create().withContactMethod(SMS).withDestination("070222222222"))));
 
-		verify(contactSettingRepositoryMock).findByPartyId(principalPartyId);
+		verify(contactSettingRepositoryMock).findByMunicipalityIdAndPartyId(MUNICIPALITY_ID, principalPartyId);
 		verify(delegateRepositoryMock).findByPrincipalId(principal.getId());
 		verify(delegateRepositoryMock).findByPrincipalId(agent.getId());
 		verifyNoMoreInteractions(delegateRepositoryMock);
@@ -273,12 +278,14 @@ class ContactSettingsServiceTest {
 			.withAlias("Principal")
 			.withChannels(List.of(Channel.create().withContactMethod(SMS.toString()).withDestination("070111111111")))
 			.withPartyId(principalPartyId)
+			.withMunicipalityId(MUNICIPALITY_ID)
 			.withId(randomUUID().toString());
 
 		final var agent = ContactSettingEntity.create()
 			.withAlias("Agent")
 			.withChannels(List.of(Channel.create().withContactMethod(SMS.toString()).withDestination("070222222222")))
 			.withPartyId(agentPartyId)
+			.withMunicipalityId(MUNICIPALITY_ID)
 			.withId(randomUUID().toString());
 
 		final var delegate = DelegateEntity.create()
@@ -289,20 +296,20 @@ class ContactSettingsServiceTest {
 					DelegateFilterRule.create().withAttributeName("key1").withOperator("EQUALS").withAttributeValue("value2"),
 					DelegateFilterRule.create().withAttributeName("key2").withOperator("EQUALS").withAttributeValue("value4")))));
 
-		when(contactSettingRepositoryMock.findByPartyId(principal.getPartyId())).thenReturn(Optional.of(principal));
+		when(contactSettingRepositoryMock.findByMunicipalityIdAndPartyId(MUNICIPALITY_ID, principal.getPartyId())).thenReturn(Optional.of(principal));
 		when(delegateRepositoryMock.findByPrincipalId(principal.getId())).thenReturn(List.of(delegate));
 
 		// Act
-		final var result = service.findByPartyIdAndQueryFilter(principalPartyId, inputQuery);
+		final var result = service.findByPartyIdAndQueryFilter(MUNICIPALITY_ID, principalPartyId, inputQuery);
 
 		// Assert
 		assertThat(result)
-			.extracting(ContactSetting::getId, ContactSetting::getPartyId, ContactSetting::getAlias, ContactSetting::getContactChannels)
+			.extracting(ContactSetting::getId, ContactSetting::getMunicipalityId, ContactSetting::getPartyId, ContactSetting::getAlias, ContactSetting::getContactChannels)
 			.containsExactlyInAnyOrder(
-				tuple(principal.getId(), principalPartyId, "Principal", List.of(ContactChannel.create().withContactMethod(SMS).withDestination("070111111111"))),
-				tuple(agent.getId(), agentPartyId, "Agent", List.of(ContactChannel.create().withContactMethod(SMS).withDestination("070222222222"))));
+				tuple(principal.getId(), "2281", principalPartyId, "Principal", List.of(ContactChannel.create().withContactMethod(SMS).withDestination("070111111111"))),
+				tuple(agent.getId(), "2281", agentPartyId, "Agent", List.of(ContactChannel.create().withContactMethod(SMS).withDestination("070222222222"))));
 
-		verify(contactSettingRepositoryMock).findByPartyId(principalPartyId);
+		verify(contactSettingRepositoryMock).findByMunicipalityIdAndPartyId(MUNICIPALITY_ID, principalPartyId);
 		verify(delegateRepositoryMock).findByPrincipalId(principal.getId());
 		verify(delegateRepositoryMock).findByPrincipalId(agent.getId());
 		verifyNoMoreInteractions(delegateRepositoryMock);
@@ -324,12 +331,14 @@ class ContactSettingsServiceTest {
 			.withAlias("Principal")
 			.withChannels(List.of(Channel.create().withContactMethod(SMS.toString()).withDestination("070111111111")))
 			.withPartyId(principalPartyId)
+			.withMunicipalityId(MUNICIPALITY_ID)
 			.withId(randomUUID().toString());
 
 		final var agent = ContactSettingEntity.create()
 			.withAlias("Agent")
 			.withChannels(List.of(Channel.create().withContactMethod(SMS.toString()).withDestination("070222222222")))
 			.withPartyId(agentPartyId)
+			.withMunicipalityId(MUNICIPALITY_ID)
 			.withId(randomUUID().toString());
 
 		final var delegate = DelegateEntity.create()
@@ -339,20 +348,20 @@ class ContactSettingsServiceTest {
 				DelegateFilterEntity.create().withFilterRules(List.of(
 					DelegateFilterRule.create().withAttributeName("key1").withOperator("NOT_EQUALS").withAttributeValue("theForbiddenValue")))));
 
-		when(contactSettingRepositoryMock.findByPartyId(principal.getPartyId())).thenReturn(Optional.of(principal));
+		when(contactSettingRepositoryMock.findByMunicipalityIdAndPartyId(MUNICIPALITY_ID, principal.getPartyId())).thenReturn(Optional.of(principal));
 		when(delegateRepositoryMock.findByPrincipalId(principal.getId())).thenReturn(List.of(delegate));
 
 		// Act
-		final var result = service.findByPartyIdAndQueryFilter(principalPartyId, inputQuery);
+		final var result = service.findByPartyIdAndQueryFilter(MUNICIPALITY_ID, principalPartyId, inputQuery);
 
 		// Assert
 		assertThat(result)
-			.extracting(ContactSetting::getId, ContactSetting::getPartyId, ContactSetting::getAlias, ContactSetting::getContactChannels)
+			.extracting(ContactSetting::getId, ContactSetting::getMunicipalityId, ContactSetting::getPartyId, ContactSetting::getAlias, ContactSetting::getContactChannels)
 			.containsExactlyInAnyOrder(
-				tuple(principal.getId(), principalPartyId, "Principal", List.of(ContactChannel.create().withContactMethod(SMS).withDestination("070111111111"))),
-				tuple(agent.getId(), agentPartyId, "Agent", List.of(ContactChannel.create().withContactMethod(SMS).withDestination("070222222222"))));
+				tuple(principal.getId(), MUNICIPALITY_ID, principalPartyId, "Principal", List.of(ContactChannel.create().withContactMethod(SMS).withDestination("070111111111"))),
+				tuple(agent.getId(), MUNICIPALITY_ID, agentPartyId, "Agent", List.of(ContactChannel.create().withContactMethod(SMS).withDestination("070222222222"))));
 
-		verify(contactSettingRepositoryMock).findByPartyId(principalPartyId);
+		verify(contactSettingRepositoryMock).findByMunicipalityIdAndPartyId(MUNICIPALITY_ID, principalPartyId);
 		verify(delegateRepositoryMock).findByPrincipalId(principal.getId());
 		verify(delegateRepositoryMock).findByPrincipalId(agent.getId());
 		verifyNoMoreInteractions(delegateRepositoryMock);
@@ -373,12 +382,14 @@ class ContactSettingsServiceTest {
 			.withAlias("Principal")
 			.withChannels(List.of(Channel.create().withContactMethod(SMS.toString()).withDestination("070111111111")))
 			.withPartyId(principalPartyId)
+			.withMunicipalityId(MUNICIPALITY_ID)
 			.withId(randomUUID().toString());
 
 		final var agent = ContactSettingEntity.create()
 			.withAlias("Agent")
 			.withChannels(List.of(Channel.create().withContactMethod(SMS.toString()).withDestination("070222222222")))
 			.withPartyId(agentPartyId)
+			.withMunicipalityId(MUNICIPALITY_ID)
 			.withId(randomUUID().toString());
 
 		final var delegate = DelegateEntity.create()
@@ -389,19 +400,19 @@ class ContactSettingsServiceTest {
 					DelegateFilterRule.create().withAttributeName("key1").withOperator("EQUALS").withAttributeValue("value1"),
 					DelegateFilterRule.create().withAttributeName("key2").withOperator("EQUALS").withAttributeValue("value2")))));
 
-		when(contactSettingRepositoryMock.findByPartyId(principal.getPartyId())).thenReturn(Optional.of(principal));
+		when(contactSettingRepositoryMock.findByMunicipalityIdAndPartyId(MUNICIPALITY_ID, principal.getPartyId())).thenReturn(Optional.of(principal));
 		when(delegateRepositoryMock.findByPrincipalId(principal.getId())).thenReturn(List.of(delegate));
 
 		// Act
-		final var result = service.findByPartyIdAndQueryFilter(principalPartyId, inputQuery);
+		final var result = service.findByPartyIdAndQueryFilter(MUNICIPALITY_ID, principalPartyId, inputQuery);
 
 		// Assert
 		assertThat(result)
-			.extracting(ContactSetting::getId, ContactSetting::getPartyId, ContactSetting::getAlias, ContactSetting::getContactChannels)
+			.extracting(ContactSetting::getId, ContactSetting::getMunicipalityId, ContactSetting::getPartyId, ContactSetting::getAlias, ContactSetting::getContactChannels)
 			.containsExactlyInAnyOrder(
-				tuple(principal.getId(), principalPartyId, "Principal", List.of(ContactChannel.create().withContactMethod(SMS).withDestination("070111111111"))));
+				tuple(principal.getId(), MUNICIPALITY_ID, principalPartyId, "Principal", List.of(ContactChannel.create().withContactMethod(SMS).withDestination("070111111111"))));
 
-		verify(contactSettingRepositoryMock).findByPartyId(principalPartyId);
+		verify(contactSettingRepositoryMock).findByMunicipalityIdAndPartyId(MUNICIPALITY_ID, principalPartyId);
 		verify(delegateRepositoryMock).findByPrincipalId(principal.getId());
 		verifyNoMoreInteractions(delegateRepositoryMock);
 		verifyNoMoreInteractions(contactSettingRepositoryMock);
@@ -418,12 +429,14 @@ class ContactSettingsServiceTest {
 			.withAlias("Principal")
 			.withChannels(List.of(Channel.create().withContactMethod(SMS.toString()).withDestination("070111111111")))
 			.withPartyId(principalPartyId)
+			.withMunicipalityId(MUNICIPALITY_ID)
 			.withId(randomUUID().toString());
 
 		final var agent = ContactSettingEntity.create()
 			.withAlias("Agent")
 			.withChannels(List.of(Channel.create().withContactMethod(SMS.toString()).withDestination("070222222222")))
 			.withPartyId(agentPartyId)
+			.withMunicipalityId(MUNICIPALITY_ID)
 			.withId(randomUUID().toString());
 
 		final var delegate1 = DelegateEntity.create()
@@ -434,21 +447,21 @@ class ContactSettingsServiceTest {
 			.withAgent(principal)
 			.withPrincipal(agent);
 
-		when(contactSettingRepositoryMock.findByPartyId(principal.getPartyId())).thenReturn(Optional.of(principal));
+		when(contactSettingRepositoryMock.findByMunicipalityIdAndPartyId(MUNICIPALITY_ID, principal.getPartyId())).thenReturn(Optional.of(principal));
 		when(delegateRepositoryMock.findByPrincipalId(principal.getId())).thenReturn(List.of(delegate1));
 		when(delegateRepositoryMock.findByPrincipalId(agent.getId())).thenReturn(List.of(delegate2));
 
 		// Act
-		final var result = service.findByPartyIdAndQueryFilter(principalPartyId, null);
+		final var result = service.findByPartyIdAndQueryFilter(MUNICIPALITY_ID, principalPartyId, null);
 
 		// Assert
 		assertThat(result)
-			.extracting(ContactSetting::getId, ContactSetting::getPartyId, ContactSetting::getAlias, ContactSetting::getContactChannels)
+			.extracting(ContactSetting::getId, ContactSetting::getMunicipalityId, ContactSetting::getPartyId, ContactSetting::getAlias, ContactSetting::getContactChannels)
 			.containsExactlyInAnyOrder(
-				tuple(principal.getId(), principalPartyId, "Principal", List.of(ContactChannel.create().withContactMethod(SMS).withDestination("070111111111"))),
-				tuple(agent.getId(), agentPartyId, "Agent", List.of(ContactChannel.create().withContactMethod(SMS).withDestination("070222222222"))));
+				tuple(principal.getId(), "2281", principalPartyId, "Principal", List.of(ContactChannel.create().withContactMethod(SMS).withDestination("070111111111"))),
+				tuple(agent.getId(), "2281", agentPartyId, "Agent", List.of(ContactChannel.create().withContactMethod(SMS).withDestination("070222222222"))));
 
-		verify(contactSettingRepositoryMock).findByPartyId(principalPartyId);
+		verify(contactSettingRepositoryMock).findByMunicipalityIdAndPartyId(MUNICIPALITY_ID, principalPartyId);
 		verify(delegateRepositoryMock).findByPrincipalId(principal.getId());
 		verify(delegateRepositoryMock).findByPrincipalId(agent.getId());
 		verifyNoMoreInteractions(delegateRepositoryMock);
@@ -460,16 +473,16 @@ class ContactSettingsServiceTest {
 
 		// Arrange
 		final var partyId = randomUUID().toString();
-		when(contactSettingRepositoryMock.findByPartyId(any())).thenReturn(empty());
+		when(contactSettingRepositoryMock.findByMunicipalityIdAndPartyId(any(), any())).thenReturn(empty());
 
 		// Act
-		final var exception = assertThrows(ThrowableProblem.class, () -> service.findByPartyIdAndQueryFilter(partyId, null));
+		final var exception = assertThrows(ThrowableProblem.class, () -> service.findByPartyIdAndQueryFilter(MUNICIPALITY_ID, partyId, null));
 
 		// Assert
 		assertThat(exception.getStatus()).isEqualTo(NOT_FOUND);
 		assertThat(exception.getTitle()).isEqualTo(NOT_FOUND.getReasonPhrase());
-		assertThat(exception.getDetail()).isEqualTo(format(ERROR_MESSAGE_CONTACT_SETTING_BY_PARTY_ID_NOT_FOUND, partyId));
-		verify(contactSettingRepositoryMock).findByPartyId(partyId);
+		assertThat(exception.getDetail()).isEqualTo(ERROR_MESSAGE_CONTACT_SETTING_BY_PARTY_ID_NOT_FOUND.formatted(partyId));
+		verify(contactSettingRepositoryMock).findByMunicipalityIdAndPartyId(MUNICIPALITY_ID, partyId);
 		verifyNoMoreInteractions(contactSettingRepositoryMock);
 	}
 
@@ -479,16 +492,16 @@ class ContactSettingsServiceTest {
 		// Arrange
 		final var contactSettingEntity = ContactSettingEntity.create().withId(ID);
 
-		when(contactSettingRepositoryMock.findById(ID)).thenReturn(Optional.of(contactSettingEntity));
+		when(contactSettingRepositoryMock.findByMunicipalityIdAndId(MUNICIPALITY_ID, ID)).thenReturn(Optional.of(contactSettingEntity));
 		when(contactSettingRepositoryMock.save(any(ContactSettingEntity.class))).thenReturn(buildContactSettingEntity());
 
 		// Act
-		final var result = service.updateContactSetting(ID, buildContactSettingUpdateRequest());
+		final var result = service.updateContactSetting(MUNICIPALITY_ID, ID, buildContactSettingUpdateRequest());
 
 		// Assert
 		assertThat(result).isEqualTo(buildContactSetting());
 
-		verify(contactSettingRepositoryMock).findById(ID);
+		verify(contactSettingRepositoryMock).findByMunicipalityIdAndId(MUNICIPALITY_ID, ID);
 		verify(contactSettingRepositoryMock).save(contactSettingEntity);
 		verifyNoMoreInteractions(contactSettingRepositoryMock);
 	}
@@ -499,16 +512,16 @@ class ContactSettingsServiceTest {
 		// Arrange
 		final var contactSettingUpdateRequest = buildContactSettingUpdateRequest();
 
-		when(contactSettingRepositoryMock.findById(ID)).thenReturn(Optional.empty());
+		when(contactSettingRepositoryMock.findByMunicipalityIdAndId(any(), any())).thenReturn(Optional.empty());
 
 		// Act
-		final var exception = assertThrows(ThrowableProblem.class, () -> service.updateContactSetting(ID, contactSettingUpdateRequest));
+		final var exception = assertThrows(ThrowableProblem.class, () -> service.updateContactSetting(MUNICIPALITY_ID, ID, contactSettingUpdateRequest));
 
 		// Assert
 		assertThat(exception.getStatus()).isEqualTo(NOT_FOUND);
 		assertThat(exception.getTitle()).isEqualTo(NOT_FOUND.getReasonPhrase());
-		assertThat(exception.getDetail()).isEqualTo(format(ERROR_MESSAGE_CONTACT_SETTING_NOT_FOUND, ID));
-		verify(contactSettingRepositoryMock).findById(ID);
+		assertThat(exception.getDetail()).isEqualTo(ERROR_MESSAGE_CONTACT_SETTING_NOT_FOUND.formatted(ID));
+		verify(contactSettingRepositoryMock).findByMunicipalityIdAndId(MUNICIPALITY_ID, ID);
 		verifyNoMoreInteractions(contactSettingRepositoryMock);
 	}
 
@@ -519,12 +532,15 @@ class ContactSettingsServiceTest {
 		final var CHILD_ENTITY_ID_1 = randomUUID().toString();
 		final var CHILD_ENTITY_ID_2 = randomUUID().toString();
 
-		when(contactSettingRepositoryMock.findById(ID)).thenReturn(Optional.of(ContactSettingEntity.create().withId(ID).withPartyId("partyId")));
-		when(contactSettingRepositoryMock.findById(CHILD_ENTITY_ID_1)).thenReturn(Optional.of(ContactSettingEntity.create().withId(CHILD_ENTITY_ID_1)));
-		when(contactSettingRepositoryMock.findById(CHILD_ENTITY_ID_2)).thenReturn(Optional.of(ContactSettingEntity.create().withId(CHILD_ENTITY_ID_2)));
-		when(contactSettingRepositoryMock.findByCreatedById(ID)).thenReturn(List.of(
-			ContactSettingEntity.create().withId(CHILD_ENTITY_ID_1),
-			ContactSettingEntity.create().withId(CHILD_ENTITY_ID_2)));
+		when(contactSettingRepositoryMock.findByMunicipalityIdAndId(MUNICIPALITY_ID, ID)).thenReturn(Optional.of(ContactSettingEntity.create()
+			.withId(ID)
+			.withMunicipalityId(MUNICIPALITY_ID)
+			.withPartyId("partyId")));
+		when(contactSettingRepositoryMock.findByMunicipalityIdAndId(MUNICIPALITY_ID, CHILD_ENTITY_ID_1)).thenReturn(Optional.of(ContactSettingEntity.create().withId(CHILD_ENTITY_ID_1)));
+		when(contactSettingRepositoryMock.findByMunicipalityIdAndId(MUNICIPALITY_ID, CHILD_ENTITY_ID_2)).thenReturn(Optional.of(ContactSettingEntity.create().withId(CHILD_ENTITY_ID_2)));
+		when(contactSettingRepositoryMock.findByMunicipalityIdAndCreatedById(MUNICIPALITY_ID, ID)).thenReturn(List.of(
+			ContactSettingEntity.create().withId(CHILD_ENTITY_ID_1).withMunicipalityId(MUNICIPALITY_ID),
+			ContactSettingEntity.create().withId(CHILD_ENTITY_ID_2).withMunicipalityId(MUNICIPALITY_ID)));
 		when(delegateRepositoryMock.findByAgentId(ID)).thenReturn(List.of(
 			DelegateEntity.create().withId("1")));
 		when(delegateRepositoryMock.findByPrincipalId(ID)).thenReturn(List.of(
@@ -532,11 +548,11 @@ class ContactSettingsServiceTest {
 			DelegateEntity.create().withId("3")));
 
 		// Act
-		service.deleteContactSetting(ID);
+		service.deleteContactSetting(MUNICIPALITY_ID, ID);
 
 		// Assert
-		verify(contactSettingRepositoryMock).findById(ID);
-		verify(contactSettingRepositoryMock).findByCreatedById(ID);
+		verify(contactSettingRepositoryMock).findByMunicipalityIdAndId(MUNICIPALITY_ID, ID);
+		verify(contactSettingRepositoryMock).findByMunicipalityIdAndCreatedById(MUNICIPALITY_ID, ID);
 		verify(contactSettingRepositoryMock).deleteById(ID);
 		verify(contactSettingRepositoryMock).deleteById(CHILD_ENTITY_ID_1);
 		verify(contactSettingRepositoryMock).deleteById(CHILD_ENTITY_ID_2);
@@ -558,16 +574,16 @@ class ContactSettingsServiceTest {
 	void deleteContactSettingNotFound() {
 
 		// Arrange
-		when(contactSettingRepositoryMock.findById(ID)).thenReturn(empty());
+		when(contactSettingRepositoryMock.findByMunicipalityIdAndId(MUNICIPALITY_ID, ID)).thenReturn(empty());
 
 		// Act
-		final var exception = assertThrows(ThrowableProblem.class, () -> service.deleteContactSetting(ID));
+		final var exception = assertThrows(ThrowableProblem.class, () -> service.deleteContactSetting(MUNICIPALITY_ID, ID));
 
 		// Assert
 		assertThat(exception.getStatus()).isEqualTo(NOT_FOUND);
 		assertThat(exception.getTitle()).isEqualTo(NOT_FOUND.getReasonPhrase());
-		assertThat(exception.getDetail()).isEqualTo(format(ERROR_MESSAGE_CONTACT_SETTING_NOT_FOUND, ID));
-		verify(contactSettingRepositoryMock).findById(ID);
+		assertThat(exception.getDetail()).isEqualTo(ERROR_MESSAGE_CONTACT_SETTING_NOT_FOUND.formatted(ID));
+		verify(contactSettingRepositoryMock).findByMunicipalityIdAndId(MUNICIPALITY_ID, ID);
 		verifyNoMoreInteractions(contactSettingRepositoryMock);
 		verifyNoInteractions(delegateRepositoryMock);
 	}

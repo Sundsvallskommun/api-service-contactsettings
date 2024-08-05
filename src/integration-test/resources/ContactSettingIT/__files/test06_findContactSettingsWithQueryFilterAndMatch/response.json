@@ -2,6 +2,7 @@
 	{
 		"id": "41e31470-150b-4db1-b3c1-c8f4108051ab",
 		"partyId": "7903f7a9-325a-4a49-929a-d5952fef5c9a",
+		"municipalityId": "2281",
 		"alias": "Mr White",
 		"virtual": false,
 		"contactChannels": [
@@ -18,6 +19,7 @@
 	{
 		"id": "a552e909-d2b1-4f08-acbe-938040f95ff3",
 		"partyId": "b63386a0-f19f-4a92-8f88-9fe8e9ad5339",
+		"municipalityId": "2281",
 		"alias": "Mr Brown",
 		"virtual": false,
 		"contactChannels": [

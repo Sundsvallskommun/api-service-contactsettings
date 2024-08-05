@@ -77,6 +77,12 @@ public class DelegateMapper {
 	 * From DB-model to API-model.
 	 */
 
+	public static List<Delegate> toDelegateList(final List<DelegateEntity> delegateEntityList) {
+		return new ArrayList<>(Optional.ofNullable(delegateEntityList).orElse(emptyList()).stream()
+			.map(DelegateMapper::toDelegate)
+			.toList());
+	}
+
 	public static Delegate toDelegate(final DelegateEntity delegateEntity) {
 		return Optional.ofNullable(delegateEntity)
 			.map(entity -> Delegate.create()

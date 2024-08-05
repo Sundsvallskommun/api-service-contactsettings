@@ -41,11 +41,12 @@ import se.sundsvall.contactsettings.api.model.ContactSetting;
 import se.sundsvall.contactsettings.api.model.ContactSettingCreateRequest;
 import se.sundsvall.contactsettings.api.model.ContactSettingUpdateRequest;
 import se.sundsvall.contactsettings.service.ContactSettingsService;
+import se.sundsvall.dept44.common.validators.annotation.ValidMunicipalityId;
 import se.sundsvall.dept44.common.validators.annotation.ValidUuid;
 
 @RestController
 @Validated
-@RequestMapping("/settings")
+@RequestMapping("/{municipalityId}/settings")
 @Tag(name = "ContactSettings", description = "Contact setting operations")
 public class ContactSettingsResource {
 
@@ -60,9 +61,12 @@ public class ContactSettingsResource {
 	@ApiResponse(responseCode = "201", headers = @Header(name = LOCATION, schema = @Schema(type = "string")), description = "Successful operation", useReturnTypeSchema = true)
 	@ApiResponse(responseCode = "400", description = "Bad request", content = @Content(mediaType = APPLICATION_PROBLEM_JSON_VALUE, schema = @Schema(oneOf = { Problem.class, ConstraintViolationProblem.class })))
 	@ApiResponse(responseCode = "500", description = "Internal Server error", content = @Content(mediaType = APPLICATION_PROBLEM_JSON_VALUE, schema = @Schema(implementation = Problem.class)))
-	public ResponseEntity<Void> create(@NotNull @Valid @RequestBody final ContactSettingCreateRequest body) {
-		final var id = contactSettingsService.createContactSetting(body);
-		return created(fromPath("/settings/{id}").buildAndExpand(id).toUri())
+	public ResponseEntity<Void> create(
+		@Parameter(name = "municipalityId", description = "Municipality id", example = "2281") @ValidMunicipalityId @PathVariable final String municipalityId,
+		@NotNull @Valid @RequestBody final ContactSettingCreateRequest body) {
+
+		final var id = contactSettingsService.createContactSetting(municipalityId, body);
+		return created(fromPath("/{municipalityId}/settings/{id}").buildAndExpand(municipalityId, id).toUri())
 			.header(CONTENT_TYPE, ALL_VALUE)
 			.build();
 	}
@@ -74,10 +78,11 @@ public class ContactSettingsResource {
 	@ApiResponse(responseCode = "404", description = "Not found", content = @Content(mediaType = APPLICATION_PROBLEM_JSON_VALUE, schema = @Schema(implementation = Problem.class)))
 	@ApiResponse(responseCode = "500", description = "Internal Server error", content = @Content(mediaType = APPLICATION_PROBLEM_JSON_VALUE, schema = @Schema(implementation = Problem.class)))
 	public ResponseEntity<ContactSetting> update(
+		@Parameter(name = "municipalityId", description = "Municipality id", example = "2281") @ValidMunicipalityId @PathVariable final String municipalityId,
 		@Parameter(name = "id", description = "Contact setting ID", example = "81471222-5798-11e9-ae24-57fa13b361e1") @ValidUuid @PathVariable(name = "id") final String id,
 		@NotNull @Valid @RequestBody final ContactSettingUpdateRequest body) {
 
-		return ok(contactSettingsService.updateContactSetting(id, body));
+		return ok(contactSettingsService.updateContactSetting(municipalityId, id, body));
 	}
 
 	@DeleteMapping(path = "/{id}", produces = APPLICATION_PROBLEM_JSON_VALUE)
@@ -86,8 +91,11 @@ public class ContactSettingsResource {
 	@ApiResponse(responseCode = "400", description = "Bad request", content = @Content(schema = @Schema(oneOf = { Problem.class, ConstraintViolationProblem.class })))
 	@ApiResponse(responseCode = "404", description = "Not found", content = @Content(schema = @Schema(implementation = Problem.class)))
 	@ApiResponse(responseCode = "500", description = "Internal Server error", content = @Content(schema = @Schema(implementation = Problem.class)))
-	public ResponseEntity<Void> delete(@Parameter(name = "id", description = "Contact setting ID", example = "81471222-5798-11e9-ae24-57fa13b361e1") @ValidUuid @PathVariable(name = "id") final String id) {
-		contactSettingsService.deleteContactSetting(id);
+	public ResponseEntity<Void> delete(
+		@Parameter(name = "municipalityId", description = "Municipality id", example = "2281") @ValidMunicipalityId @PathVariable final String municipalityId,
+		@Parameter(name = "id", description = "Contact setting ID", example = "81471222-5798-11e9-ae24-57fa13b361e1") @ValidUuid @PathVariable(name = "id") final String id) {
+		contactSettingsService.deleteContactSetting(municipalityId, id);
+
 		return noContent().build();
 	}
 
@@ -97,8 +105,11 @@ public class ContactSettingsResource {
 	@ApiResponse(responseCode = "400", description = "Bad request", content = @Content(mediaType = APPLICATION_PROBLEM_JSON_VALUE, schema = @Schema(oneOf = { Problem.class, ConstraintViolationProblem.class })))
 	@ApiResponse(responseCode = "404", description = "Not found", content = @Content(mediaType = APPLICATION_PROBLEM_JSON_VALUE, schema = @Schema(implementation = Problem.class)))
 	@ApiResponse(responseCode = "500", description = "Internal Server error", content = @Content(mediaType = APPLICATION_PROBLEM_JSON_VALUE, schema = @Schema(implementation = Problem.class)))
-	public ResponseEntity<ContactSetting> read(@Parameter(name = "id", description = "Contact setting ID", example = "81471222-5798-11e9-ae24-57fa13b361e1") @ValidUuid @PathVariable(name = "id") final String id) {
-		return ok(contactSettingsService.readContactSetting(id));
+	public ResponseEntity<ContactSetting> read(
+		@Parameter(name = "municipalityId", description = "Municipality id", example = "2281") @ValidMunicipalityId @PathVariable final String municipalityId,
+		@Parameter(name = "id", description = "Contact setting ID", example = "81471222-5798-11e9-ae24-57fa13b361e1") @ValidUuid @PathVariable(name = "id") final String id) {
+
+		return ok(contactSettingsService.readContactSetting(municipalityId, id));
 	}
 
 	@GetMapping(path = "/{id}/children", produces = { APPLICATION_JSON_VALUE, APPLICATION_PROBLEM_JSON_VALUE })
@@ -107,8 +118,11 @@ public class ContactSettingsResource {
 	@ApiResponse(responseCode = "400", description = "Bad request", content = @Content(mediaType = APPLICATION_PROBLEM_JSON_VALUE, schema = @Schema(oneOf = { Problem.class, ConstraintViolationProblem.class })))
 	@ApiResponse(responseCode = "404", description = "Not found", content = @Content(mediaType = APPLICATION_PROBLEM_JSON_VALUE, schema = @Schema(implementation = Problem.class)))
 	@ApiResponse(responseCode = "500", description = "Internal Server error", content = @Content(mediaType = APPLICATION_PROBLEM_JSON_VALUE, schema = @Schema(implementation = Problem.class)))
-	public ResponseEntity<List<ContactSetting>> readChildren(@Parameter(name = "id", description = "Contact setting ID", example = "81471222-5798-11e9-ae24-57fa13b361e1") @ValidUuid @PathVariable(name = "id") final String id) {
-		return ok(contactSettingsService.readContactSettingChildren(id));
+	public ResponseEntity<List<ContactSetting>> readChildren(
+		@Parameter(name = "municipalityId", description = "Municipality id", example = "2281") @ValidMunicipalityId @PathVariable final String municipalityId,
+		@Parameter(name = "id", description = "Contact setting ID", example = "81471222-5798-11e9-ae24-57fa13b361e1") @ValidUuid @PathVariable(name = "id") final String id) {
+
+		return ok(contactSettingsService.readContactSettingChildren(municipalityId, id));
 	}
 
 	@GetMapping(produces = { APPLICATION_JSON_VALUE, APPLICATION_PROBLEM_JSON_VALUE })
@@ -118,13 +132,14 @@ public class ContactSettingsResource {
 	@ApiResponse(responseCode = "404", description = "Not found", content = @Content(mediaType = APPLICATION_PROBLEM_JSON_VALUE, schema = @Schema(implementation = Problem.class)))
 	@ApiResponse(responseCode = "500", description = "Internal Server error", content = @Content(mediaType = APPLICATION_PROBLEM_JSON_VALUE, schema = @Schema(implementation = Problem.class)))
 	public ResponseEntity<List<ContactSetting>> findByPartyIdAndQueryFilter(
+		@Parameter(name = "municipalityId", description = "Municipality id", example = "2281") @ValidMunicipalityId @PathVariable final String municipalityId,
 		@Parameter(name = "partyId", description = "Party-ID", example = "81471222-5798-11e9-ae24-57fa13b361e1") @ValidUuid @RequestParam("partyId") String partyId,
 		@Parameter(name = "query", description = "Filter query parameters. Only delegates that matches (i.e. has matching delegate filters) the specified query will be included in the result.") @RequestParam final MultiValueMap<String, String> query) {
 
 		// "query" contains ALL queryParams, Since "partyId" is also a queryParam it will end up in the filter as well. Remove!
 		Optional.ofNullable(query).ifPresent(map -> map.remove("partyId"));
 
-		return ok(contactSettingsService.findByPartyIdAndQueryFilter(partyId, query));
+		return ok(contactSettingsService.findByPartyIdAndQueryFilter(municipalityId, partyId, query));
 	}
 
 	@GetMapping(path = "/contact-channels", produces = { APPLICATION_JSON_VALUE, APPLICATION_PROBLEM_JSON_VALUE })
@@ -133,7 +148,10 @@ public class ContactSettingsResource {
 	@ApiResponse(responseCode = "400", description = "Bad request", content = @Content(mediaType = APPLICATION_PROBLEM_JSON_VALUE, schema = @Schema(oneOf = { Problem.class, ConstraintViolationProblem.class })))
 	@ApiResponse(responseCode = "404", description = "Not found", content = @Content(mediaType = APPLICATION_PROBLEM_JSON_VALUE, schema = @Schema(implementation = Problem.class)))
 	@ApiResponse(responseCode = "500", description = "Internal Server error", content = @Content(mediaType = APPLICATION_PROBLEM_JSON_VALUE, schema = @Schema(implementation = Problem.class)))
-	public ResponseEntity<List<ContactSetting>> findByDestination(@Parameter(name = "destination", description = "destination of contact channel", example = "0701234567") @RequestParam(name = "destination") final String destination) {
-		return ok(contactSettingsService.findByChannelsDestination(destination));
+	public ResponseEntity<List<ContactSetting>> findByDestination(
+		@Parameter(name = "municipalityId", description = "Municipality id", example = "2281") @ValidMunicipalityId @PathVariable final String municipalityId,
+		@Parameter(name = "destination", description = "destination of contact channel", example = "0701234567") @RequestParam(name = "destination") final String destination) {
+
+		return ok(contactSettingsService.findByChannelsDestination(municipalityId, destination));
 	}
 }

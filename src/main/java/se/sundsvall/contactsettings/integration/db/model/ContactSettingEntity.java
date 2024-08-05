@@ -28,7 +28,8 @@ import se.sundsvall.contactsettings.integration.db.model.listener.ContactSetting
 @Table(name = "contact_setting",
 	indexes = {
 		@Index(name = "contact_setting_party_id_index", columnList = "party_id"),
-		@Index(name = "contact_setting_created_by_id_index", columnList = "created_by_id")
+		@Index(name = "contact_setting_created_by_id_index", columnList = "created_by_id"),
+		@Index(name = "contact_setting_municipality_id_index", columnList = "municipality_id"),
 	})
 @EntityListeners(ContactSettingEntityListener.class)
 public class ContactSettingEntity {
@@ -40,6 +41,9 @@ public class ContactSettingEntity {
 
 	@Column(name = "party_id")
 	private String partyId;
+
+	@Column(name = "municipality_id")
+	private String municipalityId;
 
 	@Column(name = "alias")
 	private String alias;
@@ -93,6 +97,19 @@ public class ContactSettingEntity {
 
 	public ContactSettingEntity withPartyId(final String partyId) {
 		this.partyId = partyId;
+		return this;
+	}
+
+	public String getMunicipalityId() {
+		return municipalityId;
+	}
+
+	public void setMunicipalityId(String municipalityId) {
+		this.municipalityId = municipalityId;
+	}
+
+	public ContactSettingEntity withMunicipalityId(String municipalityId) {
+		this.municipalityId = municipalityId;
 		return this;
 	}
 
@@ -172,26 +189,22 @@ public class ContactSettingEntity {
 
 	@Override
 	public int hashCode() {
-		return Objects.hash(alias, channels, created, createdById, id, modified, partyId);
+		return Objects.hash(alias, channels, created, createdById, id, modified, municipalityId, partyId);
 	}
 
 	@Override
-	public boolean equals(final Object obj) {
-		if (this == obj) {
-			return true;
-		}
-		if (!(obj instanceof final ContactSettingEntity other)) {
-			return false;
-		}
+	public boolean equals(Object obj) {
+		if (this == obj) { return true; }
+		if (!(obj instanceof final ContactSettingEntity other)) { return false; }
 		return Objects.equals(alias, other.alias) && Objects.equals(channels, other.channels) && Objects.equals(created, other.created) && Objects.equals(createdById, other.createdById) && Objects.equals(id, other.id) && Objects.equals(modified,
-			other.modified) && Objects.equals(partyId, other.partyId);
+			other.modified) && Objects.equals(municipalityId, other.municipalityId) && Objects.equals(partyId, other.partyId);
 	}
 
 	@Override
 	public String toString() {
 		final StringBuilder builder = new StringBuilder();
-		builder.append("ContactSettingEntity [id=").append(id).append(", partyId=").append(partyId).append(", alias=").append(alias).append(", created=").append(created).append(", modified=").append(modified).append(", createdById=").append(createdById)
-			.append(", channels=").append(channels).append("]");
+		builder.append("ContactSettingEntity [id=").append(id).append(", partyId=").append(partyId).append(", municipalityId=").append(municipalityId).append(", alias=").append(alias).append(", created=").append(created).append(", modified=").append(
+			modified).append(", createdById=").append(createdById).append(", channels=").append(channels).append("]");
 		return builder.toString();
 	}
 }

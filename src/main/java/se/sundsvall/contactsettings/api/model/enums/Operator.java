@@ -1,6 +1,5 @@
 package se.sundsvall.contactsettings.api.model.enums;
 
-import static java.lang.String.format;
 import static org.zalando.problem.Status.BAD_REQUEST;
 
 import java.util.stream.Stream;
@@ -21,6 +20,6 @@ public enum Operator {
 		return Stream.of(Operator.values())
 			.filter(e -> e.name().equalsIgnoreCase(value))
 			.findAny()
-			.orElseThrow(() -> Problem.valueOf(BAD_REQUEST, format(INVALID_VALUE_ERROR, value)));
+			.orElseThrow(() -> Problem.valueOf(BAD_REQUEST, INVALID_VALUE_ERROR.formatted(value)));
 	}
 }

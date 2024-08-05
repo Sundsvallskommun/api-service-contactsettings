@@ -29,7 +29,7 @@ import se.sundsvall.dept44.test.annotation.wiremock.WireMockAppTestSuite;
 })
 class DelegateIT extends AbstractAppTest {
 
-	private static final String PATH = "/delegates";
+	private static final String PATH = "/2281/delegates";
 	private static final String REQUEST_FILE = "request.json";
 	private static final String RESPONSE_FILE = "response.json";
 
@@ -80,7 +80,7 @@ class DelegateIT extends AbstractAppTest {
 			.getResponseHeaders().get("Location").get(0);
 
 		setupCall()
-			.withServicePath(location.substring(location.indexOf("/delegates")))
+			.withServicePath(location.substring(location.indexOf(PATH)))
 			.withHttpMethod(GET)
 			.withHeader(ACCEPT, APPLICATION_JSON_VALUE)
 			.withExpectedResponseStatus(OK)
@@ -151,6 +151,42 @@ class DelegateIT extends AbstractAppTest {
 		setupCall()
 			.withServicePath(PATH + "/a59b305c-868a-4798-8889-cd24c4bd314a")
 			.withHttpMethod(DELETE)
+			.withExpectedResponseStatus(NOT_FOUND)
+			.withExpectedResponseHeader(CONTENT_TYPE, List.of(APPLICATION_PROBLEM_JSON_VALUE))
+			.withExpectedResponse(RESPONSE_FILE)
+			.sendRequestAndVerifyResponse();
+	}
+
+	@Test
+	void test11_createDelegateWithAgentFromDifferentMunicipality() {
+		setupCall()
+			.withServicePath(PATH)
+			.withHttpMethod(POST)
+			.withRequest(REQUEST_FILE)
+			.withExpectedResponseStatus(NOT_FOUND)
+			.withExpectedResponseHeader(CONTENT_TYPE, List.of(APPLICATION_PROBLEM_JSON_VALUE))
+			.withExpectedResponse(RESPONSE_FILE)
+			.sendRequestAndVerifyResponse();
+	}
+
+	@Test
+	void test12_createDelegateWithPrincipalFromDifferentMunicipality() {
+		setupCall()
+			.withServicePath(PATH)
+			.withHttpMethod(POST)
+			.withRequest(REQUEST_FILE)
+			.withExpectedResponseStatus(NOT_FOUND)
+			.withExpectedResponseHeader(CONTENT_TYPE, List.of(APPLICATION_PROBLEM_JSON_VALUE))
+			.withExpectedResponse(RESPONSE_FILE)
+			.sendRequestAndVerifyResponse();
+	}
+
+	@Test
+	void test13_findDelegatesByAgentFromDifferentMunicipality() {
+		setupCall()
+			.withServicePath(PATH + "?agentId=951dacb1-645a-41fd-952a-6089abdce481") // AgentId belongs to a contactSetting from a different municipality.
+			.withHttpMethod(GET)
+			.withHeader(ACCEPT, APPLICATION_JSON_VALUE)
 			.withExpectedResponseStatus(NOT_FOUND)
 			.withExpectedResponseHeader(CONTENT_TYPE, List.of(APPLICATION_PROBLEM_JSON_VALUE))
 			.withExpectedResponse(RESPONSE_FILE)

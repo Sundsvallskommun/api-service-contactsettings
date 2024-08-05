@@ -1,6 +1,5 @@
 package se.sundsvall.contactsettings.service;
 
-import static java.lang.String.format;
 import static java.util.Collections.emptyList;
 import static org.zalando.problem.Status.NOT_FOUND;
 import static se.sundsvall.contactsettings.service.Constants.ERROR_MESSAGE_DELEGATE_FILTER_NOT_FOUND;
@@ -12,7 +11,6 @@ import static se.sundsvall.contactsettings.service.mapper.DelegateMapper.toFilte
 import java.util.ArrayList;
 import java.util.Optional;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.zalando.problem.Problem;
 
@@ -23,17 +21,19 @@ import se.sundsvall.contactsettings.integration.db.DelegateRepository;
 @Service
 public class DelegateFilterService {
 
-	@Autowired
-	private DelegateRepository delegateRepository;
+	private final DelegateRepository delegateRepository;
+	private final DelegateFilterRepository delegateFilterRepository;
 
-	@Autowired
-	private DelegateFilterRepository delegateFilterRepository;
+	public DelegateFilterService(DelegateRepository delegateRepository, DelegateFilterRepository delegateFilterRepository) {
+		this.delegateRepository = delegateRepository;
+		this.delegateFilterRepository = delegateFilterRepository;
+	}
 
 	public Filter create(String delegateId, Filter filter) {
 
 		// Fetch/Validate.
 		final var delegateEntity = delegateRepository.findById(delegateId)
-			.orElseThrow(() -> Problem.valueOf(NOT_FOUND, format(ERROR_MESSAGE_DELEGATE_NOT_FOUND, delegateId)));
+			.orElseThrow(() -> Problem.valueOf(NOT_FOUND, ERROR_MESSAGE_DELEGATE_NOT_FOUND.formatted(delegateId)));
 
 		// Save delegateFilter.
 		final var delegateFilterEntity = delegateFilterRepository.save(toDelegateFilterEntity(filter));
@@ -50,7 +50,7 @@ public class DelegateFilterService {
 
 		// Fetch/validate
 		final var delegateFilterEntity = delegateFilterRepository.findByIdAndDelegateId(delegateFilterId, delegateId)
-			.orElseThrow(() -> Problem.valueOf(NOT_FOUND, format(ERROR_MESSAGE_DELEGATE_FILTER_NOT_FOUND, delegateId, delegateFilterId)));
+			.orElseThrow(() -> Problem.valueOf(NOT_FOUND, ERROR_MESSAGE_DELEGATE_FILTER_NOT_FOUND.formatted(delegateId, delegateFilterId)));
 
 		// All good: proceed
 		return toFilter(delegateFilterEntity);
@@ -60,7 +60,7 @@ public class DelegateFilterService {
 
 		// Fetch/validate
 		final var delegateFilterEntity = delegateFilterRepository.findByIdAndDelegateId(delegateFilterId, delegateId)
-			.orElseThrow(() -> Problem.valueOf(NOT_FOUND, format(ERROR_MESSAGE_DELEGATE_FILTER_NOT_FOUND, delegateId, delegateFilterId)));
+			.orElseThrow(() -> Problem.valueOf(NOT_FOUND, ERROR_MESSAGE_DELEGATE_FILTER_NOT_FOUND.formatted(delegateId, delegateFilterId)));
 
 		// All good: proceed
 		return toFilter(delegateFilterRepository.save(mergeIntoDelegateFilterEntity(delegateFilterEntity, filter)));
@@ -70,10 +70,10 @@ public class DelegateFilterService {
 
 		// Validate
 		if (!delegateFilterRepository.existsByIdAndDelegateId(delegateFilterId, delegateId)) {
-			throw Problem.valueOf(NOT_FOUND, format(ERROR_MESSAGE_DELEGATE_FILTER_NOT_FOUND, delegateId, delegateFilterId));
+			throw Problem.valueOf(NOT_FOUND, ERROR_MESSAGE_DELEGATE_FILTER_NOT_FOUND.formatted(delegateId, delegateFilterId));
 		}
 
-		// Delete delegate if the filter is the last filter on the delegate, otherwise.
+		// Delete delegate if the filter is the last filter on the delegate.
 		if (delegateFilterRepository.countByDelegateId(delegateId) <= 1) {
 			delegateRepository.deleteById(delegateId);
 			return;

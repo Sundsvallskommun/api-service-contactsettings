@@ -8,6 +8,7 @@ import static org.springframework.http.HttpMethod.GET;
 import static org.springframework.http.HttpMethod.PATCH;
 import static org.springframework.http.HttpMethod.POST;
 import static org.springframework.http.HttpStatus.CREATED;
+import static org.springframework.http.HttpStatus.NOT_FOUND;
 import static org.springframework.http.HttpStatus.NO_CONTENT;
 import static org.springframework.http.HttpStatus.OK;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
@@ -31,11 +32,12 @@ import se.sundsvall.dept44.test.annotation.wiremock.WireMockAppTestSuite;
 })
 class ContactSettingIT extends AbstractAppTest {
 
-	private static final String PATH = "/settings";
+	private static final String PATH = "/2281/settings";
 	private static final String REQUEST_FILE = "request.json";
 	private static final String RESPONSE_FILE = "response.json";
 	private static final String CONTACT_SETTING_ID = "41e31470-150b-4db1-b3c1-c8f4108051ab";
 	private static final String PARTY_ID = "7903f7a9-325a-4a49-929a-d5952fef5c9a";
+	private static final String MUNICIPALITY_ID = "2281";
 
 	@Autowired
 	private DelegateRepository delegateRepository;
@@ -93,7 +95,7 @@ class ContactSettingIT extends AbstractAppTest {
 
 		assertThat(delegateRepository.findByPrincipalId(CONTACT_SETTING_ID)).hasSize(1);
 		assertThat(delegateRepository.findByAgentId(CONTACT_SETTING_ID)).hasSize(1);
-		assertThat(contactSettingRepository.findByCreatedById(CONTACT_SETTING_ID)).hasSize(1);
+		assertThat(contactSettingRepository.findByMunicipalityIdAndCreatedById(MUNICIPALITY_ID, CONTACT_SETTING_ID)).hasSize(1);
 
 		setupCall()
 			.withServicePath(PATH + "/" + CONTACT_SETTING_ID)
@@ -104,7 +106,7 @@ class ContactSettingIT extends AbstractAppTest {
 		// All related delegates and "virtual" child instances should have been removed.
 		assertThat(delegateRepository.findByPrincipalId(CONTACT_SETTING_ID)).isEmpty();
 		assertThat(delegateRepository.findByAgentId(CONTACT_SETTING_ID)).isEmpty();
-		assertThat(contactSettingRepository.findByCreatedById(CONTACT_SETTING_ID)).isEmpty();
+		assertThat(contactSettingRepository.findByMunicipalityIdAndCreatedById(MUNICIPALITY_ID, CONTACT_SETTING_ID)).isEmpty();
 	}
 
 	@Test
@@ -153,6 +155,16 @@ class ContactSettingIT extends AbstractAppTest {
 			.withServicePath(PATH + "/contact-channels?destination=mr.pink@example.com")
 			.withHttpMethod(GET)
 			.withExpectedResponseStatus(OK)
+			.withExpectedResponse(RESPONSE_FILE)
+			.sendRequestAndVerifyResponse();
+	}
+
+	@Test
+	void test10_findContactSettingsWithWrongMunicipalityId() {
+		setupCall()
+			.withServicePath("/1984/settings" + "?partyId=" + PARTY_ID)
+			.withHttpMethod(GET)
+			.withExpectedResponseStatus(NOT_FOUND)
 			.withExpectedResponse(RESPONSE_FILE)
 			.sendRequestAndVerifyResponse();
 	}

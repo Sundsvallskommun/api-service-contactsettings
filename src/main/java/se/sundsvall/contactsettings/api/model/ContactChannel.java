@@ -10,10 +10,10 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import se.sundsvall.contactsettings.api.model.enums.ContactMethod;
 
-@Schema(description = "Contact channel model")
+@Schema(description = "ContactChannel model")
 public class ContactChannel {
 
-	@Schema(description = "Method of contact", example = "SMS", requiredMode = REQUIRED)
+	@Schema(description = "Method of contact", requiredMode = REQUIRED)
 	@NotNull
 	private ContactMethod contactMethod;
 

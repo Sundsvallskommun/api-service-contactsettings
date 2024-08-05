@@ -92,6 +92,83 @@ class DelegateMapperTest {
 	}
 
 	@Test
+	void toDelegateList() {
+
+		// Arrange
+		final var agentId = "agentId";
+		final var principalId = "principalId";
+		final var id = "id";
+		final var created = now(ZoneId.systemDefault());
+		final var modified = now(ZoneId.systemDefault()).plusDays(1);
+
+		final var delegateEntity = DelegateEntity.create()
+			.withAgent(ContactSettingEntity.create().withId(agentId))
+			.withFilters(List.of(
+				DelegateFilterEntity.create()
+					.withAlias("alias1")
+					.withChannel("channel1")
+					.withCreated(created)
+					.withFilterRules(List.of(DelegateFilterRule.create().withAttributeName("attribute1").withOperator("EQUALS").withAttributeValue("value1")))
+					.withId("id1")
+					.withModified(modified),
+				DelegateFilterEntity.create()
+					.withAlias("alias2")
+					.withChannel("channel2")
+					.withCreated(created)
+					.withFilterRules(List.of(DelegateFilterRule.create().withAttributeName("attribute2").withOperator("NOT_EQUALS").withAttributeValue("value2")))
+					.withId("id2")
+					.withModified(modified)))
+			.withId(id)
+			.withPrincipal(ContactSettingEntity.create().withId(principalId))
+			.withCreated(created)
+			.withModified(modified);
+
+		final var delegateEntityList = List.of(delegateEntity);
+
+		// Act
+		final var result = DelegateMapper.toDelegateList(delegateEntityList);
+
+		// Assert
+		assertThat(result)
+			.isNotNull()
+			.hasSize(1);
+		assertThat(result.getFirst().getAgentId()).isEqualTo(agentId);
+		assertThat(result.getFirst().getCreated()).isEqualTo(created);
+		assertThat(result.getFirst().getFilters()).containsExactly(
+			Filter.create()
+				.withAlias("alias1")
+				.withChannel("channel1")
+				.withCreated(created)
+				.withId("id1")
+				.withModified(modified)
+				.withRules(List.of(
+					Rule.create().withAttributeName("attribute1").withAttributeValue("value1").withOperator(Operator.EQUALS))),
+			Filter.create()
+				.withAlias("alias2")
+				.withChannel("channel2")
+				.withCreated(created)
+				.withId("id2")
+				.withModified(modified)
+				.withRules(List.of(
+					Rule.create().withAttributeName("attribute2").withAttributeValue("value2").withOperator(Operator.NOT_EQUALS))));
+		assertThat(result.getFirst().getId()).isEqualTo(id);
+		assertThat(result.getFirst().getModified()).isEqualTo(modified);
+		assertThat(result.getFirst().getPrincipalId()).isEqualTo(principalId);
+	}
+
+	@Test
+	void toDelegateListWhenNull() {
+
+		// Act
+		final var result = DelegateMapper.toDelegateList(null);
+
+		// Assert
+		assertThat(result)
+			.isNotNull()
+			.isEmpty();
+	}
+
+	@Test
 	void toDelegateEntityFromDelegateCreateRequest() {
 
 		// Arrange

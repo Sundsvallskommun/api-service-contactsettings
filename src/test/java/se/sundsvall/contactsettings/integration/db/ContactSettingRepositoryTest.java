@@ -41,6 +41,7 @@ class ContactSettingRepositoryTest {
 	private static final String CONTACT_SETTING_ENTITY_ID = "a42bfd69-ab22-443c-bdef-1cc6a70bcab3";
 	private static final String CONTACT_SETTING_ENTITY_PARTY_ID = "db96ca23-7c52-412e-b251-f75fb45551d5";
 	private static final String CONTACT_SETTING_VIRTUAL_ENTITY_ID = "2c94ea99-a1b4-4073-b094-9ff79bad23b0";
+	private static final String MUNICIPALITY_ID = "2281";
 
 	@Autowired
 	private ContactSettingRepository contactSettingRepository;
@@ -98,13 +99,88 @@ class ContactSettingRepositoryTest {
 	}
 
 	@Test
-	void findByChannelsDestination() {
+	void findByMunicipalityIdAndId() {
+
+		// Act
+		final var result = contactSettingRepository.findByMunicipalityIdAndId(MUNICIPALITY_ID, CONTACT_SETTING_ENTITY_ID);
+
+		// Assert
+		assertThat(result).isNotNull().isPresent();
+		assertThat(result.get().getId()).isEqualTo(CONTACT_SETTING_ENTITY_ID);
+		assertThat(result.get().getPartyId()).isEqualTo(CONTACT_SETTING_ENTITY_PARTY_ID);
+		assertThat(result.get().getChannels())
+			.extracting(Channel::getAlias, Channel::getContactMethod, Channel::getDestination)
+			.containsExactly(
+				tuple("Email", "EMAIL", "john.smith@example.com"),
+				tuple("SMS", "SMS", "46701111111"));
+	}
+
+	@Test
+	void findByMunicipalityIdAndIdNotFound() {
+
+		// Act
+		final var result = contactSettingRepository.findByMunicipalityIdAndId("non-existing", CONTACT_SETTING_ENTITY_ID);
+
+		// Assert
+		assertThat(result).isEmpty();
+	}
+
+	@Test
+	void existsByMunicipalityIdAndId() {
+
+		// Act
+		final var result = contactSettingRepository.existsByMunicipalityIdAndId(MUNICIPALITY_ID, CONTACT_SETTING_ENTITY_ID);
+
+		// Assert
+		assertThat(result).isTrue();
+	}
+
+	@Test
+	void existsByMunicipalityIdAndIdNotFound() {
+
+		// Act
+		final var result = contactSettingRepository.existsByMunicipalityIdAndId("non-existing", CONTACT_SETTING_ENTITY_ID);
+
+		// Assert
+		assertThat(result).isFalse();
+	}
+
+	@Test
+	void findByMunicipalityIdAndPartyId() {
+
+		// Act
+		final var result = contactSettingRepository.findByMunicipalityIdAndPartyId(MUNICIPALITY_ID, CONTACT_SETTING_ENTITY_PARTY_ID);
+
+		// Assert
+		assertThat(result).isNotNull().isPresent();
+		assertThat(result.get().getId()).isEqualTo(CONTACT_SETTING_ENTITY_ID);
+		assertThat(result.get().getPartyId()).isEqualTo(CONTACT_SETTING_ENTITY_PARTY_ID);
+		assertThat(result.get().getChannels())
+			.extracting(Channel::getAlias, Channel::getContactMethod, Channel::getDestination)
+			.containsExactly(
+				tuple("Email", "EMAIL", "john.smith@example.com"),
+				tuple("SMS", "SMS", "46701111111"));
+	}
+
+	@Test
+	void findByMunicipalityIdAndPartyIdNotFound() {
+
+		// Act
+		final var result = contactSettingRepository.findByMunicipalityIdAndPartyId("non-existing", CONTACT_SETTING_ENTITY_PARTY_ID);
+
+		// Assert
+		assertThat(result).isEmpty();
+	}
+
+	@Test
+	void findByMunicipalityIdAndChannelsDestination() {
 
 		// Arrange
+		final var municipalityId = "2281";
 		final var destinationSearchParameter = "46701111111";
 
 		// Act
-		final var result = contactSettingRepository.findByChannelsDestination(destinationSearchParameter);
+		final var result = contactSettingRepository.findByMunicipalityIdAndChannelsDestination(municipalityId, destinationSearchParameter);
 
 		// Assert
 		assertThat(result).hasSize(1);
@@ -121,47 +197,21 @@ class ContactSettingRepositoryTest {
 	void findByChannelsDestinationNotFound() {
 
 		// Arrange
+		final var municipalityId = "2281";
 		final var destinationSearchParameter = "non-existing";
 
 		// Act
-		final var result = contactSettingRepository.findByChannelsDestination(destinationSearchParameter);
+		final var result = contactSettingRepository.findByMunicipalityIdAndChannelsDestination(municipalityId, destinationSearchParameter);
 
 		// Assert
 		assertThat(result).isEmpty();
 	}
 
 	@Test
-	void findByPartyId() {
+	void findByMunicipalityIdAndCreatedById() {
 
 		// Act
-		final var result = contactSettingRepository.findById(CONTACT_SETTING_ENTITY_ID).orElseThrow();
-
-		// Assert
-		assertThat(result).isNotNull();
-		assertThat(result.getId()).isEqualTo(CONTACT_SETTING_ENTITY_ID);
-		assertThat(result.getPartyId()).isEqualTo(CONTACT_SETTING_ENTITY_PARTY_ID);
-		assertThat(result.getChannels())
-			.extracting(Channel::getAlias, Channel::getContactMethod, Channel::getDestination)
-			.containsExactly(
-				tuple("Email", "EMAIL", "john.smith@example.com"),
-				tuple("SMS", "SMS", "46701111111"));
-	}
-
-	@Test
-	void findByPartyIdNotFound() {
-
-		// Act
-		final var result = contactSettingRepository.findById("non-existing");
-
-		// Assert
-		assertThat(result).isEmpty();
-	}
-
-	@Test
-	void findByCreatedById() {
-
-		// Act
-		final var result = contactSettingRepository.findByCreatedById(CONTACT_SETTING_ENTITY_ID);
+		final var result = contactSettingRepository.findByMunicipalityIdAndCreatedById(MUNICIPALITY_ID, CONTACT_SETTING_ENTITY_ID);
 
 		// Assert
 		assertThat(result).hasSize(1);
@@ -174,7 +224,7 @@ class ContactSettingRepositoryTest {
 	void findByCreatedByIdNotFound() {
 
 		// Act
-		final var result = contactSettingRepository.findByCreatedById("non-existing");
+		final var result = contactSettingRepository.findByMunicipalityIdAndCreatedById("non-existing", CONTACT_SETTING_ENTITY_ID);
 
 		// Assert
 		assertThat(result).isEmpty();

@@ -10,7 +10,7 @@ import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotEmpty;
 import se.sundsvall.dept44.common.validators.annotation.ValidUuid;
 
-@Schema(description = "Delegate create request model")
+@Schema(description = "DelegateCreateRequest model")
 public class DelegateCreateRequest {
 
 	@Schema(description = "Contact setting ID of the delegate principal (owner)", example = "0d64c132-3aea-11ec-8d3d-0242ac130003", requiredMode = REQUIRED)

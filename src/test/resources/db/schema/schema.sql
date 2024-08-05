@@ -5,6 +5,7 @@
         alias varchar(255),
         created_by_id varchar(255),
         id varchar(255) not null,
+        municipality_id varchar(255),
         party_id varchar(255),
         primary key (id)
     ) engine=InnoDB;
@@ -48,6 +49,9 @@
 
     create index contact_setting_created_by_id_index 
        on contact_setting (created_by_id);
+
+    create index contact_setting_municipality_id_index 
+       on contact_setting (municipality_id);
 
     create index contact_setting_channel_destination_index 
        on contact_setting_channel (destination);

@@ -33,8 +33,10 @@ import se.sundsvall.contactsettings.service.DelegateFilterService;
 @ActiveProfiles("junit")
 class DelegateFilterResourceFailuresTest {
 
-	private final static String DELEGATE_ID = randomUUID().toString();
-	private final static String DELEGATE_FILTER_ID = randomUUID().toString();
+	private static final String PATH_TEMPLATE = "/{municipalityId}/delegates/{id}/filters";
+	private static final String MUNICIPALITY_ID = "2281";
+	private static final String DELEGATE_ID = randomUUID().toString();
+	private static final String DELEGATE_FILTER_ID = randomUUID().toString();
 
 	@MockBean
 	private DelegateFilterService delegateFilterServiceMock;
@@ -47,7 +49,9 @@ class DelegateFilterResourceFailuresTest {
 
 		// Act
 		final var response = webTestClient.post()
-			.uri(builder -> builder.path("/delegates/{id}/filters").build(Map.of("id", DELEGATE_ID)))
+			.uri(builder -> builder.path(PATH_TEMPLATE).build(Map.of(
+				"municipalityId", MUNICIPALITY_ID,
+				"id", DELEGATE_ID)))
 			.contentType(APPLICATION_JSON)
 			.exchange()
 			.expectStatus().isBadRequest()
@@ -61,7 +65,7 @@ class DelegateFilterResourceFailuresTest {
 		assertThat(response.getTitle()).isEqualTo("Bad Request");
 		assertThat(response.getStatus()).isEqualTo(BAD_REQUEST);
 		assertThat(response.getDetail()).isEqualTo(
-			"Required request body is missing: public org.springframework.http.ResponseEntity<java.lang.Void> se.sundsvall.contactsettings.api.DelegateFilterResource.create(java.lang.String,se.sundsvall.contactsettings.api.model.Filter)");
+			"Required request body is missing: public org.springframework.http.ResponseEntity<java.lang.Void> se.sundsvall.contactsettings.api.DelegateFilterResource.create(java.lang.String,java.lang.String,se.sundsvall.contactsettings.api.model.Filter)");
 
 		verifyNoInteractions(delegateFilterServiceMock);
 	}
@@ -79,7 +83,9 @@ class DelegateFilterResourceFailuresTest {
 
 		// Act
 		final var response = webTestClient.post()
-			.uri(builder -> builder.path("/delegates/{id}/filters").build(Map.of("id", "invalid-id")))
+			.uri(builder -> builder.path(PATH_TEMPLATE).build(Map.of(
+				"municipalityId", MUNICIPALITY_ID,
+				"id", "invalid-id")))
 			.contentType(APPLICATION_JSON)
 			.bodyValue(body)
 			.exchange()
@@ -101,6 +107,42 @@ class DelegateFilterResourceFailuresTest {
 	}
 
 	@Test
+	void createWithInvalidMunicipalityId() {
+
+		// Arrange
+		final var body = Filter.create()
+			.withAlias("alias")
+			.withRules(List.of(Rule.create()
+				.withAttributeName("key")
+				.withAttributeValue("value")
+				.withOperator(EQUALS)));
+
+		// Act
+		final var response = webTestClient.post()
+			.uri(builder -> builder.path(PATH_TEMPLATE).build(Map.of(
+				"municipalityId", "invalid-id",
+				"id", DELEGATE_ID)))
+			.contentType(APPLICATION_JSON)
+			.bodyValue(body)
+			.exchange()
+			.expectStatus().isBadRequest()
+			.expectHeader().contentType(APPLICATION_PROBLEM_JSON)
+			.expectBody(ConstraintViolationProblem.class)
+			.returnResult()
+			.getResponseBody();
+
+		// Assert
+		assertThat(response).isNotNull();
+		assertThat(response.getTitle()).isEqualTo("Constraint Violation");
+		assertThat(response.getStatus()).isEqualTo(BAD_REQUEST);
+		assertThat(response.getViolations())
+			.extracting(Violation::getField, Violation::getMessage)
+			.containsExactlyInAnyOrder(tuple("create.municipalityId", "not a valid municipality ID"));
+
+		verifyNoInteractions(delegateFilterServiceMock);
+	}
+
+	@Test
 	void createWithEmptyRules() {
 
 		// Arrange
@@ -110,7 +152,9 @@ class DelegateFilterResourceFailuresTest {
 
 		// Act
 		final var response = webTestClient.post()
-			.uri(builder -> builder.path("/delegates/{id}/filters").build(Map.of("id", DELEGATE_ID)))
+			.uri(builder -> builder.path(PATH_TEMPLATE).build(Map.of(
+				"municipalityId", MUNICIPALITY_ID,
+				"id", DELEGATE_ID)))
 			.contentType(APPLICATION_JSON)
 			.bodyValue(body)
 			.exchange()
@@ -141,7 +185,9 @@ class DelegateFilterResourceFailuresTest {
 
 		// Act
 		final var response = webTestClient.post()
-			.uri(builder -> builder.path("/delegates/{id}/filters").build(Map.of("id", DELEGATE_ID)))
+			.uri(builder -> builder.path(PATH_TEMPLATE).build(Map.of(
+				"municipalityId", MUNICIPALITY_ID,
+				"id", DELEGATE_ID)))
 			.contentType(APPLICATION_JSON)
 			.bodyValue(body)
 			.exchange()
@@ -172,7 +218,9 @@ class DelegateFilterResourceFailuresTest {
 
 		// Act
 		final var response = webTestClient.post()
-			.uri(builder -> builder.path("/delegates/{id}/filters").build(Map.of("id", DELEGATE_ID)))
+			.uri(builder -> builder.path(PATH_TEMPLATE).build(Map.of(
+				"municipalityId", MUNICIPALITY_ID,
+				"id", DELEGATE_ID)))
 			.contentType(APPLICATION_JSON)
 			.bodyValue(body)
 			.exchange()
@@ -201,7 +249,10 @@ class DelegateFilterResourceFailuresTest {
 
 		// Act
 		final var response = webTestClient.get()
-			.uri(builder -> builder.path("/delegates/{id}/filters/{filterId}").build(Map.of("id", "invalid-id", "filterId", DELEGATE_FILTER_ID)))
+			.uri(builder -> builder.path(PATH_TEMPLATE + "/{filterId}").build(Map.of(
+				"municipalityId", MUNICIPALITY_ID,
+				"id", "invalid-id",
+				"filterId", DELEGATE_FILTER_ID)))
 			.exchange()
 			.expectStatus().isBadRequest()
 			.expectHeader().contentType(APPLICATION_PROBLEM_JSON)
@@ -225,7 +276,10 @@ class DelegateFilterResourceFailuresTest {
 
 		// Act
 		final var response = webTestClient.get()
-			.uri(builder -> builder.path("/delegates/{id}/filters/{filterId}").build(Map.of("id", DELEGATE_ID, "filterId", "invalid-id")))
+			.uri(builder -> builder.path(PATH_TEMPLATE + "/{filterId}").build(Map.of(
+				"municipalityId", MUNICIPALITY_ID,
+				"id", DELEGATE_ID,
+				"filterId", "invalid-id")))
 			.exchange()
 			.expectStatus().isBadRequest()
 			.expectHeader().contentType(APPLICATION_PROBLEM_JSON)
@@ -245,6 +299,33 @@ class DelegateFilterResourceFailuresTest {
 	}
 
 	@Test
+	void readWithInvalidMunicipalityId() {
+
+		// Act
+		final var response = webTestClient.get()
+			.uri(builder -> builder.path(PATH_TEMPLATE + "/{filterId}").build(Map.of(
+				"municipalityId", "invalid-id",
+				"id", DELEGATE_ID,
+				"filterId", DELEGATE_FILTER_ID)))
+			.exchange()
+			.expectStatus().isBadRequest()
+			.expectHeader().contentType(APPLICATION_PROBLEM_JSON)
+			.expectBody(ConstraintViolationProblem.class)
+			.returnResult()
+			.getResponseBody();
+
+		// Assert
+		assertThat(response).isNotNull();
+		assertThat(response.getTitle()).isEqualTo("Constraint Violation");
+		assertThat(response.getStatus()).isEqualTo(BAD_REQUEST);
+		assertThat(response.getViolations())
+			.extracting(Violation::getField, Violation::getMessage)
+			.containsExactlyInAnyOrder(tuple("read.municipalityId", "not a valid municipality ID"));
+
+		verifyNoInteractions(delegateFilterServiceMock);
+	}
+
+	@Test
 	void updateWithInvalidId() {
 
 		// Arrange
@@ -257,7 +338,10 @@ class DelegateFilterResourceFailuresTest {
 
 		// Act
 		final var response = webTestClient.patch()
-			.uri(builder -> builder.path("/delegates/{id}/filters/{filterId}").build(Map.of("id", "invalid-id", "filterId", DELEGATE_FILTER_ID)))
+			.uri(builder -> builder.path(PATH_TEMPLATE + "/{filterId}").build(Map.of(
+				"municipalityId", MUNICIPALITY_ID,
+				"id", "invalid-id",
+				"filterId", DELEGATE_FILTER_ID)))
 			.contentType(APPLICATION_JSON)
 			.bodyValue(body)
 			.exchange()
@@ -291,7 +375,10 @@ class DelegateFilterResourceFailuresTest {
 
 		// Act
 		final var response = webTestClient.patch()
-			.uri(builder -> builder.path("/delegates/{id}/filters/{filterId}").build(Map.of("id", DELEGATE_ID, "filterId", "invalid-id")))
+			.uri(builder -> builder.path(PATH_TEMPLATE + "/{filterId}").build(Map.of(
+				"municipalityId", MUNICIPALITY_ID,
+				"id", DELEGATE_ID,
+				"filterId", "invalid-id")))
 			.contentType(APPLICATION_JSON)
 			.bodyValue(body)
 			.exchange()
@@ -313,11 +400,51 @@ class DelegateFilterResourceFailuresTest {
 	}
 
 	@Test
+	void updateWithInvalidMunicipalityId() {
+
+		// Arrange
+		final var body = Filter.create()
+			.withAlias("alias")
+			.withRules(List.of(Rule.create()
+				.withAttributeName("key")
+				.withAttributeValue("value")
+				.withOperator(EQUALS)));
+
+		// Act
+		final var response = webTestClient.patch()
+			.uri(builder -> builder.path(PATH_TEMPLATE + "/{filterId}").build(Map.of(
+				"municipalityId", "invalid-id",
+				"id", DELEGATE_ID,
+				"filterId", DELEGATE_FILTER_ID)))
+			.contentType(APPLICATION_JSON)
+			.bodyValue(body)
+			.exchange()
+			.expectStatus().isBadRequest()
+			.expectHeader().contentType(APPLICATION_PROBLEM_JSON)
+			.expectBody(ConstraintViolationProblem.class)
+			.returnResult()
+			.getResponseBody();
+
+		// Assert
+		assertThat(response).isNotNull();
+		assertThat(response.getTitle()).isEqualTo("Constraint Violation");
+		assertThat(response.getStatus()).isEqualTo(BAD_REQUEST);
+		assertThat(response.getViolations())
+			.extracting(Violation::getField, Violation::getMessage)
+			.containsExactlyInAnyOrder(tuple("update.municipalityId", "not a valid municipality ID"));
+
+		verifyNoInteractions(delegateFilterServiceMock);
+	}
+
+	@Test
 	void updateWithMissingBody() {
 
 		// Act
 		final var response = webTestClient.patch()
-			.uri(builder -> builder.path("/delegates/{id}/filters/{filterId}").build(Map.of("id", DELEGATE_ID, "filterId", DELEGATE_FILTER_ID)))
+			.uri(builder -> builder.path(PATH_TEMPLATE + "/{filterId}").build(Map.of(
+				"municipalityId", MUNICIPALITY_ID,
+				"id", DELEGATE_ID,
+				"filterId", DELEGATE_FILTER_ID)))
 			.contentType(APPLICATION_JSON)
 			.exchange()
 			.expectStatus().isBadRequest()
@@ -331,7 +458,7 @@ class DelegateFilterResourceFailuresTest {
 		assertThat(response.getTitle()).isEqualTo("Bad Request");
 		assertThat(response.getStatus()).isEqualTo(BAD_REQUEST);
 		assertThat(response.getDetail()).isEqualTo(
-			"Required request body is missing: public org.springframework.http.ResponseEntity<se.sundsvall.contactsettings.api.model.Filter> se.sundsvall.contactsettings.api.DelegateFilterResource.update(java.lang.String,java.lang.String,se.sundsvall.contactsettings.api.model.Filter)");
+			"Required request body is missing: public org.springframework.http.ResponseEntity<se.sundsvall.contactsettings.api.model.Filter> se.sundsvall.contactsettings.api.DelegateFilterResource.update(java.lang.String,java.lang.String,java.lang.String,se.sundsvall.contactsettings.api.model.Filter)");
 
 		verifyNoInteractions(delegateFilterServiceMock);
 	}
@@ -346,7 +473,10 @@ class DelegateFilterResourceFailuresTest {
 
 		// Act
 		final var response = webTestClient.patch()
-			.uri(builder -> builder.path("/delegates/{id}/filters/{filterId}").build(Map.of("id", DELEGATE_ID, "filterId", DELEGATE_FILTER_ID)))
+			.uri(builder -> builder.path(PATH_TEMPLATE + "/{filterId}").build(Map.of(
+				"municipalityId", MUNICIPALITY_ID,
+				"id", DELEGATE_ID,
+				"filterId", DELEGATE_FILTER_ID)))
 			.contentType(APPLICATION_JSON)
 			.bodyValue(body)
 			.exchange()
@@ -377,7 +507,10 @@ class DelegateFilterResourceFailuresTest {
 
 		// Act
 		final var response = webTestClient.patch()
-			.uri(builder -> builder.path("/delegates/{id}/filters/{filterId}").build(Map.of("id", DELEGATE_ID, "filterId", DELEGATE_FILTER_ID)))
+			.uri(builder -> builder.path(PATH_TEMPLATE + "/{filterId}").build(Map.of(
+				"municipalityId", MUNICIPALITY_ID,
+				"id", DELEGATE_ID,
+				"filterId", DELEGATE_FILTER_ID)))
 			.contentType(APPLICATION_JSON)
 			.bodyValue(body)
 			.exchange()
@@ -408,7 +541,10 @@ class DelegateFilterResourceFailuresTest {
 
 		// Act
 		final var response = webTestClient.patch()
-			.uri(builder -> builder.path("/delegates/{id}/filters/{filterId}").build(Map.of("id", DELEGATE_ID, "filterId", DELEGATE_FILTER_ID)))
+			.uri(builder -> builder.path(PATH_TEMPLATE + "/{filterId}").build(Map.of(
+				"municipalityId", MUNICIPALITY_ID,
+				"id", DELEGATE_ID,
+				"filterId", DELEGATE_FILTER_ID)))
 			.contentType(APPLICATION_JSON)
 			.bodyValue(body)
 			.exchange()
@@ -437,7 +573,10 @@ class DelegateFilterResourceFailuresTest {
 
 		// Act
 		final var response = webTestClient.delete()
-			.uri(builder -> builder.path("/delegates/{id}/filters/{filterId}").build(Map.of("id", "invalid-id", "filterId", DELEGATE_FILTER_ID)))
+			.uri(builder -> builder.path(PATH_TEMPLATE + "/{filterId}").build(Map.of(
+				"municipalityId", MUNICIPALITY_ID,
+				"id", "invalid-id",
+				"filterId", DELEGATE_FILTER_ID)))
 			.exchange()
 			.expectStatus().isBadRequest()
 			.expectHeader().contentType(APPLICATION_PROBLEM_JSON)
@@ -461,7 +600,10 @@ class DelegateFilterResourceFailuresTest {
 
 		// Act
 		final var response = webTestClient.delete()
-			.uri(builder -> builder.path("/delegates/{id}/filters/{filterId}").build(Map.of("id", DELEGATE_ID, "filterId", "invalid-id")))
+			.uri(builder -> builder.path(PATH_TEMPLATE + "/{filterId}").build(Map.of(
+				"municipalityId", MUNICIPALITY_ID,
+				"id", DELEGATE_ID,
+				"filterId", "invalid-id")))
 			.exchange()
 			.expectStatus().isBadRequest()
 			.expectHeader().contentType(APPLICATION_PROBLEM_JSON)
@@ -476,6 +618,33 @@ class DelegateFilterResourceFailuresTest {
 		assertThat(response.getViolations())
 			.extracting(Violation::getField, Violation::getMessage)
 			.containsExactlyInAnyOrder(tuple("delete.filterId", "not a valid UUID"));
+
+		verifyNoInteractions(delegateFilterServiceMock);
+	}
+
+	@Test
+	void deleteWithInvalidMunicipalityId() {
+
+		// Act
+		final var response = webTestClient.delete()
+			.uri(builder -> builder.path(PATH_TEMPLATE + "/{filterId}").build(Map.of(
+				"municipalityId", "invalid-id",
+				"id", DELEGATE_ID,
+				"filterId", DELEGATE_FILTER_ID)))
+			.exchange()
+			.expectStatus().isBadRequest()
+			.expectHeader().contentType(APPLICATION_PROBLEM_JSON)
+			.expectBody(ConstraintViolationProblem.class)
+			.returnResult()
+			.getResponseBody();
+
+		// Assert
+		assertThat(response).isNotNull();
+		assertThat(response.getTitle()).isEqualTo("Constraint Violation");
+		assertThat(response.getStatus()).isEqualTo(BAD_REQUEST);
+		assertThat(response.getViolations())
+			.extracting(Violation::getField, Violation::getMessage)
+			.containsExactlyInAnyOrder(tuple("delete.municipalityId", "not a valid municipality ID"));
 
 		verifyNoInteractions(delegateFilterServiceMock);
 	}
