@@ -12,7 +12,6 @@ spring:
     driver-class-name: org.mariadb.jdbc.Driver
     hikari:
       pool-name: contactsettings-pool
-    type: com.zaxxer.hikari.HikariDataSource
   flyway:
     enabled: false
   jpa:
