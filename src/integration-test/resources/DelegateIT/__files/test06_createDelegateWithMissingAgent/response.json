@@ -1,5 +1,5 @@
 {
+	"detail": "No agent with contactSettingsId: '49c661a0-f1ff-4aee-9c3a-9c9f44883557' could be found for this municipality!",
 	"title": "Not Found",
-	"status": 404,
-	"detail": "No agent with contactSettingsId: '49c661a0-f1ff-4aee-9c3a-9c9f44883557' could be found for this municipality!"
+	"status": 404
 }

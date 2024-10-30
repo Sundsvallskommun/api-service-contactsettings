@@ -1,16 +1,16 @@
 {
-	"alias": "My updated filter",
 	"channel": "My updated channel",
+	"alias": "My updated filter",
 	"rules": [
 		{
+			"attributeValue": "value1",
 			"attributeName": "key1",
-			"operator": "EQUALS",
-			"attributeValue": "value1"
+			"operator": "EQUALS"
 		},
 		{
+			"attributeValue": "value2",
 			"attributeName": "key2",
-			"operator": "NOT_EQUALS",
-			"attributeValue": "value2"
+			"operator": "NOT_EQUALS"
 		}
 	]
 }

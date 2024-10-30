@@ -11,7 +11,9 @@ import jakarta.validation.Payload;
 import se.sundsvall.contactsettings.api.validator.impl.ValidContactSettingCreateRequestConstraintValidator;
 
 @Documented
-@Target({ ElementType.FIELD, ElementType.CONSTRUCTOR, ElementType.PARAMETER, ElementType.TYPE_USE })
+@Target({
+	ElementType.FIELD, ElementType.CONSTRUCTOR, ElementType.PARAMETER, ElementType.TYPE_USE
+})
 @Retention(RetentionPolicy.RUNTIME)
 @Constraint(validatedBy = ValidContactSettingCreateRequestConstraintValidator.class)
 public @interface ValidContactSettingCreateRequest {

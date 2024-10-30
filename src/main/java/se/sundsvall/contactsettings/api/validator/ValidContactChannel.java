@@ -21,7 +21,9 @@ import se.sundsvall.contactsettings.api.validator.impl.ValidContactChannelConstr
  *
  */
 @Documented
-@Target({ ElementType.FIELD, ElementType.CONSTRUCTOR, ElementType.PARAMETER, ElementType.TYPE_USE })
+@Target({
+	ElementType.FIELD, ElementType.CONSTRUCTOR, ElementType.PARAMETER, ElementType.TYPE_USE
+})
 @Retention(RetentionPolicy.RUNTIME)
 @Constraint(validatedBy = ValidContactChannelConstraintValidator.class)
 public @interface ValidContactChannel {

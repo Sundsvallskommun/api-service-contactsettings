@@ -16,23 +16,23 @@ import se.sundsvall.contactsettings.api.model.enums.Operator;
 
 	A rule that mathches everything. The MATCH_ALL_RULE:
 	{
-	   "attributeName": "*",
-	   "operator": "EQUALS",
-	   "attributeValue": "*"
+	"attributeName": "*",
+	"operator": "EQUALS",
+	"attributeValue": "*"
 	}
 
 	A rule that matches a single attribute:
 	{
-	   "attributeName": "someAttributeName",
-	   "operator": "EQUALS",
-	   "attributeValue": "theValue"
+	"attributeName": "someAttributeName",
+	"operator": "EQUALS",
+	"attributeValue": "theValue"
 	}
 
 	A rule that matches everything but a single attribute (i.e. a negation of the rule above):
 	{
-	   "attributeName": "someAttributeName",
-	   "operator": "NOT_EQUALS",
-	   "attributeValue": "theValue"
+	"attributeName": "someAttributeName",
+	"operator": "NOT_EQUALS",
+	"attributeValue": "theValue"
 	}
 	""")
 public class Rule {

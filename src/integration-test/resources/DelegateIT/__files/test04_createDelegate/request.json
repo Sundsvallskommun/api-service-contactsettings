@@ -1,20 +1,20 @@
 {
-	"principalId": "6c22993a-26b3-4a1f-805e-33a8c2b7c7e5",
 	"agentId": "a552e909-d2b1-4f08-acbe-938040f95ff3",
+	"principalId": "6c22993a-26b3-4a1f-805e-33a8c2b7c7e5",
 	"filters": [
 		{
-			"alias": "My first filter",
 			"channel": "Sundsvalls Energi",
+			"alias": "My first filter",
 			"rules": [
 				{
+					"attributeValue": "value1",
 					"attributeName": "key1",
-					"operator": "EQUALS",
-					"attributeValue": "value1"
+					"operator": "EQUALS"
 				},
 				{
+					"attributeValue": "value2",
 					"attributeName": "key2",
-					"operator": "NOT_EQUALS",
-					"attributeValue": "value2"
+					"operator": "NOT_EQUALS"
 				}
 			]
 		},
@@ -22,14 +22,14 @@
 			"alias": "My second filter",
 			"rules": [
 				{
+					"attributeValue": "value3",
 					"attributeName": "key3",
-					"operator": "EQUALS",
-					"attributeValue": "value3"
+					"operator": "EQUALS"
 				},
 				{
+					"attributeValue": "value4",
 					"attributeName": "key4",
-					"operator": "NOT_EQUALS",
-					"attributeValue": "value4"
+					"operator": "NOT_EQUALS"
 				}
 			]
 		}

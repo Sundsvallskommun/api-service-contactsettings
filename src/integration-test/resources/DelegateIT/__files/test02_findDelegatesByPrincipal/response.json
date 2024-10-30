@@ -1,41 +1,33 @@
 [
 	{
-		"id": "336e4854-87f4-4407-9618-9fcf37e2f14f",
-		"principalId": "6c22993a-26b3-4a1f-805e-33a8c2b7c7e5",
 		"agentId": "41e31470-150b-4db1-b3c1-c8f4108051ab",
 		"created": "2023-07-21T12:02:00+02:00",
-		"filters": [
-			{
-				"id": "153555a5-5a25-41b2-b7b0-cee640427240",
-				"alias": "Mr Blue delegates to Mr White",
-				"rules": [
-					{
-						"attributeName": "contractId",
-						"operator": "EQUALS",
-						"attributeValue": "456"
-					}
-				]
-			}
-		]
+		"principalId": "6c22993a-26b3-4a1f-805e-33a8c2b7c7e5",
+		"id": "336e4854-87f4-4407-9618-9fcf37e2f14f",
+		"filters": [{
+			"alias": "Mr Blue delegates to Mr White",
+			"rules": [{
+				"attributeValue": "456",
+				"attributeName": "contractId",
+				"operator": "EQUALS"
+			}],
+			"id": "153555a5-5a25-41b2-b7b0-cee640427240"
+		}]
 	},
 	{
-		"id": "7d5fbffc-d1ff-4fff-86de-8158b4e34459",
-		"principalId": "6c22993a-26b3-4a1f-805e-33a8c2b7c7e5",
 		"agentId": "1aa6df8d-6f5f-4e00-91aa-43dee8cfaef7",
 		"created": "2023-06-20T12:01:00+02:00",
-		"filters": [
-			{
-				"id": "a28c428b-a374-417e-89ea-3dba7d30a2e9",
-				"alias": "Mr Blue delegates to Mr Pink",
-				"channel": "The channel",
-				"rules": [
-					{
-						"attributeName": "facilityId",
-						"operator": "EQUALS",
-						"attributeValue": "123"
-					}
-				]
-			}
-		]
+		"principalId": "6c22993a-26b3-4a1f-805e-33a8c2b7c7e5",
+		"id": "7d5fbffc-d1ff-4fff-86de-8158b4e34459",
+		"filters": [{
+			"channel": "The channel",
+			"alias": "Mr Blue delegates to Mr Pink",
+			"rules": [{
+				"attributeValue": "123",
+				"attributeName": "facilityId",
+				"operator": "EQUALS"
+			}],
+			"id": "a28c428b-a374-417e-89ea-3dba7d30a2e9"
+		}]
 	}
 ]
