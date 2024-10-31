@@ -1,12 +1,10 @@
 {
-	"id": "a28c428b-a374-417e-89ea-3dba7d30a2e9",
-	"alias": "Mr Blue delegates to Mr Pink",
 	"channel": "The channel",
-	"rules": [
-		{
-			"attributeName": "facilityId",
-			"operator": "EQUALS",
-			"attributeValue": "123"
-		}
-	]
+	"alias": "Mr Blue delegates to Mr Pink",
+	"rules": [{
+		"attributeValue": "123",
+		"attributeName": "facilityId",
+		"operator": "EQUALS"
+	}],
+	"id": "a28c428b-a374-417e-89ea-3dba7d30a2e9"
 }

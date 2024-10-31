@@ -2,14 +2,14 @@
 	"alias": "My updated contact-settings",
 	"contactChannels": [
 		{
-			"contactMethod": "SMS",
+			"destination": "+46706666666",
 			"alias": "Updated phone number",
-			"destination": "+46706666666"
+			"contactMethod": "SMS"
 		},
 		{
-			"contactMethod": "EMAIL",
+			"destination": "name@host.com",
 			"alias": "Added email address",
-			"destination": "name@host.com"
+			"contactMethod": "EMAIL"
 		}
 	]
 }
