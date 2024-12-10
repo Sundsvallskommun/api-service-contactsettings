@@ -36,7 +36,7 @@ class DelegateResourceFailuresTest {
 	private static final String MUNICIPALITY_ID = "2281";
 	private static final String DELEGATE_ID = randomUUID().toString();
 
-	@MockBean
+	@MockitoBean
 	private DelegateService delegateServiceMock;
 
 	@Autowired

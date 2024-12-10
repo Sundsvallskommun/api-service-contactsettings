@@ -36,7 +36,7 @@ class DelegateFilterResourceFailuresTest {
 	private static final String DELEGATE_ID = randomUUID().toString();
 	private static final String DELEGATE_FILTER_ID = randomUUID().toString();
 
-	@MockBean
+	@MockitoBean
 	private DelegateFilterService delegateFilterServiceMock;
 
 	@Autowired

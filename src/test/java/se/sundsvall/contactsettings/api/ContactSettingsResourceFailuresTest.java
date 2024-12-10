@@ -39,7 +39,7 @@ class ContactSettingsResourceFailuresTest {
 	@Autowired
 	private WebTestClient webTestClient;
 
-	@MockBean
+	@MockitoBean
 	private ContactSettingsService contactSettingsServiceMock;
 
 	@Test
