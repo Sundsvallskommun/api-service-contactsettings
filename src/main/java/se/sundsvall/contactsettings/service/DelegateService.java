@@ -15,10 +15,8 @@ import static se.sundsvall.contactsettings.service.mapper.DelegateMapper.toDeleg
 import static se.sundsvall.contactsettings.service.mapper.DelegateMapper.toDelegateList;
 
 import java.util.List;
-
 import org.springframework.stereotype.Service;
 import org.zalando.problem.Problem;
-
 import se.sundsvall.contactsettings.api.model.Delegate;
 import se.sundsvall.contactsettings.api.model.DelegateCreateRequest;
 import se.sundsvall.contactsettings.api.model.FindDelegatesParameters;

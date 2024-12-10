@@ -22,7 +22,6 @@ import static se.sundsvall.contactsettings.service.Constants.ERROR_MESSAGE_CONTA
 
 import java.util.List;
 import java.util.Optional;
-
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -30,7 +29,6 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.util.LinkedMultiValueMap;
 import org.zalando.problem.ThrowableProblem;
-
 import se.sundsvall.contactsettings.api.model.ContactChannel;
 import se.sundsvall.contactsettings.api.model.ContactSetting;
 import se.sundsvall.contactsettings.api.model.ContactSettingCreateRequest;

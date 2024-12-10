@@ -5,7 +5,6 @@ import static java.util.Objects.isNull;
 
 import java.util.List;
 import java.util.Optional;
-
 import se.sundsvall.contactsettings.api.model.ContactChannel;
 import se.sundsvall.contactsettings.api.model.ContactSetting;
 import se.sundsvall.contactsettings.api.model.ContactSettingCreateRequest;

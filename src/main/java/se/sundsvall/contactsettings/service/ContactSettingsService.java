@@ -18,10 +18,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Stream;
-
 import org.springframework.stereotype.Service;
 import org.zalando.problem.Problem;
-
 import se.sundsvall.contactsettings.api.model.ContactSetting;
 import se.sundsvall.contactsettings.api.model.ContactSettingCreateRequest;
 import se.sundsvall.contactsettings.api.model.ContactSettingUpdateRequest;
