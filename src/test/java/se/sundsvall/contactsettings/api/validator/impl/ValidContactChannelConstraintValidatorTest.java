@@ -6,8 +6,9 @@ import static org.mockito.Mockito.lenient;
 import static se.sundsvall.contactsettings.api.model.enums.ContactMethod.EMAIL;
 import static se.sundsvall.contactsettings.api.model.enums.ContactMethod.SMS;
 
+import jakarta.validation.ConstraintValidatorContext;
+import jakarta.validation.ConstraintValidatorContext.ConstraintViolationBuilder;
 import java.util.stream.Stream;
-
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
@@ -15,9 +16,6 @@ import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-
-import jakarta.validation.ConstraintValidatorContext;
-import jakarta.validation.ConstraintValidatorContext.ConstraintViolationBuilder;
 import se.sundsvall.contactsettings.api.model.ContactChannel;
 
 @ExtendWith(MockitoExtension.class)

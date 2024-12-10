@@ -6,9 +6,7 @@ import static org.assertj.core.api.Assertions.within;
 
 import java.time.OffsetDateTime;
 import java.util.List;
-
 import org.junit.jupiter.api.Test;
-
 import se.sundsvall.contactsettings.api.model.ContactSettingCreateRequest;
 import se.sundsvall.contactsettings.api.model.ContactSettingUpdateRequest;
 import se.sundsvall.contactsettings.api.model.enums.ContactMethod;

@@ -11,7 +11,6 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static se.sundsvall.contactsettings.api.model.enums.Operator.EQUALS;
 
 import java.util.List;
-
 import org.junit.jupiter.api.Test;
 
 class DelegateCreateRequestTest {

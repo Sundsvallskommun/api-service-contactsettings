@@ -1,9 +1,11 @@
 {
 	"channel": "My channel",
 	"alias": "My filter for delegating messages to my friend",
-	"rules": [{
-		"attributeValue": "12345678",
-		"attributeName": "facilityId",
-		"operator": "EQUALS"
-	}]
+	"rules": [
+		{
+			"attributeValue": "12345678",
+			"attributeName": "facilityId",
+			"operator": "EQUALS"
+		}
+	]
 }

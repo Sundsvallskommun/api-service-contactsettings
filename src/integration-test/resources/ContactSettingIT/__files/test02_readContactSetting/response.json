@@ -6,10 +6,12 @@
 	"modified": "2023-05-24T12:00:00+02:00",
 	"id": "41e31470-150b-4db1-b3c1-c8f4108051ab",
 	"partyId": "7903f7a9-325a-4a49-929a-d5952fef5c9a",
-	"contactChannels": [{
-		"destination": "mr.white@example.com",
-		"alias": "Email",
-		"disabled": false,
-		"contactMethod": "EMAIL"
-	}]
+	"contactChannels": [
+		{
+			"destination": "mr.white@example.com",
+			"alias": "Email",
+			"disabled": false,
+			"contactMethod": "EMAIL"
+		}
+	]
 }

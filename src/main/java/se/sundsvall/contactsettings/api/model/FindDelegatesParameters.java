@@ -1,8 +1,7 @@
 package se.sundsvall.contactsettings.api.model;
 
-import java.util.Objects;
-
 import io.swagger.v3.oas.annotations.media.Schema;
+import java.util.Objects;
 import se.sundsvall.contactsettings.api.validator.ValidFindDelegatesParameters;
 import se.sundsvall.dept44.common.validators.annotation.ValidUuid;
 

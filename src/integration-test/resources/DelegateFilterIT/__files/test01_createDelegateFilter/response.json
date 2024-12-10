@@ -2,10 +2,12 @@
 	"created": "${json-unit.regex}^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}\\.\\d{1,5}\\+\\d{2}:00$",
 	"channel": "My channel",
 	"alias": "My filter for delegating messages to my friend",
-	"rules": [{
-		"attributeValue": "12345678",
-		"attributeName": "facilityId",
-		"operator": "EQUALS"
-	}],
+	"rules": [
+		{
+			"attributeValue": "12345678",
+			"attributeName": "facilityId",
+			"operator": "EQUALS"
+		}
+	],
 	"id": "${json-unit.regex}^[0-9a-fA-F]{8}\\b-[0-9a-fA-F]{4}\\b-[0-9a-fA-F]{4}\\b-[0-9a-fA-F]{4}\\b-[0-9a-fA-F]{12}$"
 }

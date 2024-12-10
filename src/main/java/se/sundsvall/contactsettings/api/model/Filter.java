@@ -4,15 +4,13 @@ import static io.swagger.v3.oas.annotations.media.Schema.AccessMode.READ_ONLY;
 import static io.swagger.v3.oas.annotations.media.Schema.RequiredMode.REQUIRED;
 import static org.springframework.format.annotation.DateTimeFormat.ISO.DATE_TIME;
 
-import java.time.OffsetDateTime;
-import java.util.List;
-import java.util.Objects;
-
-import org.springframework.format.annotation.DateTimeFormat;
-
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotEmpty;
+import java.time.OffsetDateTime;
+import java.util.List;
+import java.util.Objects;
+import org.springframework.format.annotation.DateTimeFormat;
 
 @Schema(description = "Filter model")
 public class Filter {

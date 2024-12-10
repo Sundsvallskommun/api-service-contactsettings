@@ -10,10 +10,8 @@ import static se.sundsvall.contactsettings.service.mapper.DelegateMapper.toFilte
 
 import java.util.ArrayList;
 import java.util.Optional;
-
 import org.springframework.stereotype.Service;
 import org.zalando.problem.Problem;
-
 import se.sundsvall.contactsettings.api.model.Filter;
 import se.sundsvall.contactsettings.integration.db.DelegateFilterRepository;
 import se.sundsvall.contactsettings.integration.db.DelegateRepository;
