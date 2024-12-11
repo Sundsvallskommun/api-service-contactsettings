@@ -10,7 +10,6 @@ import static se.sundsvall.contactsettings.api.model.enums.Operator.toEnum;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-
 import se.sundsvall.contactsettings.integration.db.model.DelegateFilterEntity;
 import se.sundsvall.contactsettings.integration.db.model.DelegateFilterRule;
 

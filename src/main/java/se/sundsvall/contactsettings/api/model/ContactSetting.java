@@ -3,13 +3,11 @@ package se.sundsvall.contactsettings.api.model;
 import static io.swagger.v3.oas.annotations.media.Schema.AccessMode.READ_ONLY;
 import static org.springframework.format.annotation.DateTimeFormat.ISO.DATE_TIME;
 
+import io.swagger.v3.oas.annotations.media.Schema;
 import java.time.OffsetDateTime;
 import java.util.List;
 import java.util.Objects;
-
 import org.springframework.format.annotation.DateTimeFormat;
-
-import io.swagger.v3.oas.annotations.media.Schema;
 
 @Schema(description = "ContactSetting model", accessMode = READ_ONLY)
 public class ContactSetting {

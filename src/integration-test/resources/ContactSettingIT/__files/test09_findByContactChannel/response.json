@@ -1,15 +1,19 @@
-[{
-	"municipalityId": "2281",
-	"virtual": false,
-	"created": "2023-05-23T12:01:00+02:00",
-	"alias": "Mr Pink",
-	"modified": "2023-05-24T12:00:00+02:00",
-	"id": "1aa6df8d-6f5f-4e00-91aa-43dee8cfaef7",
-	"partyId": "27c4424a-9b9c-49f4-8635-bcaca8cc202b",
-	"contactChannels": [{
-		"destination": "mr.pink@example.com",
-		"alias": "Email",
-		"disabled": false,
-		"contactMethod": "EMAIL"
-	}]
-}]
+[
+	{
+		"municipalityId": "2281",
+		"virtual": false,
+		"created": "2023-05-23T12:01:00+02:00",
+		"alias": "Mr Pink",
+		"modified": "2023-05-24T12:00:00+02:00",
+		"id": "1aa6df8d-6f5f-4e00-91aa-43dee8cfaef7",
+		"partyId": "27c4424a-9b9c-49f4-8635-bcaca8cc202b",
+		"contactChannels": [
+			{
+				"destination": "mr.pink@example.com",
+				"alias": "Email",
+				"disabled": false,
+				"contactMethod": "EMAIL"
+			}
+		]
+	}
+]

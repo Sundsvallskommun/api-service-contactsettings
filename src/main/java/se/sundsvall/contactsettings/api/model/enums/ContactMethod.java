@@ -2,11 +2,9 @@ package se.sundsvall.contactsettings.api.model.enums;
 
 import static org.zalando.problem.Status.BAD_REQUEST;
 
-import java.util.stream.Stream;
-
-import org.zalando.problem.Problem;
-
 import io.swagger.v3.oas.annotations.media.Schema;
+import java.util.stream.Stream;
+import org.zalando.problem.Problem;
 
 @Schema(description = "ContactMethod model", enumAsRef = true)
 public enum ContactMethod {

@@ -7,7 +7,6 @@ import static se.sundsvall.contactsettings.api.model.enums.Operator.toEnum;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-
 import se.sundsvall.contactsettings.api.model.Delegate;
 import se.sundsvall.contactsettings.api.model.DelegateCreateRequest;
 import se.sundsvall.contactsettings.api.model.Filter;

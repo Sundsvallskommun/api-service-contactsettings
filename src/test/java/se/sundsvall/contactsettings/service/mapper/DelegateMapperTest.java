@@ -6,9 +6,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import java.time.ZoneId;
 import java.util.List;
-
 import org.junit.jupiter.api.Test;
-
 import se.sundsvall.contactsettings.api.model.DelegateCreateRequest;
 import se.sundsvall.contactsettings.api.model.Filter;
 import se.sundsvall.contactsettings.api.model.Rule;

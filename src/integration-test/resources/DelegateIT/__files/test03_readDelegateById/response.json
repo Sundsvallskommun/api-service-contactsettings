@@ -3,13 +3,17 @@
 	"created": "2023-08-22T12:03:00+02:00",
 	"principalId": "41e31470-150b-4db1-b3c1-c8f4108051ab",
 	"id": "a1381b7f-9149-4fd5-a271-5513d9579a8d",
-	"filters": [{
-		"alias": "Mr White delegates to Mr Brown",
-		"rules": [{
-			"attributeValue": "789",
-			"attributeName": "caseId",
-			"operator": "EQUALS"
-		}],
-		"id": "b95eb1ed-0561-49f2-a7dc-5b8bc0411778"
-	}]
+	"filters": [
+		{
+			"alias": "Mr White delegates to Mr Brown",
+			"rules": [
+				{
+					"attributeValue": "789",
+					"attributeName": "caseId",
+					"operator": "EQUALS"
+				}
+			],
+			"id": "b95eb1ed-0561-49f2-a7dc-5b8bc0411778"
+		}
+	]
 }

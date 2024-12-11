@@ -12,14 +12,12 @@ import static se.sundsvall.contactsettings.api.model.enums.Operator.EQUALS;
 
 import java.util.List;
 import java.util.Map;
-
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.reactive.server.WebTestClient;
-
 import se.sundsvall.contactsettings.Application;
 import se.sundsvall.contactsettings.api.model.Filter;
 import se.sundsvall.contactsettings.api.model.Rule;
@@ -35,7 +33,7 @@ class DelegateFilterResourceTest {
 	private static final String DELEGATE_ID = randomUUID().toString();
 	private static final String DELEGATE_FILTER_ID = randomUUID().toString();
 
-	@MockBean
+	@MockitoBean
 	private DelegateFilterService delegateFilterServiceMock;
 
 	@Autowired
