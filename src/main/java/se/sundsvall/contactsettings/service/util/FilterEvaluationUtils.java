@@ -13,7 +13,7 @@ import java.util.Optional;
 import se.sundsvall.contactsettings.integration.db.model.DelegateFilterEntity;
 import se.sundsvall.contactsettings.integration.db.model.DelegateFilterRule;
 
-public class FilterEvaluationUtils {
+public final class FilterEvaluationUtils {
 
 	private static final DelegateFilterRule MATCH_ALL_RULE = DelegateFilterRule.create()
 		.withAttributeName("*")

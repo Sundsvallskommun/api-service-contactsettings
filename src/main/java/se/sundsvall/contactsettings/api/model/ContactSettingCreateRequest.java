@@ -1,13 +1,9 @@
 package se.sundsvall.contactsettings.api.model;
 
-import static io.swagger.v3.oas.annotations.media.Schema.RequiredMode.NOT_REQUIRED;
-import static io.swagger.v3.oas.annotations.media.Schema.RequiredMode.REQUIRED;
-
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.Valid;
 import java.util.List;
 import java.util.Objects;
-import se.sundsvall.contactsettings.api.validator.ValidContactChannel;
 import se.sundsvall.contactsettings.api.validator.ValidContactSettingCreateRequest;
 import se.sundsvall.dept44.common.validators.annotation.ValidUuid;
 
@@ -15,19 +11,19 @@ import se.sundsvall.dept44.common.validators.annotation.ValidUuid;
 @ValidContactSettingCreateRequest
 public class ContactSettingCreateRequest {
 
-	@Schema(description = "ID of the person or organization to whom the contact setting applies. Set to null when creating a 'virtual' contact setting.", example = "15aee472-46ab-4f03-9605-68bd64ebc73f", requiredMode = REQUIRED)
+	@Schema(description = "ID of the person or organization to whom the contact setting applies. Set to null when creating a 'virtual' contact setting.", example = "15aee472-46ab-4f03-9605-68bd64ebc73f")
 	@ValidUuid(nullable = true)
 	private String partyId;
 
-	@Schema(description = "ID of the contact setting that created this instance. Mandatory for virtual contact settings.", example = "9ca9425e-42cf-4145-a9e7-d77e1ea9e5b0", requiredMode = REQUIRED)
+	@Schema(description = "ID of the contact setting that created this instance. Mandatory for virtual contact settings.", example = "9ca9425e-42cf-4145-a9e7-d77e1ea9e5b0")
 	@ValidUuid(nullable = true)
 	private String createdById;
 
-	@Schema(description = "Alias for this contact setting", example = "My contact-settings", requiredMode = NOT_REQUIRED)
+	@Schema(description = "Alias for this contact setting", example = "My contact-settings")
 	private String alias;
 
 	@Schema(description = "List of contact channels connected to this contact setting")
-	private List<@Valid @ValidContactChannel ContactChannel> contactChannels;
+	private List<@Valid ContactChannel> contactChannels;
 
 	public static ContactSettingCreateRequest create() {
 		return new ContactSettingCreateRequest();

@@ -16,7 +16,7 @@ import se.sundsvall.contactsettings.integration.db.model.DelegateEntity;
 import se.sundsvall.contactsettings.integration.db.model.DelegateFilterEntity;
 import se.sundsvall.contactsettings.integration.db.model.DelegateFilterRule;
 
-public class DelegateMapper {
+public final class DelegateMapper {
 
 	private DelegateMapper() {}
 

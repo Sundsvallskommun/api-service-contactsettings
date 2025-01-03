@@ -61,7 +61,7 @@ class ContactSettingsResourceFailuresTest {
 		assertThat(response.getTitle()).isEqualTo(BAD_REQUEST.getReasonPhrase());
 		assertThat(response.getStatus()).isEqualTo(BAD_REQUEST);
 		assertThat(response.getDetail()).isEqualTo(
-			"Required request body is missing: public org.springframework.http.ResponseEntity<java.lang.Void> se.sundsvall.contactsettings.api.ContactSettingsResource.create(java.lang.String,se.sundsvall.contactsettings.api.model.ContactSettingCreateRequest)");
+			"Required request body is missing: org.springframework.http.ResponseEntity<java.lang.Void> se.sundsvall.contactsettings.api.ContactSettingsResource.create(java.lang.String,se.sundsvall.contactsettings.api.model.ContactSettingCreateRequest)");
 
 		verifyNoInteractions(contactSettingsServiceMock);
 	}
@@ -286,7 +286,7 @@ class ContactSettingsResourceFailuresTest {
 		assertThat(response.getTitle()).isEqualTo(BAD_REQUEST.getReasonPhrase());
 		assertThat(response.getStatus()).isEqualTo(BAD_REQUEST);
 		assertThat(response.getDetail()).isEqualTo(
-			"Required request body is missing: public org.springframework.http.ResponseEntity<se.sundsvall.contactsettings.api.model.ContactSetting> se.sundsvall.contactsettings.api.ContactSettingsResource.update(java.lang.String,java.lang.String,se.sundsvall.contactsettings.api.model.ContactSettingUpdateRequest)");
+			"Required request body is missing: org.springframework.http.ResponseEntity<se.sundsvall.contactsettings.api.model.ContactSetting> se.sundsvall.contactsettings.api.ContactSettingsResource.update(java.lang.String,java.lang.String,se.sundsvall.contactsettings.api.model.ContactSettingUpdateRequest)");
 
 		verifyNoInteractions(contactSettingsServiceMock);
 	}

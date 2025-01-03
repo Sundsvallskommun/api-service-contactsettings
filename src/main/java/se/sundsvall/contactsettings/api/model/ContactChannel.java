@@ -8,8 +8,10 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import java.util.Objects;
 import se.sundsvall.contactsettings.api.model.enums.ContactMethod;
+import se.sundsvall.contactsettings.api.validator.ValidContactChannel;
 
 @Schema(description = "ContactChannel model")
+@ValidContactChannel
 public class ContactChannel {
 
 	@Schema(description = "Method of contact", requiredMode = REQUIRED)
