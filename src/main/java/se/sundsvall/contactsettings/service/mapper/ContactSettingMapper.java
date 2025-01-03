@@ -13,7 +13,7 @@ import se.sundsvall.contactsettings.api.model.enums.ContactMethod;
 import se.sundsvall.contactsettings.integration.db.model.Channel;
 import se.sundsvall.contactsettings.integration.db.model.ContactSettingEntity;
 
-public class ContactSettingMapper {
+public final class ContactSettingMapper {
 
 	private ContactSettingMapper() {}
 
