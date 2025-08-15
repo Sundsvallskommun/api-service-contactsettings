@@ -1,6 +1,5 @@
 package se.sundsvall.contactsettings.integration.db.model;
 
-import static java.util.Objects.isNull;
 import static org.hibernate.annotations.TimeZoneStorageType.NORMALIZE;
 
 import jakarta.persistence.CollectionTable;
@@ -66,7 +65,7 @@ public class ContactSettingEntity {
 			name = "contact_setting_id",
 			referencedColumnName = "id",
 			foreignKey = @ForeignKey(name = "fk_contact_setting_contact_setting_channel")))
-	private List<Channel> channels;
+	private List<Channel> channels = new ArrayList<>();
 
 	public static ContactSettingEntity create() {
 		return new ContactSettingEntity();
@@ -167,17 +166,8 @@ public class ContactSettingEntity {
 		return channels;
 	}
 
-	public void setChannels(final List<Channel> channels) {
-
-		if (isNull(this.channels)) {
-			this.channels = new ArrayList<>();
-		}
-
-		this.channels.clear();
-
-		if (channels != null) {
-			this.channels.addAll(channels);
-		}
+	public void setChannels(List<Channel> channels) {
+		this.channels = channels;
 	}
 
 	public ContactSettingEntity withChannels(final List<Channel> channels) {

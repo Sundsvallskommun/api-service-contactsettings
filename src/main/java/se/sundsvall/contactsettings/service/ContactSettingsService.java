@@ -93,12 +93,12 @@ public class ContactSettingsService {
 	}
 
 	public ContactSetting updateContactSetting(final String municipalityId, final String id, final ContactSettingUpdateRequest contactSettingUpdateRequest) {
-
-		// Fetch entity, or throw a 404.
 		final var contactSettingEntity = contactSettingRepository.findByMunicipalityIdAndId(municipalityId, id)
 			.orElseThrow(() -> Problem.valueOf(NOT_FOUND, ERROR_MESSAGE_CONTACT_SETTING_NOT_FOUND.formatted(id)));
 
-		return toContactSetting(contactSettingRepository.save(mergeIntoContactSettingEntity(contactSettingEntity, contactSettingUpdateRequest)));
+		var updatedContactSettingEntity = mergeIntoContactSettingEntity(contactSettingEntity, contactSettingUpdateRequest);
+
+		return toContactSetting(contactSettingRepository.save(updatedContactSettingEntity));
 	}
 
 	public void deleteContactSetting(final String municipalityId, final String id) {

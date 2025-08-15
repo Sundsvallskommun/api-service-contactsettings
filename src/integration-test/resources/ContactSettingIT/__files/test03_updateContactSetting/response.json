@@ -2,8 +2,8 @@
 	"municipalityId": "2281",
 	"virtual": false,
 	"created": "2023-05-23T12:01:00+02:00",
-	"alias": "My updated contact-settings",
 	"modified": "${json-unit.regex}^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}\\.\\d{1,5}\\+\\d{2}:00$",
+	"alias": "My updated contact-settings",
 	"id": "41e31470-150b-4db1-b3c1-c8f4108051ab",
 	"partyId": "7903f7a9-325a-4a49-929a-d5952fef5c9a",
 	"contactChannels": [

@@ -50,7 +50,7 @@ class ContactSettingsResource {
 
 	private final ContactSettingsService contactSettingsService;
 
-	ContactSettingsResource(ContactSettingsService contactSettingsService) {
+	ContactSettingsResource(final ContactSettingsService contactSettingsService) {
 		this.contactSettingsService = contactSettingsService;
 	}
 
@@ -84,9 +84,9 @@ class ContactSettingsResource {
 	ResponseEntity<ContactSetting> update(
 		@Parameter(name = "municipalityId", description = "Municipality id", example = "2281") @ValidMunicipalityId @PathVariable final String municipalityId,
 		@Parameter(name = "id", description = "Contact setting ID", example = "81471222-5798-11e9-ae24-57fa13b361e1") @ValidUuid @PathVariable(name = "id") final String id,
-		@NotNull @Valid @RequestBody final ContactSettingUpdateRequest body) {
+		@NotNull @Valid @RequestBody final ContactSettingUpdateRequest request) {
 
-		return ok(contactSettingsService.updateContactSetting(municipalityId, id, body));
+		return ok(contactSettingsService.updateContactSetting(municipalityId, id, request));
 	}
 
 	@DeleteMapping(path = "/{id}")

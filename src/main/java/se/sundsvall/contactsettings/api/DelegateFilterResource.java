@@ -44,7 +44,7 @@ class DelegateFilterResource {
 
 	private final DelegateFilterService delegateFilterService;
 
-	DelegateFilterResource(DelegateFilterService delegateFilterService) {
+	DelegateFilterResource(final DelegateFilterService delegateFilterService) {
 		this.delegateFilterService = delegateFilterService;
 	}
 

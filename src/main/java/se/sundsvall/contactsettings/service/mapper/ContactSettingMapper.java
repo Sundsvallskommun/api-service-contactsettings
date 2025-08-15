@@ -3,8 +3,10 @@ package se.sundsvall.contactsettings.service.mapper;
 import static java.util.Collections.emptyList;
 import static java.util.Objects.isNull;
 
+import java.time.OffsetDateTime;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 import se.sundsvall.contactsettings.api.model.ContactChannel;
 import se.sundsvall.contactsettings.api.model.ContactSetting;
 import se.sundsvall.contactsettings.api.model.ContactSettingCreateRequest;
@@ -32,14 +34,11 @@ public final class ContactSettingMapper {
 			.orElse(null);
 	}
 
-	public static ContactSettingEntity mergeIntoContactSettingEntity(ContactSettingEntity existingContactSettingEntity, ContactSettingUpdateRequest contactSettingUpdateRequest) {
-		if (isNull(existingContactSettingEntity)) {
-			return null;
-		}
-
+	public static ContactSettingEntity mergeIntoContactSettingEntity(final ContactSettingEntity existingContactSettingEntity, final ContactSettingUpdateRequest contactSettingUpdateRequest) {
 		Optional.ofNullable(contactSettingUpdateRequest).ifPresent(contactSetting -> {
 			Optional.ofNullable(contactSetting.getContactChannels()).map(ContactSettingMapper::toChannels).ifPresent(existingContactSettingEntity::setChannels);
 			Optional.ofNullable(contactSetting.getAlias()).ifPresent(existingContactSettingEntity::setAlias);
+			existingContactSettingEntity.setModified(OffsetDateTime.now());
 		});
 
 		return existingContactSettingEntity;
@@ -48,7 +47,7 @@ public final class ContactSettingMapper {
 	private static List<Channel> toChannels(final List<ContactChannel> contactChannels) {
 		return Optional.ofNullable(contactChannels).orElse(emptyList()).stream()
 			.map(ContactSettingMapper::toChannel)
-			.toList();
+			.collect(Collectors.toList());
 	}
 
 	private static Channel toChannel(final ContactChannel contactChannel) {

@@ -78,7 +78,7 @@ class DelegateRepositoryTest {
 		assertThat(result).isNotNull();
 		assertThat(isValidUUID(result.getId())).isTrue();
 		assertThat(result.getCreated()).isCloseTo(now(), within(2, SECONDS));
-		assertThat(result.getModified()).isNull();
+		assertThat(result.getModified()).isCloseTo(now(), within(2, SECONDS));
 		assertThat(result.getAgent()).isEqualTo(agent);
 		assertThat(result.getPrincipal()).isEqualTo(principal);
 		assertThat(result.getFilters())

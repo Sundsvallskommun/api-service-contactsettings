@@ -46,7 +46,7 @@ class DelegateResource {
 
 	private final DelegateService delegateService;
 
-	DelegateResource(DelegateService delegateService) {
+	DelegateResource(final DelegateService delegateService) {
 		this.delegateService = delegateService;
 	}
 

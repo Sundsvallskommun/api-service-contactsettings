@@ -12,7 +12,9 @@ public class DelegateFilterEntityListener {
 
 	@PrePersist
 	void prePersist(final DelegateFilterEntity entity) {
-		entity.setCreated(now(ZoneId.systemDefault()).truncatedTo(MILLIS));
+		var now = now(ZoneId.systemDefault()).truncatedTo(MILLIS);
+		entity.setCreated(now);
+		entity.setModified(now);
 	}
 
 	@PreUpdate
