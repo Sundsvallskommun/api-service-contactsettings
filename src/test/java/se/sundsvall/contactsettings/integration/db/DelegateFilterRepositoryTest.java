@@ -65,7 +65,7 @@ class DelegateFilterRepositoryTest {
 		assertThat(result).isNotNull();
 		assertThat(isValidUUID(result.getId())).isTrue();
 		assertThat(result.getCreated()).isCloseTo(now(), within(2, SECONDS));
-		assertThat(result.getModified()).isNull();
+		assertThat(result.getModified()).isCloseTo(now(), within(2, SECONDS));
 		assertThat(result.getFilterRules())
 			.isNotEmpty()
 			.extracting(DelegateFilterRule::getAttributeName, DelegateFilterRule::getOperator, DelegateFilterRule::getAttributeValue)

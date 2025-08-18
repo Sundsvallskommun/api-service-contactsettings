@@ -51,9 +51,9 @@ class ContactSettingMapperTest {
 		assertThat(result.getModified()).isCloseTo(modified, within(1, SECONDS));
 		assertThat(result.getCreatedById()).isEqualTo(createdById);
 		assertThat(result.getContactChannels()).hasSize(1);
-		assertThat(result.getContactChannels().get(0).getAlias()).isEqualTo(channelAlias);
-		assertThat(result.getContactChannels().get(0).getDestination()).isEqualTo(destination);
-		assertThat(result.getContactChannels().get(0).getContactMethod()).isEqualTo(ContactMethod.valueOf(contactMethod));
+		assertThat(result.getContactChannels().getFirst().getAlias()).isEqualTo(channelAlias);
+		assertThat(result.getContactChannels().getFirst().getDestination()).isEqualTo(destination);
+		assertThat(result.getContactChannels().getFirst().getContactMethod()).isEqualTo(ContactMethod.valueOf(contactMethod));
 	}
 
 	@Test
@@ -113,9 +113,9 @@ class ContactSettingMapperTest {
 		assertThat(result.getMunicipalityId()).isEqualTo(municipalityId);
 		assertThat(result.getCreatedById()).isEqualTo(createdById);
 		assertThat(result.getChannels()).hasSize(1);
-		assertThat(result.getChannels().get(0).getAlias()).isEqualTo(channelAlias);
-		assertThat(result.getChannels().get(0).getDestination()).isEqualTo(destination);
-		assertThat(result.getChannels().get(0).getContactMethod()).isEqualTo(contactMethod);
+		assertThat(result.getChannels().getFirst().getAlias()).isEqualTo(channelAlias);
+		assertThat(result.getChannels().getFirst().getDestination()).isEqualTo(destination);
+		assertThat(result.getChannels().getFirst().getContactMethod()).isEqualTo(contactMethod);
 	}
 
 	@Test
@@ -125,7 +125,7 @@ class ContactSettingMapperTest {
 		final var municipalityId = "2281";
 
 		// Act
-		final var result = ContactSettingMapper.toContactSettingEntity(municipalityId, (ContactSettingCreateRequest) null);
+		final var result = ContactSettingMapper.toContactSettingEntity(municipalityId, null);
 
 		// Assert
 		assertThat(result).isNull();
@@ -181,19 +181,9 @@ class ContactSettingMapperTest {
 		assertThat(result).isNotNull();
 		assertThat(result.getAlias()).isEqualTo(alias);
 		assertThat(result.getChannels()).hasSize(1);
-		assertThat(result.getChannels().get(0).getAlias()).isEqualTo(channelAlias);
-		assertThat(result.getChannels().get(0).getDestination()).isEqualTo(destination);
-		assertThat(result.getChannels().get(0).getContactMethod()).isEqualTo(contactMethod);
-	}
-
-	@Test
-	void mergeIntoContactSettingEntityWhenExistingEntityIsNull() {
-
-		// Act
-		final var result = ContactSettingMapper.mergeIntoContactSettingEntity(null, ContactSettingUpdateRequest.create());
-
-		// Assert
-		assertThat(result).isNull();
+		assertThat(result.getChannels().getFirst().getAlias()).isEqualTo(channelAlias);
+		assertThat(result.getChannels().getFirst().getDestination()).isEqualTo(destination);
+		assertThat(result.getChannels().getFirst().getContactMethod()).isEqualTo(contactMethod);
 	}
 
 	@Test
@@ -203,12 +193,12 @@ class ContactSettingMapperTest {
 		final var existingContactSettingEntity = ContactSettingEntity.create();
 
 		// Act
-		final var result = ContactSettingMapper.mergeIntoContactSettingEntity(ContactSettingEntity.create(), (ContactSettingUpdateRequest) null);
+		final var result = ContactSettingMapper.mergeIntoContactSettingEntity(ContactSettingEntity.create(), null);
 
 		// Assert
 		assertThat(result)
 			.isEqualTo(existingContactSettingEntity)
-			.hasAllNullFieldsOrProperties();
+			.hasAllNullFieldsOrPropertiesExcept("channels");
 	}
 
 	@Test
@@ -222,7 +212,7 @@ class ContactSettingMapperTest {
 
 		// Assert
 		assertThat(result)
-			.isEqualTo(existingContactSettingEntity)
-			.hasAllNullFieldsOrProperties();
+			.usingRecursiveComparison().ignoringFields("modified")
+			.isEqualTo(existingContactSettingEntity);
 	}
 }

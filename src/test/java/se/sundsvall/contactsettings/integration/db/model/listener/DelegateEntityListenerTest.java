@@ -11,7 +11,7 @@ import se.sundsvall.contactsettings.integration.db.model.DelegateEntity;
 class DelegateEntityListenerTest {
 
 	@Test
-	void prePerist() {
+	void prePersist() {
 
 		// Arrange
 		final var listener = new DelegateEntityListener();
@@ -21,7 +21,7 @@ class DelegateEntityListenerTest {
 		listener.prePersist(entity);
 
 		// Assert
-		assertThat(entity).hasAllNullFieldsOrPropertiesExcept("created");
+		assertThat(entity).hasAllNullFieldsOrPropertiesExcept("created", "modified");
 		assertThat(entity.getCreated()).isCloseTo(now(), within(2, SECONDS));
 	}
 

@@ -70,7 +70,7 @@ class ContactSettingEntityTest {
 
 	@Test
 	void hasNoDirtOnCreatedBean() {
-		assertThat(new ContactSettingEntity()).hasAllNullFieldsOrProperties();
-		assertThat(ContactSettingEntity.create()).hasAllNullFieldsOrProperties();
+		assertThat(new ContactSettingEntity()).hasAllNullFieldsOrPropertiesExcept("channels");
+		assertThat(ContactSettingEntity.create()).hasAllNullFieldsOrPropertiesExcept("channels");
 	}
 }

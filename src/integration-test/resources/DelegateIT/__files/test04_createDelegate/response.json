@@ -1,11 +1,13 @@
 {
 	"agentId": "a552e909-d2b1-4f08-acbe-938040f95ff3",
 	"created": "${json-unit.regex}^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}\\.\\d{1,5}\\+\\d{2}:00$",
+	"modified": "${json-unit.regex}^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}\\.\\d{1,5}\\+\\d{2}:00$",
 	"principalId": "6c22993a-26b3-4a1f-805e-33a8c2b7c7e5",
 	"id": "${json-unit.regex}^[0-9a-fA-F]{8}\\b-[0-9a-fA-F]{4}\\b-[0-9a-fA-F]{4}\\b-[0-9a-fA-F]{4}\\b-[0-9a-fA-F]{12}$",
 	"filters": [
 		{
 			"created": "${json-unit.regex}^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}\\.\\d{1,5}\\+\\d{2}:00$",
+			"modified": "${json-unit.regex}^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}\\.\\d{1,5}\\+\\d{2}:00$",
 			"channel": "Sundsvalls Energi",
 			"alias": "My first filter",
 			"rules": [
@@ -24,6 +26,7 @@
 		},
 		{
 			"created": "${json-unit.regex}^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}\\.\\d{1,5}\\+\\d{2}:00$",
+			"modified": "${json-unit.regex}^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}\\.\\d{1,5}\\+\\d{2}:00$",
 			"alias": "My second filter",
 			"rules": [
 				{

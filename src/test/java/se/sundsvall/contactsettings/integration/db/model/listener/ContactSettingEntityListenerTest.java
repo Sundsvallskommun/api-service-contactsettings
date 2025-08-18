@@ -11,7 +11,7 @@ import se.sundsvall.contactsettings.integration.db.model.ContactSettingEntity;
 class ContactSettingEntityListenerTest {
 
 	@Test
-	void prePerist() {
+	void prePersist() {
 
 		// Arrange
 		final var listener = new ContactSettingEntityListener();
@@ -21,7 +21,7 @@ class ContactSettingEntityListenerTest {
 		listener.prePersist(entity);
 
 		// Assert
-		assertThat(entity).hasAllNullFieldsOrPropertiesExcept("created");
+		assertThat(entity).hasAllNullFieldsOrPropertiesExcept("created", "channels", "modified");
 		assertThat(entity.getCreated()).isCloseTo(now(), within(2, SECONDS));
 	}
 
@@ -36,7 +36,7 @@ class ContactSettingEntityListenerTest {
 		listener.preUpdate(entity);
 
 		// Assert
-		assertThat(entity).hasAllNullFieldsOrPropertiesExcept("modified");
+		assertThat(entity).hasAllNullFieldsOrPropertiesExcept("modified", "channels");
 		assertThat(entity.getModified()).isCloseTo(now(), within(2, SECONDS));
 	}
 }
