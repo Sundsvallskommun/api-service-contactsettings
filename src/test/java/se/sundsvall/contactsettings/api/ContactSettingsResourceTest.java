@@ -37,7 +37,7 @@ class ContactSettingsResourceTest {
 	private static final String MUNICIPALITY_ID = "2281";
 	private static final String CONTACT_SETTING_ID = randomUUID().toString();
 	private static final String PARTY_ID = randomUUID().toString();
-	private static final String CONTACT_CHANNEL_DESTINATION = "0701234567";
+	private static final String CONTACT_CHANNEL_DESTINATION = "0701740605";
 
 	@Autowired
 	private WebTestClient webTestClient;

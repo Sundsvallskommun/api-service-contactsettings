@@ -224,7 +224,7 @@ class ContactSettingsResourceFailuresTest {
 		assertThat(response.getStatus()).isEqualTo(BAD_REQUEST);
 		assertThat(response.getViolations())
 			.extracting(Violation::getField, Violation::getMessage)
-			.containsExactlyInAnyOrder(tuple("contactChannels[0]", "The SMS destination value 'invalid' is not valid! Example of a valid value: +46701234567"));
+			.containsExactlyInAnyOrder(tuple("contactChannels[0]", "The SMS destination value 'invalid' is not valid! Example of a valid value: +46701740605"));
 
 		verifyNoInteractions(contactSettingsServiceMock);
 	}
@@ -418,7 +418,7 @@ class ContactSettingsResourceFailuresTest {
 		assertThat(response.getStatus()).isEqualTo(BAD_REQUEST);
 		assertThat(response.getViolations())
 			.extracting(Violation::getField, Violation::getMessage)
-			.containsExactlyInAnyOrder(tuple("contactChannels[0]", "The SMS destination value 'invalid' is not valid! Example of a valid value: +46701234567"));
+			.containsExactlyInAnyOrder(tuple("contactChannels[0]", "The SMS destination value 'invalid' is not valid! Example of a valid value: +46701740605"));
 
 		verifyNoInteractions(contactSettingsServiceMock);
 	}

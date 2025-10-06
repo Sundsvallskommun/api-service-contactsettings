@@ -187,7 +187,7 @@ class ContactSettingsServiceTest {
 	void findByChannelsDestination() {
 
 		// Arrange
-		final var destination = "0701234567";
+		final var destination = "0701740605";
 		when(contactSettingRepositoryMock.findByMunicipalityIdAndChannelsDestination(MUNICIPALITY_ID, destination)).thenReturn(List.of(ContactSettingEntity.create().withChannels(List.of(
 			Channel.create().withDestination(destination).withContactMethod("SMS")))));
 
@@ -205,7 +205,7 @@ class ContactSettingsServiceTest {
 	void findByChannelsDestinationNotFound() {
 
 		// Arrange
-		final var destination = "0701234567";
+		final var destination = "0701740605";
 		when(contactSettingRepositoryMock.findByMunicipalityIdAndChannelsDestination(any(), any())).thenReturn(emptyList());
 
 		// Act

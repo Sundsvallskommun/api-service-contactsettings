@@ -14,7 +14,7 @@ public class ValidContactChannelConstraintValidator implements ConstraintValidat
 	private static final Pattern EMAIL_PATTERN = Pattern.compile("^[a-zA-Z0-9_!#$%&'*+/=?`{|}~^.-]+@[a-zA-Z0-9.-]+$");
 	private static final Pattern MSISDN_PATTERN = Pattern.compile("^\\+[1-9][\\d]{3,14}$");
 	private static final String EMAIL_VALIDATION_MESSAGE = "The email destination value '%s' is not valid! Example of a valid value: hello@example.com";
-	private static final String SMS_VALIDATION_MESSAGE = "The SMS destination value '%s' is not valid! Example of a valid value: +46701234567";
+	private static final String SMS_VALIDATION_MESSAGE = "The SMS destination value '%s' is not valid! Example of a valid value: +46701740605";
 
 	@Override
 	public boolean isValid(final ContactChannel value, final ConstraintValidatorContext context) {

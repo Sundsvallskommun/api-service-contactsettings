@@ -169,7 +169,7 @@ class ContactSettingsResource {
 	})
 	ResponseEntity<List<ContactSetting>> findByDestination(
 		@Parameter(name = "municipalityId", description = "Municipality id", example = "2281") @ValidMunicipalityId @PathVariable final String municipalityId,
-		@Parameter(name = "destination", description = "destination of contact channel", example = "0701234567") @RequestParam(name = "destination") final String destination) {
+		@Parameter(name = "destination", description = "destination of contact channel", example = "0701740605") @RequestParam(name = "destination") final String destination) {
 
 		return ok(contactSettingsService.findByChannelsDestination(municipalityId, destination));
 	}

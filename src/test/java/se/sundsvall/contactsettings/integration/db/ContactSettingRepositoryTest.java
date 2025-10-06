@@ -60,7 +60,7 @@ class ContactSettingRepositoryTest {
 		assertThat(result.getModified()).isCloseTo(now(), within(2, SECONDS));
 		assertThat(result.getChannels())
 			.extracting(Channel::getAlias, Channel::getContactMethod, Channel::getDestination)
-			.containsExactly(tuple("Email", "EMAIL", "0701234567"));
+			.containsExactly(tuple("Email", "EMAIL", "0701740605"));
 	}
 
 	@Test
@@ -234,7 +234,7 @@ class ContactSettingRepositoryTest {
 			.withChannels(List.of(Channel.create()
 				.withAlias("Email")
 				.withContactMethod("EMAIL")
-				.withDestination("0701234567")))
+				.withDestination("0701740605")))
 			.withPartyId(randomUUID().toString());
 	}
 
