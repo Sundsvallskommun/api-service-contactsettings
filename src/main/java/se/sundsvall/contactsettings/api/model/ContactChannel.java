@@ -22,7 +22,7 @@ public class ContactChannel {
 	@NotBlank
 	private String alias;
 
-	@Schema(description = "Point of destination", example = "+46701234567", requiredMode = REQUIRED)
+	@Schema(description = "Point of destination", example = "+46701740605", requiredMode = REQUIRED)
 	@NotBlank
 	private String destination;
 
