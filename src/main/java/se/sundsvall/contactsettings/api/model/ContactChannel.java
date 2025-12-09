@@ -18,15 +18,15 @@ public class ContactChannel {
 	@NotNull
 	private ContactMethod contactMethod;
 
-	@Schema(description = "Alias for the destination", example = "Private phone", requiredMode = REQUIRED)
+	@Schema(description = "Alias for the destination", examples = "Private phone", requiredMode = REQUIRED)
 	@NotBlank
 	private String alias;
 
-	@Schema(description = "Point of destination", example = "+46701740605", requiredMode = REQUIRED)
+	@Schema(description = "Point of destination", examples = "+46701740605", requiredMode = REQUIRED)
 	@NotBlank
 	private String destination;
 
-	@Schema(description = "Signal if channel should be used or not when sending message", example = "true", defaultValue = "false", requiredMode = NOT_REQUIRED)
+	@Schema(description = "Signal if channel should be used or not when sending message", examples = "true", defaultValue = "false", requiredMode = NOT_REQUIRED)
 	private boolean disabled;
 
 	public static ContactChannel create() {

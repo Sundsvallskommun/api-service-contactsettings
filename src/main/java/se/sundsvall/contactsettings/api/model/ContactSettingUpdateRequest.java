@@ -8,7 +8,7 @@ import java.util.Objects;
 @Schema(description = "ContactSettingUpdateRequest model")
 public class ContactSettingUpdateRequest {
 
-	@Schema(description = "Alias for this contact setting", example = "My contact-setting")
+	@Schema(description = "Alias for this contact setting", examples = "My contact-setting")
 	private String alias;
 
 	@Schema(description = "List of contact channels connected to this contact setting")
