@@ -9,11 +9,11 @@ import se.sundsvall.dept44.common.validators.annotation.ValidUuid;
 @Schema(description = "FindDelegatesParameters model")
 public class FindDelegatesParameters {
 
-	@Schema(description = "Agent contact setting ID", example = "15aee472-46ab-4f03-9605-68bd64ebc73f")
+	@Schema(description = "Agent contact setting ID", examples = "15aee472-46ab-4f03-9605-68bd64ebc73f")
 	@ValidUuid(nullable = true)
 	private String agentId;
 
-	@Schema(description = "Principal contact setting ID", example = "15aee472-46ab-4f03-9605-68bd64ebc73f")
+	@Schema(description = "Principal contact setting ID", examples = "15aee472-46ab-4f03-9605-68bd64ebc73f")
 	@ValidUuid(nullable = true)
 	private String principalId;
 

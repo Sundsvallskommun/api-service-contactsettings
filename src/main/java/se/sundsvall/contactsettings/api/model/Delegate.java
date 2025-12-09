@@ -12,20 +12,20 @@ import org.springframework.format.annotation.DateTimeFormat;
 @Schema(description = "Delegate model", accessMode = READ_ONLY)
 public class Delegate {
 
-	@Schema(description = "ID of the delegate", example = "0d64c132-3aea-11ec-8d3d-0242ac130003", accessMode = READ_ONLY)
+	@Schema(description = "ID of the delegate", examples = "0d64c132-3aea-11ec-8d3d-0242ac130003", accessMode = READ_ONLY)
 	private String id;
 
-	@Schema(description = "Contact setting ID of the delegate principal (owner)", example = "0d64c132-3aea-11ec-8d3d-0242ac130003", accessMode = READ_ONLY)
+	@Schema(description = "Contact setting ID of the delegate principal (owner)", examples = "0d64c132-3aea-11ec-8d3d-0242ac130003", accessMode = READ_ONLY)
 	private String principalId;
 
-	@Schema(description = "Contact setting ID of the delegate agent (performer)", example = "0d64c132-3aea-11ec-8d3d-0242ac130003", accessMode = READ_ONLY)
+	@Schema(description = "Contact setting ID of the delegate agent (performer)", examples = "0d64c132-3aea-11ec-8d3d-0242ac130003", accessMode = READ_ONLY)
 	private String agentId;
 
-	@Schema(description = "Timestamp when delegate was created", example = "2020-08-31T01:30:00.000+02:00", accessMode = READ_ONLY)
+	@Schema(description = "Timestamp when delegate was created", examples = "2020-08-31T01:30:00.000+02:00", accessMode = READ_ONLY)
 	@DateTimeFormat(iso = DATE_TIME)
 	private OffsetDateTime created;
 
-	@Schema(description = "Timestamp when delegate was last modified", example = "2020-08-31T01:30:00.000+02:00", accessMode = READ_ONLY)
+	@Schema(description = "Timestamp when delegate was last modified", examples = "2020-08-31T01:30:00.000+02:00", accessMode = READ_ONLY)
 	@DateTimeFormat(iso = DATE_TIME)
 	private OffsetDateTime modified;
 

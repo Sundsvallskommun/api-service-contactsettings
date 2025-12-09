@@ -15,20 +15,20 @@ import org.springframework.format.annotation.DateTimeFormat;
 @Schema(description = "Filter model")
 public class Filter {
 
-	@Schema(description = "ID of the filter", example = "5d8403b1-1bf0-4cb1-b39e-c7c504d501a1", accessMode = READ_ONLY)
+	@Schema(description = "ID of the filter", examples = "5d8403b1-1bf0-4cb1-b39e-c7c504d501a1", accessMode = READ_ONLY)
 	private String id;
 
-	@Schema(description = "The filter alias", example = "My filter for delegating messages to a friend")
+	@Schema(description = "The filter alias", examples = "My filter for delegating messages to a friend")
 	private String alias;
 
-	@Schema(description = "The channel that created this filter.", example = "Sundsvalls Energi")
+	@Schema(description = "The channel that created this filter.", examples = "Sundsvalls Energi")
 	private String channel;
 
-	@Schema(description = "Timestamp when filter was created", example = "2020-08-31T01:30:00.000+02:00", accessMode = READ_ONLY)
+	@Schema(description = "Timestamp when filter was created", examples = "2020-08-31T01:30:00.000+02:00", accessMode = READ_ONLY)
 	@DateTimeFormat(iso = DATE_TIME)
 	private OffsetDateTime created;
 
-	@Schema(description = "Timestamp when filter was last modified", example = "2020-08-31T01:30:00.000+02:00", accessMode = READ_ONLY)
+	@Schema(description = "Timestamp when filter was last modified", examples = "2020-08-31T01:30:00.000+02:00", accessMode = READ_ONLY)
 	@DateTimeFormat(iso = DATE_TIME)
 	private OffsetDateTime modified;
 

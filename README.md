@@ -4,7 +4,7 @@ _The service provides functionality to register contact information for specific
 
 ### Prerequisites
 
-- **Java 21 or higher**
+- **Java 25 or higher**
 - **Maven**
 - **MariaDB**
 - **Git**
