@@ -1,13 +1,13 @@
 package se.sundsvall.contactsettings.api.validator.impl;
 
-import static java.util.Objects.isNull;
-
 import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;
 import java.util.Optional;
 import java.util.regex.Pattern;
 import se.sundsvall.contactsettings.api.model.ContactChannel;
 import se.sundsvall.contactsettings.api.validator.ValidContactChannel;
+
+import static java.util.Objects.isNull;
 
 public class ValidContactChannelConstraintValidator implements ConstraintValidator<ValidContactChannel, ContactChannel> {
 

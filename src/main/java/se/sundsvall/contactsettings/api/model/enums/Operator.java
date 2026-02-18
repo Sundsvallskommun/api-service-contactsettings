@@ -1,10 +1,10 @@
 package se.sundsvall.contactsettings.api.model.enums;
 
-import static org.zalando.problem.Status.BAD_REQUEST;
-
 import io.swagger.v3.oas.annotations.media.Schema;
 import java.util.stream.Stream;
 import org.zalando.problem.Problem;
+
+import static org.zalando.problem.Status.BAD_REQUEST;
 
 @Schema(description = "Operator model", enumAsRef = true)
 public enum Operator {

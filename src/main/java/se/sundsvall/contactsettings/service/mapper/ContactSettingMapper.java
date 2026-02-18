@@ -1,8 +1,5 @@
 package se.sundsvall.contactsettings.service.mapper;
 
-import static java.util.Collections.emptyList;
-import static java.util.Objects.isNull;
-
 import java.time.OffsetDateTime;
 import java.util.List;
 import java.util.Optional;
@@ -14,6 +11,9 @@ import se.sundsvall.contactsettings.api.model.ContactSettingUpdateRequest;
 import se.sundsvall.contactsettings.api.model.enums.ContactMethod;
 import se.sundsvall.contactsettings.integration.db.model.Channel;
 import se.sundsvall.contactsettings.integration.db.model.ContactSettingEntity;
+
+import static java.util.Collections.emptyList;
+import static java.util.Objects.isNull;
 
 public final class ContactSettingMapper {
 

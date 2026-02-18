@@ -1,14 +1,5 @@
 package se.sundsvall.contactsettings.integration.db;
 
-import static java.time.OffsetDateTime.now;
-import static java.time.temporal.ChronoUnit.SECONDS;
-import static java.util.UUID.randomUUID;
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.within;
-import static org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase.Replace.NONE;
-import static org.springframework.transaction.annotation.Propagation.NOT_SUPPORTED;
-import static se.sundsvall.contactsettings.api.model.enums.Operator.EQUALS;
-
 import java.util.List;
 import java.util.UUID;
 import org.junit.jupiter.api.Test;
@@ -23,6 +14,15 @@ import se.sundsvall.contactsettings.integration.db.model.ContactSettingEntity;
 import se.sundsvall.contactsettings.integration.db.model.DelegateEntity;
 import se.sundsvall.contactsettings.integration.db.model.DelegateFilterEntity;
 import se.sundsvall.contactsettings.integration.db.model.DelegateFilterRule;
+
+import static java.time.OffsetDateTime.now;
+import static java.time.temporal.ChronoUnit.SECONDS;
+import static java.util.UUID.randomUUID;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.within;
+import static org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase.Replace.NONE;
+import static org.springframework.transaction.annotation.Propagation.NOT_SUPPORTED;
+import static se.sundsvall.contactsettings.api.model.enums.Operator.EQUALS;
 
 /**
  * DelegateRepository tests

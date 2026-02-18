@@ -1,17 +1,17 @@
 package se.sundsvall.contactsettings.service.util;
 
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import se.sundsvall.contactsettings.integration.db.model.DelegateFilterEntity;
+import se.sundsvall.contactsettings.integration.db.model.DelegateFilterRule;
+
 import static java.util.Collections.emptyList;
 import static java.util.Collections.emptyMap;
 import static org.apache.commons.collections4.CollectionUtils.isEmpty;
 import static org.apache.commons.lang3.StringUtils.equalsIgnoreCase;
 import static se.sundsvall.contactsettings.api.model.enums.Operator.EQUALS;
 import static se.sundsvall.contactsettings.api.model.enums.Operator.toEnum;
-
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import se.sundsvall.contactsettings.integration.db.model.DelegateFilterEntity;
-import se.sundsvall.contactsettings.integration.db.model.DelegateFilterRule;
 
 public final class FilterEvaluationUtils {
 

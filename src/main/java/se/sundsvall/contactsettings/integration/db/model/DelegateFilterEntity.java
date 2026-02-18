@@ -1,8 +1,5 @@
 package se.sundsvall.contactsettings.integration.db.model;
 
-import static java.util.Objects.isNull;
-import static org.hibernate.annotations.TimeZoneStorageType.NORMALIZE;
-
 import jakarta.persistence.CollectionTable;
 import jakarta.persistence.Column;
 import jakarta.persistence.ElementCollection;
@@ -20,6 +17,9 @@ import java.util.Objects;
 import org.hibernate.annotations.TimeZoneStorage;
 import org.hibernate.annotations.UuidGenerator;
 import se.sundsvall.contactsettings.integration.db.model.listener.DelegateFilterEntityListener;
+
+import static java.util.Objects.isNull;
+import static org.hibernate.annotations.TimeZoneStorageType.NORMALIZE;
 
 @Entity
 @Table(name = "delegate_filter")
