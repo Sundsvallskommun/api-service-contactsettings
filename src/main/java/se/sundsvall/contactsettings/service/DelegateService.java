@@ -1,5 +1,14 @@
 package se.sundsvall.contactsettings.service;
 
+import java.util.List;
+import org.springframework.stereotype.Service;
+import org.zalando.problem.Problem;
+import se.sundsvall.contactsettings.api.model.Delegate;
+import se.sundsvall.contactsettings.api.model.DelegateCreateRequest;
+import se.sundsvall.contactsettings.api.model.FindDelegatesParameters;
+import se.sundsvall.contactsettings.integration.db.ContactSettingRepository;
+import se.sundsvall.contactsettings.integration.db.DelegateRepository;
+
 import static java.util.Collections.emptyList;
 import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
@@ -13,15 +22,6 @@ import static se.sundsvall.contactsettings.service.Constants.ERROR_MESSAGE_PRINC
 import static se.sundsvall.contactsettings.service.mapper.DelegateMapper.toDelegate;
 import static se.sundsvall.contactsettings.service.mapper.DelegateMapper.toDelegateEntity;
 import static se.sundsvall.contactsettings.service.mapper.DelegateMapper.toDelegateList;
-
-import java.util.List;
-import org.springframework.stereotype.Service;
-import org.zalando.problem.Problem;
-import se.sundsvall.contactsettings.api.model.Delegate;
-import se.sundsvall.contactsettings.api.model.DelegateCreateRequest;
-import se.sundsvall.contactsettings.api.model.FindDelegatesParameters;
-import se.sundsvall.contactsettings.integration.db.ContactSettingRepository;
-import se.sundsvall.contactsettings.integration.db.DelegateRepository;
 
 @Service
 public class DelegateService {

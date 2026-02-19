@@ -1,11 +1,5 @@
 package se.sundsvall.contactsettings.api.validator.impl;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.lenient;
-import static se.sundsvall.contactsettings.api.model.enums.ContactMethod.EMAIL;
-import static se.sundsvall.contactsettings.api.model.enums.ContactMethod.SMS;
-
 import jakarta.validation.ConstraintValidatorContext;
 import jakarta.validation.ConstraintValidatorContext.ConstraintViolationBuilder;
 import java.util.stream.Stream;
@@ -17,6 +11,12 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import se.sundsvall.contactsettings.api.model.ContactChannel;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.lenient;
+import static se.sundsvall.contactsettings.api.model.enums.ContactMethod.EMAIL;
+import static se.sundsvall.contactsettings.api.model.enums.ContactMethod.SMS;
 
 @ExtendWith(MockitoExtension.class)
 class ValidContactChannelConstraintValidatorTest {

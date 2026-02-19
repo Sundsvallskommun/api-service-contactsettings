@@ -1,9 +1,5 @@
 package se.sundsvall.contactsettings.service.mapper;
 
-import static java.time.temporal.ChronoUnit.SECONDS;
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.within;
-
 import java.time.OffsetDateTime;
 import java.util.List;
 import org.junit.jupiter.api.Test;
@@ -12,6 +8,10 @@ import se.sundsvall.contactsettings.api.model.ContactSettingUpdateRequest;
 import se.sundsvall.contactsettings.api.model.enums.ContactMethod;
 import se.sundsvall.contactsettings.integration.db.model.Channel;
 import se.sundsvall.contactsettings.integration.db.model.ContactSettingEntity;
+
+import static java.time.temporal.ChronoUnit.SECONDS;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.within;
 
 class ContactSettingMapperTest {
 

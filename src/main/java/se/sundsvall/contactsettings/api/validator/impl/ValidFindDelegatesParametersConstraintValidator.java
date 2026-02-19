@@ -1,11 +1,11 @@
 package se.sundsvall.contactsettings.api.validator.impl;
 
-import static java.util.Objects.isNull;
-
 import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;
 import se.sundsvall.contactsettings.api.model.FindDelegatesParameters;
 import se.sundsvall.contactsettings.api.validator.ValidFindDelegatesParameters;
+
+import static java.util.Objects.isNull;
 
 public class ValidFindDelegatesParametersConstraintValidator implements ConstraintValidator<ValidFindDelegatesParameters, FindDelegatesParameters> {
 

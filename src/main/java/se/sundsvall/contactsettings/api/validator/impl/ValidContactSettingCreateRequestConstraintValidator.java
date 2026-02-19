@@ -1,12 +1,12 @@
 package se.sundsvall.contactsettings.api.validator.impl;
 
-import static java.util.Objects.isNull;
-import static org.apache.commons.lang3.ObjectUtils.allNull;
-
 import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;
 import se.sundsvall.contactsettings.api.model.ContactSettingCreateRequest;
 import se.sundsvall.contactsettings.api.validator.ValidContactSettingCreateRequest;
+
+import static java.util.Objects.isNull;
+import static org.apache.commons.lang3.ObjectUtils.allNull;
 
 public class ValidContactSettingCreateRequestConstraintValidator implements ConstraintValidator<ValidContactSettingCreateRequest, ContactSettingCreateRequest> {
 

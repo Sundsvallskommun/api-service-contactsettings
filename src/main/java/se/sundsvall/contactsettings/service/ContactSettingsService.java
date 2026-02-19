@@ -1,18 +1,5 @@
 package se.sundsvall.contactsettings.service;
 
-import static java.util.Collections.emptyMap;
-import static java.util.Objects.isNull;
-import static java.util.Objects.nonNull;
-import static org.zalando.problem.Status.CONFLICT;
-import static org.zalando.problem.Status.NOT_FOUND;
-import static se.sundsvall.contactsettings.service.Constants.ERROR_MESSAGE_CONTACT_SETTING_BY_PARTY_ALREADY_EXISTS;
-import static se.sundsvall.contactsettings.service.Constants.ERROR_MESSAGE_CONTACT_SETTING_BY_PARTY_ID_NOT_FOUND;
-import static se.sundsvall.contactsettings.service.Constants.ERROR_MESSAGE_CONTACT_SETTING_NOT_FOUND;
-import static se.sundsvall.contactsettings.service.mapper.ContactSettingMapper.mergeIntoContactSettingEntity;
-import static se.sundsvall.contactsettings.service.mapper.ContactSettingMapper.toContactSetting;
-import static se.sundsvall.contactsettings.service.mapper.ContactSettingMapper.toContactSettingEntity;
-import static se.sundsvall.contactsettings.service.util.FilterEvaluationUtils.evaluate;
-
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -28,6 +15,19 @@ import se.sundsvall.contactsettings.integration.db.DelegateRepository;
 import se.sundsvall.contactsettings.integration.db.model.ContactSettingEntity;
 import se.sundsvall.contactsettings.integration.db.model.DelegateEntity;
 import se.sundsvall.contactsettings.service.mapper.ContactSettingMapper;
+
+import static java.util.Collections.emptyMap;
+import static java.util.Objects.isNull;
+import static java.util.Objects.nonNull;
+import static org.zalando.problem.Status.CONFLICT;
+import static org.zalando.problem.Status.NOT_FOUND;
+import static se.sundsvall.contactsettings.service.Constants.ERROR_MESSAGE_CONTACT_SETTING_BY_PARTY_ALREADY_EXISTS;
+import static se.sundsvall.contactsettings.service.Constants.ERROR_MESSAGE_CONTACT_SETTING_BY_PARTY_ID_NOT_FOUND;
+import static se.sundsvall.contactsettings.service.Constants.ERROR_MESSAGE_CONTACT_SETTING_NOT_FOUND;
+import static se.sundsvall.contactsettings.service.mapper.ContactSettingMapper.mergeIntoContactSettingEntity;
+import static se.sundsvall.contactsettings.service.mapper.ContactSettingMapper.toContactSetting;
+import static se.sundsvall.contactsettings.service.mapper.ContactSettingMapper.toContactSettingEntity;
+import static se.sundsvall.contactsettings.service.util.FilterEvaluationUtils.evaluate;
 
 @Service
 public class ContactSettingsService {

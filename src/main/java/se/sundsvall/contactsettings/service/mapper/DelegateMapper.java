@@ -1,9 +1,5 @@
 package se.sundsvall.contactsettings.service.mapper;
 
-import static java.util.Collections.emptyList;
-import static java.util.Objects.isNull;
-import static se.sundsvall.contactsettings.api.model.enums.Operator.toEnum;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -15,6 +11,10 @@ import se.sundsvall.contactsettings.integration.db.model.ContactSettingEntity;
 import se.sundsvall.contactsettings.integration.db.model.DelegateEntity;
 import se.sundsvall.contactsettings.integration.db.model.DelegateFilterEntity;
 import se.sundsvall.contactsettings.integration.db.model.DelegateFilterRule;
+
+import static java.util.Collections.emptyList;
+import static java.util.Objects.isNull;
+import static se.sundsvall.contactsettings.api.model.enums.Operator.toEnum;
 
 public final class DelegateMapper {
 
