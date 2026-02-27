@@ -5,17 +5,18 @@ import java.util.Map;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.webtestclient.autoconfigure.AutoConfigureWebTestClient;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.reactive.server.WebTestClient;
-import org.zalando.problem.Problem;
-import org.zalando.problem.violations.ConstraintViolationProblem;
-import org.zalando.problem.violations.Violation;
 import se.sundsvall.contactsettings.Application;
 import se.sundsvall.contactsettings.api.model.DelegateCreateRequest;
 import se.sundsvall.contactsettings.api.model.Filter;
 import se.sundsvall.contactsettings.api.model.Rule;
 import se.sundsvall.contactsettings.service.DelegateService;
+import se.sundsvall.dept44.problem.Problem;
+import se.sundsvall.dept44.problem.violations.ConstraintViolationProblem;
+import se.sundsvall.dept44.problem.violations.Violation;
 
 import static java.util.Collections.emptyList;
 import static java.util.UUID.randomUUID;
@@ -23,11 +24,12 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.tuple;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT;
+import static org.springframework.http.HttpStatus.BAD_REQUEST;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 import static org.springframework.http.MediaType.APPLICATION_PROBLEM_JSON;
-import static org.zalando.problem.Status.BAD_REQUEST;
 import static se.sundsvall.contactsettings.api.model.enums.Operator.EQUALS;
 
+@AutoConfigureWebTestClient
 @SpringBootTest(classes = Application.class, webEnvironment = RANDOM_PORT)
 @ActiveProfiles("junit")
 class DelegateResourceFailuresTest {
@@ -60,8 +62,7 @@ class DelegateResourceFailuresTest {
 		assertThat(response).isNotNull();
 		assertThat(response.getTitle()).isEqualTo("Bad Request");
 		assertThat(response.getStatus()).isEqualTo(BAD_REQUEST);
-		assertThat(response.getDetail()).isEqualTo(
-			"Required request body is missing: org.springframework.http.ResponseEntity<java.lang.Void> se.sundsvall.contactsettings.api.DelegateResource.create(java.lang.String,se.sundsvall.contactsettings.api.model.DelegateCreateRequest)");
+		assertThat(response.getDetail()).isEqualTo("Failed to read request");
 
 		verifyNoInteractions(delegateServiceMock);
 	}
@@ -97,7 +98,7 @@ class DelegateResourceFailuresTest {
 		assertThat(response.getTitle()).isEqualTo("Constraint Violation");
 		assertThat(response.getStatus()).isEqualTo(BAD_REQUEST);
 		assertThat(response.getViolations())
-			.extracting(Violation::getField, Violation::getMessage)
+			.extracting(Violation::field, Violation::message)
 			.containsExactlyInAnyOrder(tuple("agentId", "not a valid UUID"));
 
 		verifyNoInteractions(delegateServiceMock);
@@ -134,7 +135,7 @@ class DelegateResourceFailuresTest {
 		assertThat(response.getTitle()).isEqualTo("Constraint Violation");
 		assertThat(response.getStatus()).isEqualTo(BAD_REQUEST);
 		assertThat(response.getViolations())
-			.extracting(Violation::getField, Violation::getMessage)
+			.extracting(Violation::field, Violation::message)
 			.containsExactlyInAnyOrder(tuple("principalId", "not a valid UUID"));
 
 		verifyNoInteractions(delegateServiceMock);
@@ -171,7 +172,7 @@ class DelegateResourceFailuresTest {
 		assertThat(response.getTitle()).isEqualTo("Constraint Violation");
 		assertThat(response.getStatus()).isEqualTo(BAD_REQUEST);
 		assertThat(response.getViolations())
-			.extracting(Violation::getField, Violation::getMessage)
+			.extracting(Violation::field, Violation::message)
 			.containsExactlyInAnyOrder(tuple("create.municipalityId", "not a valid municipality ID"));
 
 		verifyNoInteractions(delegateServiceMock);
@@ -205,7 +206,7 @@ class DelegateResourceFailuresTest {
 		assertThat(response.getTitle()).isEqualTo("Constraint Violation");
 		assertThat(response.getStatus()).isEqualTo(BAD_REQUEST);
 		assertThat(response.getViolations())
-			.extracting(Violation::getField, Violation::getMessage)
+			.extracting(Violation::field, Violation::message)
 			.containsExactlyInAnyOrder(
 				tuple("filters[0].rules[0].attributeName", "must not be blank"),
 				tuple("filters[0].rules[0].attributeValue", "must not be blank"),
@@ -239,7 +240,7 @@ class DelegateResourceFailuresTest {
 		assertThat(response.getTitle()).isEqualTo("Constraint Violation");
 		assertThat(response.getStatus()).isEqualTo(BAD_REQUEST);
 		assertThat(response.getViolations())
-			.extracting(Violation::getField, Violation::getMessage)
+			.extracting(Violation::field, Violation::message)
 			.containsExactlyInAnyOrder(tuple("filters", "must not be empty"));
 
 		verifyNoInteractions(delegateServiceMock);
@@ -271,7 +272,7 @@ class DelegateResourceFailuresTest {
 		assertThat(response.getTitle()).isEqualTo("Constraint Violation");
 		assertThat(response.getStatus()).isEqualTo(BAD_REQUEST);
 		assertThat(response.getViolations())
-			.extracting(Violation::getField, Violation::getMessage)
+			.extracting(Violation::field, Violation::message)
 			.containsExactlyInAnyOrder(tuple("filters", "must not be empty"));
 
 		verifyNoInteractions(delegateServiceMock);
@@ -304,7 +305,7 @@ class DelegateResourceFailuresTest {
 		assertThat(response.getTitle()).isEqualTo("Constraint Violation");
 		assertThat(response.getStatus()).isEqualTo(BAD_REQUEST);
 		assertThat(response.getViolations())
-			.extracting(Violation::getField, Violation::getMessage)
+			.extracting(Violation::field, Violation::message)
 			.containsExactlyInAnyOrder(tuple("filters[0].rules", "must not be empty"));
 
 		verifyNoInteractions(delegateServiceMock);
@@ -338,7 +339,7 @@ class DelegateResourceFailuresTest {
 		assertThat(response.getTitle()).isEqualTo("Constraint Violation");
 		assertThat(response.getStatus()).isEqualTo(BAD_REQUEST);
 		assertThat(response.getViolations())
-			.extracting(Violation::getField, Violation::getMessage)
+			.extracting(Violation::field, Violation::message)
 			.containsExactlyInAnyOrder(tuple("filters[0].rules", "must not be empty"));
 
 		verifyNoInteractions(delegateServiceMock);
@@ -364,7 +365,7 @@ class DelegateResourceFailuresTest {
 		assertThat(response.getTitle()).isEqualTo("Constraint Violation");
 		assertThat(response.getStatus()).isEqualTo(BAD_REQUEST);
 		assertThat(response.getViolations())
-			.extracting(Violation::getField, Violation::getMessage)
+			.extracting(Violation::field, Violation::message)
 			.containsExactlyInAnyOrder(tuple("delete.id", "not a valid UUID"));
 
 		verifyNoInteractions(delegateServiceMock);
@@ -390,7 +391,7 @@ class DelegateResourceFailuresTest {
 		assertThat(response.getTitle()).isEqualTo("Constraint Violation");
 		assertThat(response.getStatus()).isEqualTo(BAD_REQUEST);
 		assertThat(response.getViolations())
-			.extracting(Violation::getField, Violation::getMessage)
+			.extracting(Violation::field, Violation::message)
 			.containsExactlyInAnyOrder(tuple("delete.municipalityId", "not a valid municipality ID"));
 
 		verifyNoInteractions(delegateServiceMock);
@@ -416,7 +417,7 @@ class DelegateResourceFailuresTest {
 		assertThat(response.getTitle()).isEqualTo("Constraint Violation");
 		assertThat(response.getStatus()).isEqualTo(BAD_REQUEST);
 		assertThat(response.getViolations())
-			.extracting(Violation::getField, Violation::getMessage)
+			.extracting(Violation::field, Violation::message)
 			.containsExactlyInAnyOrder(tuple("read.id", "not a valid UUID"));
 
 		verifyNoInteractions(delegateServiceMock);
@@ -442,7 +443,7 @@ class DelegateResourceFailuresTest {
 		assertThat(response.getTitle()).isEqualTo("Constraint Violation");
 		assertThat(response.getStatus()).isEqualTo(BAD_REQUEST);
 		assertThat(response.getViolations())
-			.extracting(Violation::getField, Violation::getMessage)
+			.extracting(Violation::field, Violation::message)
 			.containsExactlyInAnyOrder(tuple("read.municipalityId", "not a valid municipality ID"));
 
 		verifyNoInteractions(delegateServiceMock);
@@ -466,7 +467,7 @@ class DelegateResourceFailuresTest {
 		assertThat(response.getTitle()).isEqualTo("Constraint Violation");
 		assertThat(response.getStatus()).isEqualTo(BAD_REQUEST);
 		assertThat(response.getViolations())
-			.extracting(Violation::getField, Violation::getMessage)
+			.extracting(Violation::field, Violation::message)
 			.containsExactlyInAnyOrder(tuple("findDelegatesParameters", "At least one of agentId or principalId must be provided!"));
 
 		verifyNoInteractions(delegateServiceMock);
@@ -492,7 +493,7 @@ class DelegateResourceFailuresTest {
 		assertThat(response.getTitle()).isEqualTo("Constraint Violation");
 		assertThat(response.getStatus()).isEqualTo(BAD_REQUEST);
 		assertThat(response.getViolations())
-			.extracting(Violation::getField, Violation::getMessage)
+			.extracting(Violation::field, Violation::message)
 			.containsExactlyInAnyOrder(tuple("agentId", "not a valid UUID"));
 
 		verifyNoInteractions(delegateServiceMock);
@@ -518,7 +519,7 @@ class DelegateResourceFailuresTest {
 		assertThat(response.getTitle()).isEqualTo("Constraint Violation");
 		assertThat(response.getStatus()).isEqualTo(BAD_REQUEST);
 		assertThat(response.getViolations())
-			.extracting(Violation::getField, Violation::getMessage)
+			.extracting(Violation::field, Violation::message)
 			.containsExactlyInAnyOrder(tuple("principalId", "not a valid UUID"));
 
 		verifyNoInteractions(delegateServiceMock);

@@ -9,7 +9,6 @@ import org.mockito.Captor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.zalando.problem.ThrowableProblem;
 import se.sundsvall.contactsettings.api.model.Delegate;
 import se.sundsvall.contactsettings.api.model.DelegateCreateRequest;
 import se.sundsvall.contactsettings.api.model.Filter;
@@ -22,6 +21,7 @@ import se.sundsvall.contactsettings.integration.db.model.ContactSettingEntity;
 import se.sundsvall.contactsettings.integration.db.model.DelegateEntity;
 import se.sundsvall.contactsettings.integration.db.model.DelegateFilterEntity;
 import se.sundsvall.contactsettings.integration.db.model.DelegateFilterRule;
+import se.sundsvall.dept44.problem.ThrowableProblem;
 
 import static java.util.Collections.emptyList;
 import static java.util.UUID.randomUUID;
@@ -33,8 +33,8 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
-import static org.zalando.problem.Status.CONFLICT;
-import static org.zalando.problem.Status.NOT_FOUND;
+import static org.springframework.http.HttpStatus.CONFLICT;
+import static org.springframework.http.HttpStatus.NOT_FOUND;
 
 @ExtendWith(MockitoExtension.class)
 class DelegateServiceTest {

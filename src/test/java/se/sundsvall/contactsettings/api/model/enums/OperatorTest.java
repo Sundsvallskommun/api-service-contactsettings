@@ -2,11 +2,11 @@ package se.sundsvall.contactsettings.api.model.enums;
 
 import java.util.stream.Stream;
 import org.junit.jupiter.api.Test;
-import org.zalando.problem.ThrowableProblem;
+import se.sundsvall.dept44.problem.ThrowableProblem;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.zalando.problem.Status.BAD_REQUEST;
+import static org.springframework.http.HttpStatus.BAD_REQUEST;
 
 class OperatorTest {
 

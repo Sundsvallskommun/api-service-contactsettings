@@ -3,13 +3,13 @@ package se.sundsvall.contactsettings.service;
 import java.util.ArrayList;
 import java.util.Optional;
 import org.springframework.stereotype.Service;
-import org.zalando.problem.Problem;
 import se.sundsvall.contactsettings.api.model.Filter;
 import se.sundsvall.contactsettings.integration.db.DelegateFilterRepository;
 import se.sundsvall.contactsettings.integration.db.DelegateRepository;
+import se.sundsvall.dept44.problem.Problem;
 
 import static java.util.Collections.emptyList;
-import static org.zalando.problem.Status.NOT_FOUND;
+import static org.springframework.http.HttpStatus.NOT_FOUND;
 import static se.sundsvall.contactsettings.service.Constants.ERROR_MESSAGE_DELEGATE_FILTER_NOT_FOUND;
 import static se.sundsvall.contactsettings.service.Constants.ERROR_MESSAGE_DELEGATE_NOT_FOUND;
 import static se.sundsvall.contactsettings.service.mapper.DelegateMapper.mergeIntoDelegateFilterEntity;
