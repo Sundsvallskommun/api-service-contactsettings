@@ -2,9 +2,9 @@ package se.sundsvall.contactsettings.api.model.enums;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import java.util.stream.Stream;
-import org.zalando.problem.Problem;
+import se.sundsvall.dept44.problem.Problem;
 
-import static org.zalando.problem.Status.BAD_REQUEST;
+import static org.springframework.http.HttpStatus.BAD_REQUEST;
 
 @Schema(description = "Operator model", enumAsRef = true)
 public enum Operator {
