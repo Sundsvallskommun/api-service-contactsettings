@@ -7,7 +7,7 @@ info:
     url: https://opensource.org/licenses/MIT
   version: "2.0"
 servers:
-- url: http://localhost:50109
+- url: http://localhost:51868
   description: Generated server url
 tags:
 - name: ContactSettings
@@ -786,16 +786,16 @@ components:
     Problem:
       type: object
       properties:
+        title:
+          type: string
+        detail:
+          type: string
         instance:
           type: string
           format: uri
         type:
           type: string
           format: uri
-        title:
-          type: string
-        detail:
-          type: string
         status:
           type: integer
           format: int32
@@ -814,13 +814,13 @@ components:
             $ref: "#/components/schemas/Violation"
         title:
           type: string
+        causeAsProblem:
+          $ref: "#/components/schemas/ThrowableProblem"
+        detail:
+          type: string
         instance:
           type: string
           format: uri
-        detail:
-          type: string
-        causeAsProblem:
-          $ref: "#/components/schemas/ThrowableProblem"
     ThrowableProblem:
       type: object
       properties:
@@ -857,11 +857,13 @@ components:
           description: Alias for the destination
           examples:
           - Private phone
+          minLength: 1
         destination:
           type: string
           description: Point of destination
           examples:
           - "+46701740605"
+          minLength: 1
         disabled:
           type: boolean
           default: false
@@ -970,6 +972,7 @@ components:
             I.e. all rules must evaluate to true in order to pass the filter.
           items:
             $ref: "#/components/schemas/Rule"
+          minItems: 1
       required:
       - rules
     Operator:
@@ -1011,6 +1014,7 @@ components:
           description: The attribute name to apply the filter rule on
           examples:
           - facilityId
+          minLength: 1
         operator:
           $ref: "#/components/schemas/Operator"
           description: The rule operator
@@ -1021,6 +1025,7 @@ components:
           description: The attribute value to apply the filter rule on
           examples:
           - "12345678"
+          minLength: 1
       required:
       - attributeName
       - attributeValue
