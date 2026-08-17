@@ -869,7 +869,7 @@ components:
           default: false
           description: Signal if channel should be used or not when sending message
           examples:
-          - "true"
+          - true
       required:
       - alias
       - contactMethod
@@ -1087,7 +1087,7 @@ components:
             doesn't have a partyId (i.e. doesn't have a direct relation to a real
             person/organization)
           examples:
-          - "false"
+          - false
           readOnly: true
         contactChannels:
           type: array
