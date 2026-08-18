@@ -1,6 +1,7 @@
 package se.sundsvall.contactsettings.service.mapper;
 
 import java.time.OffsetDateTime;
+import java.time.ZoneId;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -38,7 +39,7 @@ public final class ContactSettingMapper {
 		Optional.ofNullable(contactSettingUpdateRequest).ifPresent(contactSetting -> {
 			Optional.ofNullable(contactSetting.getContactChannels()).map(ContactSettingMapper::toChannels).ifPresent(existingContactSettingEntity::setChannels);
 			Optional.ofNullable(contactSetting.getAlias()).ifPresent(existingContactSettingEntity::setAlias);
-			existingContactSettingEntity.setModified(OffsetDateTime.now());
+			existingContactSettingEntity.setModified(OffsetDateTime.now(ZoneId.systemDefault()));
 		});
 
 		return existingContactSettingEntity;
